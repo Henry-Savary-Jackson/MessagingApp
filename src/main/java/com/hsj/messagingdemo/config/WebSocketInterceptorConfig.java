@@ -3,6 +3,7 @@ package com.hsj.messagingdemo.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -15,10 +16,10 @@ public class WebSocketInterceptorConfig implements WebSocketMessageBrokerConfigu
     private static final Logger logger = LoggerFactory.getLogger(WebSocketInterceptorConfig.class);
 
     @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
+    public void configureClientInboundChannel(@NonNull ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
             @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+            public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
                 logger.debug("Inbound message: {}", message);
                 return message;
             }
@@ -26,10 +27,10 @@ public class WebSocketInterceptorConfig implements WebSocketMessageBrokerConfigu
     }
 
     @Override
-    public void configureClientOutboundChannel(ChannelRegistration registration) {
+    public void configureClientOutboundChannel(@NonNull ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
             @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+            public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
                 logger.debug("Outbound message: {}", message);
                 return message;
             }
