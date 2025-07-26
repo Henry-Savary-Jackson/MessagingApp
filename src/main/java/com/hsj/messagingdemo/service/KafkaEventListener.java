@@ -6,13 +6,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import com.hsj.messagingdemo.model.ChatMessage;
 
-
 public class KafkaEventListener {
 
     @Autowired
     SimpMessagingTemplate template;
 
     private String userId ;
+
 
     public KafkaEventListener(String userId){
         this.userId = userId;

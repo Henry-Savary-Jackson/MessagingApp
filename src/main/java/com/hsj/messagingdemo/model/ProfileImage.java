@@ -1,5 +1,6 @@
 package com.hsj.messagingdemo.model;
 
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @Builder
 public class ProfileImage {
 
-    byte[] data;
+    Binary data;
     String mimeType;
     
 }

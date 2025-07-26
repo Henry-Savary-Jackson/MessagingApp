@@ -14,27 +14,27 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import com.hsj.messagingdemo.model.Message;
+import com.hsj.messagingdemo.model.ChatMessage;
 
 @EnableKafka
 @Configuration
 public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
-    @Value("${spring.kafka.consumer.group-id}")
-    private String groupId;
+    // @Value("${spring.kafka.consumer.group-id}")
+    // private String groupId;
 
     @Bean
-    public ConsumerFactory<String, Message> consumerFactory() {
+    public ConsumerFactory<String, ChatMessage> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new JsonDeserializer<>(Message.class, false));
+        // configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new JsonDeserializer<>(ChatMessage.class, false));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Message> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, ChatMessage> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ChatMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }

@@ -1,5 +1,6 @@
 package com.hsj.messagingdemo.config;
 
+import java.beans.Customizer;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                 (a) -> a.requestMatchers("/user/login", "/user/register").permitAll().anyRequest().authenticated())
-                .rememberMe(rememberMe -> rememberMe.key(rememberMeKey)).csrf(c -> c.disable())
+                .rememberMe(rememberMe -> rememberMe.key(rememberMeKey))
                 .cors((c) -> c.disable());
         return http.build();
     }

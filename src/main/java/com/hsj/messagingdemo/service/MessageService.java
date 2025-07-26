@@ -1,7 +1,12 @@
 package com.hsj.messagingdemo.service;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +17,9 @@ import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.ChatRepo;
 import com.hsj.messagingdemo.repo.MessageRepo;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Service
 public class MessageService {
 
@@ -20,6 +28,32 @@ public class MessageService {
 
     @Autowired
     ChatRepo chatRepo;
+
+    private static final Map<String,Set<String>> userToKafkaListener = new HashMap<>();  
+
+    public void linkUserToKafkaEventListener(String userId, String listenerId){
+
+        Set<String> listener =userToKafkaListener.get(userId); 
+        if (listener == null ){
+            listener = new HashSet<>();
+            userToKafkaListener.put(userId, listener);
+        }
+        listener.add(listenerId);
+    }
+
+    public void unLinkUserToKafkaEventListener(String userId, String listenerId){
+
+        Set<String> listener =userToKafkaListener.get(userId); 
+        if (listener == null ){
+            return;
+        }
+
+        listener.remove(listenerId);
+    }
+
+    public Set<String> getKafkaListenersForUser(String userId){
+        return userToKafkaListener.getOrDefault(userId, new HashSet<>()); 
+    }
 
     public Optional<Chat> getChatById(UUID id){
         return chatRepo.findById(id);
