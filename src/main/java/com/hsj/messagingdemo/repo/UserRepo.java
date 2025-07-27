@@ -2,6 +2,7 @@ package com.hsj.messagingdemo.repo;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.hsj.messagingdemo.model.User;
 

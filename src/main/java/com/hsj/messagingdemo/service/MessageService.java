@@ -47,7 +47,6 @@ public class MessageService {
         if (listener == null ){
             return;
         }
-
         listener.remove(listenerId);
     }
 
@@ -60,7 +59,7 @@ public class MessageService {
     }
 
     public Chat createChat(User userInitial){
-        Chat chat = Chat.builder().users(List.of(userInitial.getId())).build();
+        Chat chat = Chat.builder().chatId(UUID.randomUUID()).users(List.of(userInitial.getId())).build();
         chatRepo.save(chat);
         return chat;
     }

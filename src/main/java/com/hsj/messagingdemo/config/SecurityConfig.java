@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import com.hsj.messagingdemo.service.UserService;
 
@@ -26,8 +27,11 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
-                (a) -> a.requestMatchers("/user/login", "/user/register").permitAll().anyRequest().authenticated())
+                (a) -> a.requestMatchers("/csrf", "/user/login", "/user/register").permitAll().anyRequest()
+                        .authenticated())
                 .rememberMe(rememberMe -> rememberMe.key(rememberMeKey))
+                .csrf((csrf) -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .cors((c) -> c.disable());
         return http.build();
     }

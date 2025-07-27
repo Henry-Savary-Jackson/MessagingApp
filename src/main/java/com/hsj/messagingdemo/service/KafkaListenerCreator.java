@@ -50,7 +50,7 @@ public class KafkaListenerCreator {
         kafkaListenerEndpoint.setId(listenerId);
         kafkaListenerEndpoint.setGroupId(listenerId);
         kafkaListenerEndpoint.setAutoStartup(true);
-        // ONLY WORKS IF ONE PARTITION PER TOPIC, /THINK CAREFULLY ABOUT THIS
+        // ONLY WORKS IF ONE PARTITION PER TOPIC, THINK CAREFULLY ABOUT THIS
         TopicPartitionOffset partionOffset = new TopicPartitionOffset(chatUuid.toString(),0);
         partionOffset.setOffset((long)offset);
         kafkaListenerEndpoint.setTopicPartitions(partionOffset);

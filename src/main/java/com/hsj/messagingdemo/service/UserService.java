@@ -3,6 +3,7 @@ package com.hsj.messagingdemo.service;
 import java.lang.foreign.Linker.Option;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.Base64.Decoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.RegistrationRequest;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.UserRepo;
+import com.hsj.messagingdemo.utils.CryptoUtils;
 
 @Service
 public class UserService {
@@ -40,21 +42,18 @@ public class UserService {
     @Autowired
     UserRepo userRepo;
 
+    public Authentication getSpingSecurityAuthentication(User user) {
+
+        return new RememberMeAuthenticationToken(user.getId(), user, user.getAuthorities());
+    }
+
     public Authentication loginUser(AuthenticationRequest request) {
         try {
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            Decoder decoderb64 = Base64.getDecoder();
             User user = getUserByUsername(request.getUsername()).orElseThrow();
-            PublicKey pubKey = kf.generatePublic(new X509EncodedKeySpec(decoderb64.decode(user.getBase64PublicKey())));
-            Signature signature = Signature.getInstance("SHA256withRSA");
-            signature.initVerify(pubKey);
-            signature.update(decoderb64.decode(request.getChallenge()));
-            boolean result = signature.verify(decoderb64.decode(request.getChallengeSignature()));
-            if (!result) {
-                throw new SignatureException();
-
+            if (!CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(), request.getChallengeSignature())) {
+                throw new SignatureException("");
             }
-            return new RememberMeAuthenticationToken(user.getId(), user, user.getAuthorities());
+            return getSpingSecurityAuthentication(user);
         } catch (SignatureException e) {
             throw new AuthenticationServiceException("Signature failed.");
         } catch (NoSuchAlgorithmException nsae) {
@@ -68,10 +67,14 @@ public class UserService {
         }
     }
 
-    public void saveUser(RegistrationRequest request) {
+    public User saveUser(RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        // verify inegrity of pubkey
+        CryptoUtils.createPubKeyFrombase64(request.getBase64PubKey());
 
-        userRepo.save(
-                User.builder().username(request.getUsername()).base64PublicKey(request.getBase64PubKey()).build());
+        User user = User.builder().id(UUID.randomUUID().toString()).username(request.getUsername())
+                .base64PublicKey(request.getBase64PubKey()).build();
+        userRepo.save(user);
+        return user;
 
     }
 

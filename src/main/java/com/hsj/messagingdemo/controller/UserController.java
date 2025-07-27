@@ -7,6 +7,9 @@ import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.RegistrationRequest;
 import com.hsj.messagingdemo.service.UserService;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,8 +28,9 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/register")
-    public String registerPubKey(@RequestBody RegistrationRequest request) {
-        userService.saveUser(request);
+    public String registerPubKey(@RequestBody RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException {
+        SecurityContextHolder.getContext().setAuthentication(userService.getSpingSecurityAuthentication(userService.saveUser(request)));
+        // set remember me cookie
         return "Success";
     }
 

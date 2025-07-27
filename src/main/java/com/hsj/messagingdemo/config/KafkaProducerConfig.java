@@ -33,11 +33,8 @@ public class KafkaProducerConfig {
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
-    
-
     @Bean
     public KafkaTemplate<String, ChatMessage> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
-
 }

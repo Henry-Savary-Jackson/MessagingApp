@@ -29,7 +29,8 @@ public class User implements UserDetails {
    
     @Id
     String id;
-    @Indexed
+
+    @Indexed(unique = true)
     String username;
 
     String base64PublicKey;
