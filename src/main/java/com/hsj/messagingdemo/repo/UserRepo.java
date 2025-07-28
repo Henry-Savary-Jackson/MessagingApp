@@ -1,5 +1,7 @@
 package com.hsj.messagingdemo.repo;
 
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -9,5 +11,6 @@ import com.hsj.messagingdemo.model.User;
 public interface UserRepo  extends MongoRepository< User,String>{
 
     @Query("{ 'username' : ?0 }")
-    User findUserByUsername(String username);
+    Optional<User> findUserByUsername(String username);
+
 }

@@ -1,5 +1,6 @@
 package com.hsj.messagingdemo.service;
 
+import java.io.IOException;
 import java.lang.foreign.Linker.Option;
 import java.util.Base64;
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.UUID;
 import java.util.Base64.Decoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jms.JmsProperties.Listener.Session;
 import org.springframework.data.domain.Example;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.RememberMeServices;
+
 import com.hsj.messagingdemo.model.AuthenticationRequest;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.RegistrationRequest;
@@ -42,8 +46,10 @@ public class UserService {
     @Autowired
     UserRepo userRepo;
 
-    public Authentication getSpingSecurityAuthentication(User user) {
 
+    @Autowired
+    RememberMeServices rememberMeServices;
+    public Authentication getSpingSecurityAuthentication(User user) {
         return new RememberMeAuthenticationToken(user.getId(), user, user.getAuthorities());
     }
 
@@ -64,10 +70,12 @@ public class UserService {
             throw new AuthenticationServiceException("Invalid key spec.");
         } catch (InvalidKeyException e) {
             throw new AuthenticationServiceException("Invalid public key.");
+        } catch (IOException e) {
+            throw new AuthenticationServiceException("IOException.");
         }
     }
 
-    public User saveUser(RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public User saveUser(RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         // verify inegrity of pubkey
         CryptoUtils.createPubKeyFrombase64(request.getBase64PubKey());
 
@@ -79,7 +87,7 @@ public class UserService {
     }
 
     public Optional<User> getUserByUsername(String username) {
-        return Optional.of(userRepo.findUserByUsername(username));
+        return userRepo.findUserByUsername(username);
     }
 
     public void setProfile(String id, ProfileImage image) {

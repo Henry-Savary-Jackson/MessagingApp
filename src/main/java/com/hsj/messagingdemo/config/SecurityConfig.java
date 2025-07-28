@@ -13,7 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.hsj.messagingdemo.service.UserService;
 
@@ -21,23 +23,24 @@ import com.hsj.messagingdemo.service.UserService;
 @Configuration
 public class SecurityConfig {
 
-    @Value("remember-me-key")
-    String rememberMeKey;
+
+    @Autowired
+    RememberMeServices rememberMeServices;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                 (a) -> a.requestMatchers("/csrf", "/user/login", "/user/register").permitAll().anyRequest()
                         .authenticated())
-                .rememberMe(rememberMe -> rememberMe.key(rememberMeKey))
-                .csrf((csrf) -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .formLogin((formLogin) -> formLogin.loginProcessingUrl("/user/login"))
+                .rememberMe(rememberMe -> rememberMe.rememberMeServices(rememberMeServices))
+                .csrf((csrf) -> csrf.disable())
+                // .csrf((csrf) -> csrf
+                // .csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
                 .cors((c) -> c.disable());
         return http.build();
     }
 
-    @Autowired
-    UserService userService;
 
     // @Bean
     // AuthenticationManager authenticationManager() {
@@ -46,11 +49,5 @@ public class SecurityConfig {
     // return authmanager;
     // }
 
-    @Bean
-    UserDetailsService userDetailsService() {
-
-        return (username) -> {
-            return userService.getUserByUsername(username).orElseThrow();
-        };
-    }
+    
 }
