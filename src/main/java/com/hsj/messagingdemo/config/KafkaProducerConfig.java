@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,11 @@ import org.springframework.kafka.core.ProducerFactory;
 
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import com.hsj.messagingdemo.model.ChatMessage;
+import com.hsj.messagingdemo.service.UserService;
 
 @EnableKafka
 @Configuration
@@ -22,7 +27,6 @@ public class KafkaProducerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
-
 
     @Bean
     public ProducerFactory<String, ChatMessage> producerFactory() {
@@ -37,4 +41,5 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, ChatMessage> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
+
 }

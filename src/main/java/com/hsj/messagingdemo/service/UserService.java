@@ -34,6 +34,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
 
 import com.hsj.messagingdemo.model.AuthenticationRequest;
+import com.hsj.messagingdemo.model.DigitalSignatureAuthenticationToken;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.RegistrationRequest;
 import com.hsj.messagingdemo.model.User;
@@ -47,10 +48,8 @@ public class UserService {
     UserRepo userRepo;
 
 
-    @Autowired
-    RememberMeServices rememberMeServices;
     public Authentication getSpingSecurityAuthentication(User user) {
-        return new RememberMeAuthenticationToken(user.getId(), user, user.getAuthorities());
+        return new DigitalSignatureAuthenticationToken(user, null);
     }
 
     public Authentication loginUser(AuthenticationRequest request) {

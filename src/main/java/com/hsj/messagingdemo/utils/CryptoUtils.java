@@ -39,7 +39,6 @@ public class CryptoUtils {
     public static boolean verifySignature(String base64PubKey, String challenge, String challengeSignature)
             throws SignatureException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,
             IOException {
-        // byte[] pubKeyBytes = readPublicKeybytesFromSPKI(base64PubKey);
         Ed25519Signer signer = new Ed25519Signer();
         byte[] challengeBytes = decoderb64.decode(challenge);
         signer.init(false, new Ed25519PublicKeyParameters(decoderb64.decode(base64PubKey)));

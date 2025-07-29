@@ -40,19 +40,9 @@ public class UserController {
     @PostMapping("/register")
     public String registerPubKey(HttpServletRequest servletRequest, HttpServletResponse response,@RequestBody RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         
-        Authentication auth = userService.getSpingSecurityAuthentication(userService.saveUser(request));
-        // set remember me cookie
-        rememberMeServices.loginSuccess(servletRequest, response, auth );
+        rememberMeServices.loginSuccess(servletRequest, response, userService.getSpingSecurityAuthentication(userService.saveUser(request)));
         return "Success";
     }
-
-    @PostMapping("/login")
-    public String loginMethod(HttpServletRequest servletRequest, HttpServletResponse response,@RequestBody AuthenticationRequest request) throws AuthenticationException{
-        Authentication auth = userService.loginUser(request);
-        rememberMeServices.loginSuccess(servletRequest, response, auth );
-        return "Success";
-    }
-
 
     @PutMapping("/profile/{id}")
     public String userProfile(@PathVariable String id, @RequestBody ProfileImage entity) {
@@ -60,7 +50,5 @@ public class UserController {
         return "Success";
     }
     
-    
-
 
 }
