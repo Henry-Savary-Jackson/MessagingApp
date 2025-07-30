@@ -7,6 +7,7 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonInputMessage;
@@ -19,9 +20,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import com.hsj.messagingdemo.config.DigitialSignatureAuthenticationConverter;
-import com.hsj.messagingdemo.model.AuthenticationRequest;
+import com.hsj.messagingdemo.auth.DigitialSignatureAuthenticationConverter;
+import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.utils.CryptoUtils;
 
@@ -32,6 +34,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DigitalSignatureAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private static final DigitialSignatureAuthenticationConverter converter = new DigitialSignatureAuthenticationConverter();
 
+
     public DigitalSignatureAuthenticationFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher);
     }
@@ -40,6 +43,9 @@ public class DigitalSignatureAuthenticationFilter extends AbstractAuthentication
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
         Authentication authentication = converter.convert(request);
+        if (authentication == null){
+            return null;
+        }
         Authentication result =  this.getAuthenticationManager().authenticate(authentication);
         return result;
    }

@@ -2,16 +2,18 @@ import { useEffect, useContext, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Button, Form, FormLabel, FormControl, FormGroup } from "react-bootstrap";
 import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair } from "../utils/CryptoUtils"
-import { register } from "../utils/RequestUtils"
+import { register, setAxiosCSRF } from "../utils/RequestUtils"
 import { useLocation } from 'react-router'
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../utils/EncodingUtils";
-import { userContext } from "../globals";
+import { csrfContext, userContext } from "../globals";
+import { performActionWithAlert } from "../utils/UIUtils";
 
 function RegisterForm() {
 
     let location = useLocation()
 
     let [user, setUser] = useContext(userContext)
+    let [csrf, setCsrf] = useContext(csrfContext)
     let [username, setUsername] = useState("")
     let [privKey, setPrivKey] = useState(null)
     let [pubKey, setPubKey] = useState(null)
@@ -42,14 +44,13 @@ function RegisterForm() {
         e.preventDefault()
         console.log(privKey, convertBase64StringToArrayBuffer(privKey))
         let registerRequest = { "username": username, "base64PubKey": pubKey }
-        try {
+
+        await performActionWithAlert(async () => {
             await register(registerRequest)
-        }
-        catch (e) {
-            alert(e)
-        }
-        // setUser(username)
-        // location.pathname = "/"
+            setUser(username)
+            location.pathname = "/"
+            setCsrf(await setAxiosCSRF())
+        });
     }}>
         <FormGroup>
             <FormLabel>Username</FormLabel>
@@ -61,8 +62,8 @@ function RegisterForm() {
             setPrivKey(keypair.privateKey)
             setPubKey(keypair.publicKey)
         }} >{privKey ? "Regenerate Public/Private Key pair" : "Generate Public/Private Key pair"}</Button>
-        {privKey && privKeyURL  && <a href={privKeyURL} download={"privateKey.pem"} >Save Private Key</a>}
-        {pubKey  && pubKeyURL && <a href={pubKeyURL} download={"publicKey.pem"} >Save Public Key</a>}
+        {privKey && privKeyURL && <a href={privKeyURL} download={"privateKey.pem"} >Save Private Key</a>}
+        {pubKey && pubKeyURL && <a href={pubKeyURL} download={"publicKey.pem"} >Save Public Key</a>}
         <Link to="/login">Login</Link>
     </Form >
 

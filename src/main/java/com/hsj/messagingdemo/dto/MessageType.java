@@ -1,4 +1,4 @@
-package com.hsj.messagingdemo.model;
+package com.hsj.messagingdemo.dto;
 
 public enum MessageType {
 

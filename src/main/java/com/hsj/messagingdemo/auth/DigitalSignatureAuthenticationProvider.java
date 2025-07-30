@@ -1,4 +1,4 @@
-package com.hsj.messagingdemo.config;
+package com.hsj.messagingdemo.auth;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -16,8 +16,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.hsj.messagingdemo.model.AuthenticationRequest;
-import com.hsj.messagingdemo.model.DigitalSignatureAuthenticationToken;
+import com.hsj.messagingdemo.dto.AuthenticationRequest;
+import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.utils.CryptoUtils;
 
@@ -30,7 +30,8 @@ public class DigitalSignatureAuthenticationProvider implements AuthenticationPro
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException,UsernameNotFoundException {
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException, UsernameNotFoundException {
 
         try {
             DigitalSignatureAuthenticationToken token = (DigitalSignatureAuthenticationToken) authentication;
@@ -39,9 +40,13 @@ public class DigitalSignatureAuthenticationProvider implements AuthenticationPro
 
             AuthenticationRequest request = token.getCredentials();
             User user = (User) userDetailsService.loadUserByUsername(request.getUsername());
-            CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(), request.getChallengeSignature());
+            if (!CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(),
+                    request.getChallengeSignature())) {
+
+                    throw new SignatureException("Digital Signature did not match.");
+            }
             // token.setAuthenticated(true);
-            return new DigitalSignatureAuthenticationToken(user,request);
+            return new DigitalSignatureAuthenticationToken(user, request);
         } catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException | InvalidKeySpecException
                 | IOException e) {
             throw new AuthenticationServiceException(e.getMessage());

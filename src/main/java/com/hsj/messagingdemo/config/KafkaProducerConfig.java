@@ -18,7 +18,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.hsj.messagingdemo.model.ChatMessage;
+import com.hsj.messagingdemo.dto.ChatMessage;
 import com.hsj.messagingdemo.service.UserService;
 
 @EnableKafka

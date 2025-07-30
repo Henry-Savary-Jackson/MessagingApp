@@ -4,7 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import com.hsj.messagingdemo.model.ChatMessage;
+import com.hsj.messagingdemo.dto.ChatMessage;
 
 public class KafkaEventListener {
 

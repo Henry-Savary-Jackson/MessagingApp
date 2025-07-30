@@ -27,14 +27,6 @@ import org.bouncycastle.util.io.pem.PemReader;
 public class CryptoUtils {
     private static final Decoder decoderb64 = Base64.getDecoder();
 
-    public static byte[] readPublicKeybytesFromSPKI(String base64Data) throws IOException {
-        PemReader reader = new PemReader(new BufferedReader(new InputStreamReader(new
-        ByteArrayInputStream(decoderb64.decode(base64Data)))));
-        PemObject pemObj = reader.readPemObject();
-
-        byte[] pubKeyBytes = pemObj.getContent();
-        return pubKeyBytes;
-    }
 
     public static boolean verifySignature(String base64PubKey, String challenge, String challengeSignature)
             throws SignatureException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,

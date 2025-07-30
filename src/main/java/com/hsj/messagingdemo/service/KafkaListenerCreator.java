@@ -17,7 +17,7 @@ import org.springframework.kafka.support.TopicPartitionOffset;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 import org.springframework.stereotype.Service;
 
-import com.hsj.messagingdemo.model.ChatMessage;
+import com.hsj.messagingdemo.dto.ChatMessage;
 
 @Service
 public class KafkaListenerCreator {

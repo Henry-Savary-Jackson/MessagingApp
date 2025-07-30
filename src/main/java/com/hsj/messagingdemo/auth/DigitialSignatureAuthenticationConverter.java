@@ -1,4 +1,4 @@
-package com.hsj.messagingdemo.config;
+package com.hsj.messagingdemo.auth;
 
 import java.io.IOException;
 
@@ -13,8 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.stereotype.Component;
 
-import com.hsj.messagingdemo.model.AuthenticationRequest;
-import com.hsj.messagingdemo.model.DigitalSignatureAuthenticationToken;
+import com.hsj.messagingdemo.dto.AuthenticationRequest;
+import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
 
 import jakarta.servlet.http.HttpServletRequest;
 

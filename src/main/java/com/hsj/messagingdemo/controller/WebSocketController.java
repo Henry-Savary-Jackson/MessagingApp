@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
+import com.hsj.messagingdemo.dto.ChatMessage;
 import com.hsj.messagingdemo.model.Chat;
-import com.hsj.messagingdemo.model.ChatMessage;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
 import com.hsj.messagingdemo.service.MessageService;

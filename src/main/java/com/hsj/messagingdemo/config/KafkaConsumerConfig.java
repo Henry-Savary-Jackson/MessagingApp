@@ -14,7 +14,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import com.hsj.messagingdemo.model.ChatMessage;
+
+import com.hsj.messagingdemo.dto.ChatMessage;
 
 @EnableKafka
 @Configuration

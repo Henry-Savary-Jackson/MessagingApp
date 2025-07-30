@@ -2,9 +2,9 @@ package com.hsj.messagingdemo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hsj.messagingdemo.model.AuthenticationRequest;
+import com.hsj.messagingdemo.dto.AuthenticationRequest;
+import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.model.ProfileImage;
-import com.hsj.messagingdemo.model.RegistrationRequest;
 import com.hsj.messagingdemo.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,10 +39,10 @@ public class UserController {
     RememberMeServices rememberMeServices;
 
     @PostMapping("/register")
-    public String registerPubKey(HttpServletRequest servletRequest, HttpServletResponse response,@RequestBody RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
+    public CsrfToken registerPubKey(CsrfToken token,HttpServletRequest servletRequest, HttpServletResponse response,@RequestBody RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         
         rememberMeServices.loginSuccess(servletRequest, response, userService.getSpingSecurityAuthentication(userService.saveUser(request)));
-        return "Success";
+        return token;
     }
 
     @PutMapping("/profile/{id}")

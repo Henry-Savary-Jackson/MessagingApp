@@ -9,6 +9,7 @@ import java.util.Base64.Decoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.JmsProperties.Listener.Session;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Example;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
@@ -33,10 +34,10 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
 
-import com.hsj.messagingdemo.model.AuthenticationRequest;
-import com.hsj.messagingdemo.model.DigitalSignatureAuthenticationToken;
+import com.hsj.messagingdemo.dto.AuthenticationRequest;
+import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
+import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.model.ProfileImage;
-import com.hsj.messagingdemo.model.RegistrationRequest;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.UserRepo;
 import com.hsj.messagingdemo.utils.CryptoUtils;
@@ -47,7 +48,6 @@ public class UserService {
     @Autowired
     UserRepo userRepo;
 
-
     public Authentication getSpingSecurityAuthentication(User user) {
         return new DigitalSignatureAuthenticationToken(user, null);
     }
@@ -55,7 +55,8 @@ public class UserService {
     public Authentication loginUser(AuthenticationRequest request) {
         try {
             User user = getUserByUsername(request.getUsername()).orElseThrow();
-            if (!CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(), request.getChallengeSignature())) {
+            if (!CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(),
+                    request.getChallengeSignature())) {
                 throw new SignatureException("");
             }
             return getSpingSecurityAuthentication(user);
@@ -74,14 +75,19 @@ public class UserService {
         }
     }
 
-    public User saveUser(RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
+    public User saveUser(RegistrationRequest request)
+            throws AuthenticationException, InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         // verify inegrity of pubkey
-        CryptoUtils.createPubKeyFrombase64(request.getBase64PubKey());
+        try {
+            CryptoUtils.createPubKeyFrombase64(request.getBase64PubKey());
 
-        User user = User.builder().id(UUID.randomUUID().toString()).username(request.getUsername())
-                .base64PublicKey(request.getBase64PubKey()).build();
-        userRepo.save(user);
-        return user;
+            User user = User.builder().id(UUID.randomUUID().toString()).username(request.getUsername())
+                    .base64PublicKey(request.getBase64PubKey()).build();
+            userRepo.save(user);
+            return user;
+        } catch (DuplicateKeyException mwe) {
+            throw new AuthenticationServiceException("User %s already exist".formatted(request.getUsername()));
+        }
 
     }
 

@@ -5,24 +5,25 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
-import javax.security.sasl.AuthenticationException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException.Forbidden;
 import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
-import com.hsj.messagingdemo.model.ErrorMessage;
+import com.hsj.messagingdemo.dto.ErrorMessage;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ErrorController {
 
     private static ResponseEntity<ErrorMessage> generateErrorResponse(ErrorMessage e) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(0)).body(e);
+        return ResponseEntity.status(HttpStatusCode.valueOf(e.getCode())).body(e);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -39,7 +40,7 @@ public class ErrorController {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorMessage> onAuthError(UsernameNotFoundException a) {
+    public ResponseEntity<ErrorMessage> onUsernameNotFound(UsernameNotFoundException a) {
         return generateErrorResponse(ErrorMessage.builder().code(404)
                 .message("User %s doesnt exist".formatted(a.getAuthenticationRequest().getName()))
                 .advice("Try different username").build());

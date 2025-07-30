@@ -1,5 +1,6 @@
-package com.hsj.messagingdemo.config;
+package com.hsj.messagingdemo.auth;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;

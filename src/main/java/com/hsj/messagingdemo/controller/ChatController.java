@@ -8,10 +8,12 @@ import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.ChatRepo;
 import com.hsj.messagingdemo.service.MessageService;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,9 +40,14 @@ public class ChatController {
         return "Success";
     }
 
+    // @GetMapping("/list")
+    // public List<String> getChats(){
+    //     User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    // }
 
    @PostMapping("/create")
-   public UUID postMethodName(@RequestBody String entity) {
+   public UUID postMethodName() {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (user == null){
             return null; // TODO: add error handler
