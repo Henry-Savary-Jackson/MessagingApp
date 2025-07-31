@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-
+import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -44,6 +44,14 @@ public class ErrorController {
         return generateErrorResponse(ErrorMessage.builder().code(404)
                 .message("User %s doesnt exist".formatted(a.getAuthenticationRequest().getName()))
                 .advice("Try different username").build());
+
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErrorMessage> onUsernameNotFound(NoSuchElementException a) {
+        return generateErrorResponse(ErrorMessage.builder().code(404)
+                .message("Not found: %s".formatted(a.getMessage()))
+                .advice("Enter correct name/id for element").build());
 
     }
 

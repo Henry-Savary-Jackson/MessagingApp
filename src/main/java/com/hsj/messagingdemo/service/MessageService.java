@@ -54,6 +54,10 @@ public class MessageService {
         return userToKafkaListener.getOrDefault(userId, new HashSet<>()); 
     }
 
+    public List<Chat> getChatByUserId(String userId){
+        return chatRepo.findByUsers(userId);
+    }
+
     public Optional<Chat> getChatById(UUID id){
         return chatRepo.findById(id);
     }

@@ -36,14 +36,14 @@ public class DigitalSignatureAuthenticationProvider implements AuthenticationPro
         try {
             DigitalSignatureAuthenticationToken token = (DigitalSignatureAuthenticationToken) authentication;
             if (token == null)
-                throw new AuthenticationServiceException("Null token");
+                throw new AuthenticationServiceException("Null authentication token");
 
             AuthenticationRequest request = token.getCredentials();
             User user = (User) userDetailsService.loadUserByUsername(request.getUsername());
             if (!CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(),
                     request.getChallengeSignature())) {
 
-                    throw new SignatureException("Digital Signature did not match.");
+                throw new SignatureException("Digital signature did not match.");
             }
             // token.setAuthenticated(true);
             return new DigitalSignatureAuthenticationToken(user, request);

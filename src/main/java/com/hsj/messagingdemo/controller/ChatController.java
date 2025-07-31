@@ -27,12 +27,9 @@ public class ChatController {
     @Autowired
     MessageService messageService;
 
-    @PostMapping("/join/{id}")
-    public String postMethodName(@PathVariable UUID id) {
+    @PostMapping("/join")
+    public String postMethodName(@RequestBody UUID id) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (user == null){
-            return ""; // TODO: add error handler
-        }
 
         Chat chat = messageService.getChatById(id).orElseThrow();
 
@@ -40,11 +37,11 @@ public class ChatController {
         return "Success";
     }
 
-    // @GetMapping("/list")
-    // public List<String> getChats(){
-    //     User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    // }
+    @GetMapping("/list")
+    public List<UUID> getChats(){
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return messageService.getChatByUserId(user.getId()).stream().map((chat)-> chat.getChatId()).toList();
+    }
 
    @PostMapping("/create")
    public UUID postMethodName() {

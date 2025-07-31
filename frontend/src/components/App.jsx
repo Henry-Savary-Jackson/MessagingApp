@@ -1,9 +1,9 @@
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { createCookie, MemoryRouter, Route, Routes } from 'react-router-dom'
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import ChatWindow from './ChatWindow';
 import PrivateRoute from './PrivateRoute';
-import { setAxiosCSRF } from '../utils/RequestUtils.js';
+import { setAxiosCSRF , getCSRF} from '../utils/RequestUtils.js';
 import { useEffect, useContext, useState } from 'react';
 
 import { userContext, csrfContext } from '../globals.js'
@@ -14,7 +14,7 @@ function App() {
   let [csrf, setCsrf] = useState("")
 
   useEffect(() => {
-    (async ()  => { setCsrf(setAxiosCSRF()) })()
+    (async ()  => { setCsrf(setAxiosCSRF(await getCSRF())) })()
   }, [])
 
 

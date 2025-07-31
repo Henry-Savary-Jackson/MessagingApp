@@ -46,10 +46,10 @@ function RegisterForm() {
         let registerRequest = { "username": username, "base64PubKey": pubKey }
 
         await performActionWithAlert(async () => {
-            await register(registerRequest)
+            let csrf_data = await register(registerRequest)
             setUser(username)
             location.pathname = "/"
-            setCsrf(await setAxiosCSRF())
+            setCsrf(setAxiosCSRF(csrf_data))
         });
     }}>
         <FormGroup>

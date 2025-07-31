@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Form, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import { removeHeaderFooterToKey, signChallenge } from "../utils/CryptoUtils";
-import { login , setAxiosCSRF} from "../utils/RequestUtils";
+import { getCSRF, login , setAxiosCSRF} from "../utils/RequestUtils";
 import { Link, useLocation } from "react-router";
 import { userContext, csrfContext } from "../globals";
 import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../utils/EncodingUtils";
@@ -34,8 +34,8 @@ function LoginForm() {
             authenticationRequest.username = username
             console.log(authenticationRequest)
             await performActionWithAlert(async () => {
-                await login(authenticationRequest)
-                setCsrf(await setAxiosCSRF())
+                let csrf_data = await login(authenticationRequest)
+                setCsrf(setAxiosCSRF(await getCSRF()))
                 setUser(username)
                 location.pathname = "/"
             })

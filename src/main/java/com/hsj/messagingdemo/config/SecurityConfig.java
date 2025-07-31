@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
@@ -24,11 +26,15 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive;
+import org.springframework.security.web.method.annotation.CsrfTokenArgumentResolver;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hsj.messagingdemo.auth.CustomRememberMeServices;
 import com.hsj.messagingdemo.auth.DigitalSignatureAuthenticationProvider;
 import com.hsj.messagingdemo.filter.DigitalSignatureAuthenticationFilter;
@@ -48,6 +54,9 @@ public class SecurityConfig {
     @Autowired
     ExceptionHandlerFilter exceptionHandlerFilter;
 
+    @Autowired
+    ObjectMapper mapper;
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
@@ -57,10 +66,19 @@ public class SecurityConfig {
                 .addFilterBefore(exceptionHandlerFilter, LogoutFilter.class)
                 .userDetailsService(userDetailsService())
                 .rememberMe(rememberMe -> rememberMe.rememberMeServices(rememberMeServices(userDetailsService())))
+                .logout((logout) -> logout.addLogoutHandler(
+                        new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(Directive.COOKIES)))
+                        .logoutUrl("/user/logout").invalidateHttpSession(true)
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()))
                 .csrf((csrf) -> csrf
-                        .csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
+                        .csrfTokenRepository(httpSessionCsrfTokenRepository()))
                 .cors((c) -> c.configurationSource(corsConfigurationSource()));
         return http.build();
+    }
+
+    @Bean
+    HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository() {
+        return new HttpSessionCsrfTokenRepository();
     }
 
     @Bean
@@ -80,7 +98,15 @@ public class SecurityConfig {
                 PathPatternRequestMatcher.withDefaults().matcher("/user/login"));
         filter.setAuthenticationManager(authenticationManager());
         filter.setRememberMeServices(rememberMeServices(userDetailsService()));
-        filter.setAuthenticationFailureHandler((request, response, exception) ->  {throw exception;});
+        filter.setAuthenticationFailureHandler((request, response, exception) -> {
+            throw exception;
+        });
+        // this gives UUID instead of usual string in #ReponseMapping
+        filter.setAuthenticationSuccessHandler((request, response, auth) -> {
+            response.getWriter()
+                    .write(mapper.writeValueAsString(
+                            httpSessionCsrfTokenRepository().loadDeferredToken(request, response).get()));
+        });
         return filter;
     }
 

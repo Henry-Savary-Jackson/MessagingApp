@@ -3,14 +3,27 @@ import axios from 'axios'
 
 const api_url = "http://localhost:8080"
 
-export async function setAxiosCSRF() {
-    const test = axios
-    const csrf_data = await performRequest(async () => (await axios.get(`${api_url}/csrf`, { withCredentials: true })).data)
-
+export function setAxiosCSRF(csrf_data) {
     axios.defaults.headers.common[csrf_data.headerName] = csrf_data.token
     return csrf_data.token
 }
 
+export async function getCSRF(){
+    return await performRequest(async () => (await axios.get(`${api_url}/csrf`, { withCredentials: true })).data)
+}
+
+
+export async function getChats(){
+    return await performRequest(async () => (await axios.get(`${api_url}/chat/list`, { withCredentials: true, withXSRFToken: true })).data)
+}
+
+export async function join(chat_id){
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/join`, chat_id, { headers:{"Content-Type":"application/json"}, withCredentials: true, withXSRFToken: true })).data)
+}
+
+export async function logout(){
+    return await performRequest(async () => (await axios.post(`${api_url}/user/logout`, null, { withCredentials: true, withXSRFToken: true })).data)
+}
 
 async function performRequest(requestFunction) {
     try {
