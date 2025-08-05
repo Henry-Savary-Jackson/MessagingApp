@@ -1,22 +1,23 @@
 import { useEffect, useContext, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Button, Form, FormLabel, FormControl, FormGroup } from "react-bootstrap";
-import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair } from "../utils/CryptoUtils"
-import { register, setAxiosCSRF } from "../utils/RequestUtils"
+import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair } from "../../utils/CryptoUtils"
+import { register, setAxiosCSRF } from "../../utils/RequestUtils"
 import { useLocation } from 'react-router'
-import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../utils/EncodingUtils";
-import { csrfContext, userContext } from "../globals";
-import { performActionWithAlert } from "../utils/UIUtils";
+import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../../utils/EncodingUtils";
+import { userContext } from "../../globals";
+import { performActionWithAlert } from "../../utils/UIUtils";
 
 function RegisterForm() {
 
     let location = useLocation()
 
     let [user, setUser] = useContext(userContext)
-    let [csrf, setCsrf] = useContext(csrfContext)
     let [username, setUsername] = useState("")
     let [privKey, setPrivKey] = useState(null)
     let [pubKey, setPubKey] = useState(null)
+    let [privKeyName, setPrivKeyName] = useState("privateKey.pem")
+    let [pubKeyName, setPubKeyName] = useState("publicKey.pem")
 
     let [privKeyURL, setPrivKeyURL] = useState("");
     let [pubKeyURL, setPubKeyURL] = useState("");
@@ -36,20 +37,19 @@ function RegisterForm() {
         if (pubKey) {
             setPubKeyURL(URL.createObjectURL(new Blob([addHeaderFooterToKey("public", pubKey)], { type: "application/x-pem-file" })))
         }
-        return revokeURLs
+        return revokeURLs //as cleanup
     }, [privKey, pubKey])
 
 
     return <Form onSubmit={async (e) => {
         e.preventDefault()
-        console.log(privKey, convertBase64StringToArrayBuffer(privKey))
         let registerRequest = { "username": username, "base64PubKey": pubKey }
 
         await performActionWithAlert(async () => {
             let csrf_data = await register(registerRequest)
             setUser(username)
             location.pathname = "/"
-            setCsrf(setAxiosCSRF(csrf_data))
+            setAxiosCSRF(csrf_data)
         });
     }}>
         <FormGroup>
@@ -62,11 +62,17 @@ function RegisterForm() {
             setPrivKey(keypair.privateKey)
             setPubKey(keypair.publicKey)
         }} >{privKey ? "Regenerate Public/Private Key pair" : "Generate Public/Private Key pair"}</Button>
-        {privKey && privKeyURL && <a href={privKeyURL} download={"privateKey.pem"} >Save Private Key</a>}
-        {pubKey && pubKeyURL && <a href={pubKeyURL} download={"publicKey.pem"} >Save Public Key</a>}
+        {privKey && privKeyURL && <FormGroup>
+            <FormLabel htmlFor="privKeyName"><a href={privKeyURL} download={privKeyName} >Save Private Key</a></FormLabel>
+            <FormControl id="privKeyName" value={privKeyName} onChange={(e) => { setPrivKeyName(e.target.value) }} />
+        </FormGroup>}
+        {pubKey && pubKeyURL && <FormGroup>
+            <FormLabel><a htmlFor="pubKeyName" href={pubKeyURL} download={pubKeyName} >Save Public Key</a></FormLabel>
+            <FormControl id="pubKeyName" value={privKeyName} onChange={(e) => { setPubKeyName(e.target.value) }} />
+        </FormGroup>}
         <Link to="/login">Login</Link>
     </Form >
-
+    // TODO: allow user to set filenames to download
 }
 
 export default RegisterForm;

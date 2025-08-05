@@ -23,6 +23,5 @@ public class ChatMessage {
     String sender;
     String chatId;
     MessageContents contents;
-    // MessageType type;
     int timestamp;
 }

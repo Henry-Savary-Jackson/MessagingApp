@@ -43,6 +43,7 @@ public class WebSocketController {
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
+        message.setSender(user.getId());
 
         Chat chat = messageService.getChatById(UUID.fromString(message.getChatId())).orElseThrow();
         if (!chat.getUsers().contains(user.getId())) {

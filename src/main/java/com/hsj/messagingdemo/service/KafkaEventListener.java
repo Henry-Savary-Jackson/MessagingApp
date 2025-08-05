@@ -20,7 +20,7 @@ public class KafkaEventListener {
 
     public void listen(ConsumerRecord<String, ChatMessage> data) {
         ChatMessage message = data.value();
-        template.convertAndSendToUser(userId,"/chat/%s".formatted(message.getChatId()),data.value());
+        template.convertAndSendToUser(userId,"/chat/%s".formatted(message.getChatId()),data.value()); // TODO: MODIFY THIS
     }
     
 }

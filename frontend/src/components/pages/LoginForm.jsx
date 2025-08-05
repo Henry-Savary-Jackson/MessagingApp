@@ -1,17 +1,16 @@
 import { useContext, useState } from "react";
 import { Form, FormControl, FormGroup, FormLabel } from "react-bootstrap";
-import { removeHeaderFooterToKey, signChallenge } from "../utils/CryptoUtils";
-import { getCSRF, login , setAxiosCSRF} from "../utils/RequestUtils";
+import { removeHeaderFooterToKey, signChallenge } from "../../utils/CryptoUtils";
+import { getCSRF, login , setAxiosCSRF} from "../../utils/RequestUtils";
 import { Link, useLocation } from "react-router";
-import { userContext, csrfContext } from "../globals";
-import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../utils/EncodingUtils";
-import { performActionWithAlert } from "../utils/UIUtils";
+import { userContext  } from "../../globals";
+import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
+import { performActionWithAlert } from "../../utils/UIUtils";
 
 function LoginForm() {
 
     let location = useLocation()
     let [user, setUser] = useContext(userContext)
-    let [csrf, setCsrf] = useContext(csrfContext)
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
 
@@ -20,7 +19,7 @@ function LoginForm() {
 
         let privKeyFile = file ? file : null
         if (!privKeyFile) {
-            alert("please give the private key")
+            alert("Please give the private key.")
             return;
         }
         let reader = new FileReader()
@@ -28,14 +27,12 @@ function LoginForm() {
             let privateKeyFileRawStr = reader.result
             let privateKeyBase64 = removeHeaderFooterToKey(privateKeyFileRawStr)
             let privKeyBuffer = convertBase64StringToArrayBuffer(privateKeyBase64)
-            console.log(privKeyBuffer, convertArrayBufferToBase64(privKeyBuffer))
 
             const authenticationRequest = await signChallenge(privKeyBuffer)
             authenticationRequest.username = username
-            console.log(authenticationRequest)
             await performActionWithAlert(async () => {
                 let csrf_data = await login(authenticationRequest)
-                setCsrf(setAxiosCSRF(await getCSRF()))
+                setAxiosCSRF(await getCSRF())
                 setUser(username)
                 location.pathname = "/"
             })
