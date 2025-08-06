@@ -16,6 +16,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.messaging.web.socket.server.CsrfTokenHandshakeInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.hsj.messagingdemo.dto.ChatMessage;

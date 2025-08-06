@@ -4,7 +4,6 @@ import { useContext } from "react"
 
 
 function ChatMessage({ contents, sender }) {
-    let [user, setUser] =  useContext(userContext)
     return <Container>{sender}:{contents}</Container>
 }
 

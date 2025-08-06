@@ -49,7 +49,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     WebSocketHandler wsHandler, Exception exception) {
                 logger.info("After Handshake: {}", request.getRemoteAddress());
             }
-        }).setAllowedOriginPatterns("*").withSockJS();
+        }).setAllowedOriginPatterns("*");
     }
 
     @Override

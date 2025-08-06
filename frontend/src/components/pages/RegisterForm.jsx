@@ -8,7 +8,7 @@ import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from ".
 import { userContext } from "../../globals";
 import { performActionWithAlert } from "../../utils/UIUtils";
 
-function RegisterForm() {
+function RegisterForm({setUserCallback}) {
 
     let location = useLocation()
 
@@ -47,9 +47,9 @@ function RegisterForm() {
 
         await performActionWithAlert(async () => {
             let csrf_data = await register(registerRequest)
-            setUser(username)
-            location.pathname = "/"
             setAxiosCSRF(csrf_data)
+            setUserCallback(username)
+            location.pathname = "/"
         });
     }}>
         <FormGroup>

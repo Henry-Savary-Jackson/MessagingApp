@@ -1,4 +1,4 @@
-import { Button, NavbarCollapse, NavItem, Stack } from "react-bootstrap";
+import { Button, Container, Navbar, NavbarCollapse, NavItem, Stack } from "react-bootstrap";
 
 
 function ChatListBar({ chats, onChatClick, onChatCreate, onChatJoin }) {
@@ -9,9 +9,11 @@ function ChatListBar({ chats, onChatClick, onChatCreate, onChatJoin }) {
                 return;
             onChatJoin(uuid)
         }} >Join a chat</Button>
-        <Button onClick={(e) => { onChatCreate() }} >Create your chat</Button><NavbarCollapse className="overflow-scroll">
-            {chats.map((chat) => <NavItem className={"sidebar"} onClick={(e) => { onChatClick(chat) }}>{chat}</NavItem>)}
-        </NavbarCollapse></Stack>
+        <Button onClick={(e) => { onChatCreate() }} >Create your chat</Button>
+        <Stack>
+            {chats.map((chat) => <Container key={chat.chat_id} onClick={(e) => { onChatClick(chat) }}>{chat.chat_id}:{chat.new_message}</Container>)}
+        </Stack>
+    </Stack>
 }
 
 

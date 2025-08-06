@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ChatMessage {
-    UUID message_id;
+    UUID messageId;
     String sender;
     String chatId;
     MessageContents contents;

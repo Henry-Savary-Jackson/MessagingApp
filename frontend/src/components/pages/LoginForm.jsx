@@ -7,7 +7,7 @@ import { userContext  } from "../../globals";
 import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
 import { performActionWithAlert } from "../../utils/UIUtils";
 
-function LoginForm() {
+function LoginForm({setUserCallback}) {
 
     let location = useLocation()
     let [user, setUser] = useContext(userContext)
@@ -33,7 +33,7 @@ function LoginForm() {
             await performActionWithAlert(async () => {
                 let csrf_data = await login(authenticationRequest)
                 setAxiosCSRF(await getCSRF())
-                setUser(username)
+                setUserCallback(username)
                 location.pathname = "/"
             })
         }

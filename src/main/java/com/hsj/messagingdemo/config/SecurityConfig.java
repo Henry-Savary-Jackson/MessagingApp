@@ -33,6 +33,7 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hsj.messagingdemo.auth.CustomRememberMeServices;
@@ -59,6 +60,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        
         http.authorizeHttpRequests(
                 (a) -> a.requestMatchers("/csrf", "/user/login", "/user/register").permitAll().anyRequest()
                         .authenticated())

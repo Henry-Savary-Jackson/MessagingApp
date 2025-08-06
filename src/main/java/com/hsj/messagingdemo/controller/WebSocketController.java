@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.config.KafkaListenerEndpoint;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
@@ -55,19 +58,19 @@ public class WebSocketController {
     }
 
     @SubscribeMapping("/chat/{id}")
-    private void onSubscribe(@PathVariable UUID id, Principal principal, @Header("offset") int offset)
+    private void onSubscribe(@DestinationVariable String id, Principal principal, @Header("offset") int offset)
             throws Exception {
-        User user = (User) principal;
+        User user = (User)((Authentication) principal).getPrincipal();
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
-        Chat chat = messageService.getChatById(id).orElseThrow();
+        Chat chat = messageService.getChatById(UUID.fromString(id)).orElseThrow();
         if (!chat.getUsers().contains(user.getId())) {
             throw new Exception("User not in chat.");
         }
         // get the offset
 
-        KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(id, user.getId(), offset);
+        KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(UUID.fromString(id), user.getId(), offset);
 
         messageService.linkUserToKafkaEventListener(user.getId(), endpoint.getId());
 
@@ -76,7 +79,11 @@ public class WebSocketController {
     @EventListener
     private void handleSessionDisconnect(SessionDisconnectEvent event) throws Exception {
         // remove all relevant kafka listeners
-        User user = (User) event.getUser();
+        Authentication token = (Authentication) event.getUser();
+        if (token == null) {
+            throw new Exception("Not token.");
+        }
+        User user = (User) token.getPrincipal();
         if (user == null) {
             throw new Exception("User not found.");
         }
