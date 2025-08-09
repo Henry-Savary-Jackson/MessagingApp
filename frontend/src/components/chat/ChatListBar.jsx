@@ -1,8 +1,9 @@
 import { Button, Container, Navbar, NavbarCollapse, NavItem, Stack } from "react-bootstrap";
+import ChatItem from "./ChatItem";
 
 
-function ChatListBar({ chats, onChatClick, onChatCreate, onChatJoin }) {
-    return <Stack>
+function ChatListBar({ chats,user_id, onChatClick, onChatCreate, onChatJoin,onChatDelete, onChatLeave  }) {
+    return <Stack gap={3}>
         <Button onClick={(e) => {
             let uuid = window.prompt("Put chat UUID:")
             if (!uuid)
@@ -10,8 +11,8 @@ function ChatListBar({ chats, onChatClick, onChatCreate, onChatJoin }) {
             onChatJoin(uuid)
         }} >Join a chat</Button>
         <Button onClick={(e) => { onChatCreate() }} >Create your chat</Button>
-        <Stack>
-            {chats.map((chat) => <Container key={chat.chat_id} onClick={(e) => { onChatClick(chat) }}>{chat.chat_id}:{chat.new_message}</Container>)}
+        <Stack className="overflow-y-scroll"  gap={2}>
+            {chats.map((chat) => <ChatItem key={chat.chatId} user_id={user_id} chat={chat} onChatClick={onChatClick} onChateLeave={onChatLeave} onChatDelete={onChatDelete}/> )}
         </Stack>
     </Stack>
 }

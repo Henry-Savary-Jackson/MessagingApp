@@ -1,10 +1,15 @@
 import { Container } from "react-bootstrap"
-import { userContext } from "../../globals"
-import { useContext } from "react"
+import { getUsername } from "../../utils/RequestUtils"
+import {  useState, useEffect } from "react"
 
 
 function ChatMessage({ contents, sender }) {
-    return <Container>{sender}:{contents}</Container>
+
+    let [username , setUsername] = useState("")
+    useEffect(()=>{
+        (async () => {setUsername(await getUsername(sender))})()
+    },[])
+    return <Container>{username}:{contents}</Container>
 }
 
 

@@ -40,6 +40,9 @@ public class MessageService {
         }
         listener.add(listenerId);
     }
+    public void deleteChat(Chat chat){
+        chatRepo.delete(chat);
+    }
 
     public void unLinkUserToKafkaEventListener(String userId, String listenerId){
 
@@ -53,6 +56,9 @@ public class MessageService {
     public Set<String> getKafkaListenersForUser(String userId){
         return userToKafkaListener.getOrDefault(userId, new HashSet<>()); 
     }
+    public boolean isUserListeningToChat(String userId, UUID chatUuid){
+        return getKafkaListenersForUser(userId).stream().anyMatch((listenerId)-> listenerId.equals(KafkaListenerCreator.generateListenerId(chatUuid, userId)));
+    }
 
     public List<Chat> getChatByUserId(String userId){
         return chatRepo.findByUsers(userId);
@@ -62,8 +68,8 @@ public class MessageService {
         return chatRepo.findById(id);
     }
 
-    public Chat createChat(User userInitial){
-        Chat chat = Chat.builder().chatId(UUID.randomUUID()).users(List.of(userInitial.getId())).build();
+    public Chat createChat(User userInitial, String name){
+        Chat chat = Chat.builder().chatId(UUID.randomUUID()).name(name).ownerId(userInitial.getId()).users(List.of(userInitial.getId())).build();
         chatRepo.save(chat);
         return chat;
     }
@@ -72,6 +78,11 @@ public class MessageService {
         chat.getUsers().add(user.getId());
         chatRepo.save(chat);
 
+    }
+
+    public void removeUserFromChat(Chat chat, User user){
+        chat.getUsers().remove(user.getId());
+        chatRepo.save(chat);
     }
 
 }

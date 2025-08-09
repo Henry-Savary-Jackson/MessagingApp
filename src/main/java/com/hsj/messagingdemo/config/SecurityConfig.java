@@ -40,6 +40,7 @@ import com.hsj.messagingdemo.auth.CustomRememberMeServices;
 import com.hsj.messagingdemo.auth.DigitalSignatureAuthenticationProvider;
 import com.hsj.messagingdemo.filter.DigitalSignatureAuthenticationFilter;
 import com.hsj.messagingdemo.filter.ExceptionHandlerFilter;
+import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.UserService;
 
 @EnableWebSecurity
@@ -106,8 +107,7 @@ public class SecurityConfig {
         // this gives UUID instead of usual string in #ReponseMapping
         filter.setAuthenticationSuccessHandler((request, response, auth) -> {
             response.getWriter()
-                    .write(mapper.writeValueAsString(
-                            httpSessionCsrfTokenRepository().loadDeferredToken(request, response).get()));
+                    .write(((User)auth.getPrincipal()).getId());
         });
         return filter;
     }

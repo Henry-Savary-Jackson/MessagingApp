@@ -1,121 +1,111 @@
 import { useContext, useEffect, useReducer, useRef, useState } from 'react'
-import { Button, Container, ListGroup, ListGroupItem, Stack } from 'react-bootstrap'
+import { Button, Col, Container, ListGroup, ListGroupItem, Row, Stack } from 'react-bootstrap'
 import { Link } from 'react-router'
-import { userContext } from '../../globals'
-import { createChat, getChats, getCSRF, join, logout, setAxiosCSRF } from '../../utils/RequestUtils'
+import { userContext, userIdContext } from '../../globals'
+import { createChat, deleteChatRequest, getChats, getCSRF, join, leaveChatRequest, logout, setAxiosCSRF } from '../../utils/RequestUtils'
 import { performActionWithAlert } from '../../utils/UIUtils'
 import ChatWindow from "./../chat/ChatWindow"
 import ChatListBar from "./../chat/ChatListBar"
-import { MessageContents, activate, broker_url, disconnect, send, subscribe, unSubscribe } from '../../utils/WebsocketUtils'
-import ChatMessage from '../chat/ChatMessage'
-import { useStompClient, useSubscription, StompSessionProvider, withStompClient } from 'react-stomp-hooks'
+import { ChatWSMessage, MessageContents, activate, broker_url, disconnect, listenForMessages, send, subscribe, subscribeToChat, unSubscribe } from '../../utils/WebsocketUtils'
 
 
 function ChatPage({ logoutCallback }) {
 
-    let [user, setUser] = useContext(userContext)
+    let [user_id, setUserID] = useContext(userIdContext)
     let [currentChat, setCurrentChat] = useState("")
-    let client = useStompClient()
 
     let [chats, chatsReducer] = useReducer((prev, action) => {
         switch (action.action) {
             case "init":
-                return action.data.map((chat_id) => { return { "chat_id": chat_id, "new_message": 0 } })
+                return action.data.map((chat) => { return { ...chat, "new_message": 0, "last_timestamp": 0 } })
             case "add":
-                return ([...prev, { "chat_id": action.chat_id, "new_message": 0 }]).sort((a, b) => a.new_message - b.new_message)
+                return [...prev, { ...action.new ,"new_message": 0, "last_timestamp": 0 }].sort((a, b) => b.last_timestamp - a.last_timestamp)
             case "del":
-                return prev.filter((chat) => chat.chatId !== action.chat_id);
+                return prev.filter((chat) => chat.chatId !== action.chatId);
             case "mod":
                 return prev.map((chat) => {
-                    if (chat.chatId !== action.chat_id)
-                        return chat
-                    return { ...chat, new_message: action.read ? 0 : chat.new_message + 1 }
-                })
+                    if (chat.chatId !== action.chatId)
+                        return { ...chat }
+                    return { ...chat, new_message: action.read ? 0 : chat.new_message + 1, "last_timestamp": action.last_timestamp || chat.last_timestamp }
+                }).sort((a, b) => b.last_timestamp - a.last_timestamp)
         }
     }, [])
-
-    let messageMap = useRef(new Map())
 
     let [messages, messageReducer] = useReducer((prev, action) => {
+        let chatId = action.chatId
+        let chatMessages = prev[chatId] || []
         switch (action.action) {
             case "pop":
-                return prev + action.new
+                chatMessages.pop()
+                prev[chatId] = [...chatMessages]
+                return { ...prev }
             case "add":
-                prev.pop()
-                return [...prev]
-            case "reset":
-                return []
-            case "init":
-                return action.messages
+                prev[chatId] = [...chatMessages, action.new].sort((a, b) => a.timestamp - b.timestamp)
+                return { ...prev }
         }
-    }, [])
+    }, {})
 
-    let setMesssagesUI = (newMessages) => { messageReducer({ action: "init", messages: newMessages }) }
-    let addMessageUI = (newMessage) => { messageReducer({ action: "add", new: newMessage }) }
+    let addMessageUI = (newMessage) => { messageReducer({ action: "add", new: newMessage, chatId: newMessage.chatId }) }
     let popMessageUI = () => { messageReducer({ action: "pop" }) }
-    let resetMessagesUI = () => { messageReducer({ action: "reset" }) }
 
 
-    let readMessages = (chat_id) => { chatsReducer({ "chat_id": chat_id, "action": "mod", "read": true }) }
-    let addMessageToChatCount = (chat_id) => { chatsReducer({ "chat_id": chat_id, "action": "mod", "read": false }) }
-    let addNewChatUI = async (chat_id) => {
-        chatsReducer({ "action": "add", "chat_id": chat_id })
+    let readMessages = (chat_id) => { chatsReducer({ "chatId": chat_id, "action": "mod", "read": true }) }
+    let addMessageToChatCount = (chat_id, timestamp) => { chatsReducer({ "chatId": chat_id, "action": "mod", "read": false, "last_timestamp": timestamp }) }
+    let addNewChatUI = async (chat_id, owner_id, name) => {
+        chatsReducer({ "action": "add", "new":{"chatId": chat_id , "ownerId":owner_id, "name":name}})
     }
     let setNewChats = (newChats) => { chatsReducer({ "action": "init", "data": newChats }) }
-    let delChat = (chat_id) => { chatsReducer({ "action": "del", "chat_id": chat_id }) }
-
-    useEffect(() => {
-        async function getChatsConnect() {
-            let newChats = await getChats()
-            await activate(client)
-
-            client.onConnect((frame) => { setNewChats(newChats); newChats.forEach(connect_chat); })
-        }
-        getChatsConnect()
-        return () => { disconnect() }
-    }, [])
-
-    useEffect(() => {
-        resetMessagesUI()
-        setMesssagesUI(messageMap.current[currentChat] || [])
-    }, [currentChat])
-
-    useEffect(() => {
-        messageMap.current[currentChat] = messages
-    }, [messages])
-
+    let delChatUI = (chat_id) => { chatsReducer({ "action": "del", "chatId": chat_id }) }
 
     let onMessage = async (message) => {
         console.log(message)
         let message_body = JSON.parse(message.body)
         addMessageUI(message_body)
-        addMessageToChatCount(message_body.chatId)
+        addMessageToChatCount(message_body.chatId, message_body.timestamp)
     } // PUT notification symbol on chat
-    let connect_chat = async (chat_id) => { subscribe(client, chat_id, onMessage, 0) }
-    let disconnect_chat = async (chat_id) => { await unSubscribe(chat_id) }
+    let connect_chat = (chat_id) => { subscribeToChat(chat_id, 0) }
+    let disconnect_chat = (chat_id) => { unSubscribe(chat_id) }
+
+
+    useEffect(() => {
+        async function getChatsConnect() {
+            let newChats = await getChats()
+            activate((frame) => { setNewChats(newChats); newChats.forEach((chat) => connect_chat(chat.chatId)); listenForMessages(onMessage); })
+        }
+        getChatsConnect()
+        return () => { disconnect() }
+    }, [])
 
 
     let sendMessage = async (contents) => {
-        let newMessage = new ChatMessage(currentChat, new MessageContents(contents))
-        addMessageUI(newMessage)
-        await send(client, newMessage)
+        let newMessage = new ChatWSMessage(currentChat.chatId, new MessageContents(contents))
+        // addMessageUI(newMessage)
+        send(newMessage)
     }
 
 
-    let createNewChat = async () => { let chat_id = await createChat(); addNewChatUI(chat_id) }
-    let joinChat = async (chat_id) => { await join(chat_id); addNewChatUI(chat_id) }
+    let createNewChat = async () => { let name = prompt("Enter Name:"); let chat = await createChat(name); addNewChatUI(chat.chatId, chat.ownerId, name); connect_chat(chat.chatId) }
+    let joinChat = async (chat_id) => { let chat =  await join(chat_id); addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) }
+    let leaveChat = async (chat_id) => { await leaveChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
+    let deleteChat = async (chat_id) => { await deleteChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
 
-    return <Stack>
+    return <Container>
         <Link to={"/login"} onClick={async (e) => {
             await logout()
             setAxiosCSRF(await getCSRF())
             logoutCallback()
         }} >Logout</Link>
         <Container>
-            <ChatListBar chats={chats} onChatClick={setCurrentChat} onChatJoin={joinChat} onChatCreate={createNewChat} />
-            {currentChat && <ChatWindow onMessageSend={sendMessage} messages={messages} />}
+            <Row fluid={"true"} >
+                <Col sm={4} >
+                    <ChatListBar user_id={user_id} chats={chats} onChatDelete={deleteChat} onChatLeave={leaveChat} onChatClick={setCurrentChat} onChatJoin={joinChat} onChatCreate={createNewChat} />
+                </Col>
+                <Col sm={8}>
+                    {currentChat && <ChatWindow onMessageSend={sendMessage} messages={messages[currentChat.chatId] || []} />}
+                </Col>
+            </Row>
         </Container>
-    </Stack>
+    </Container>
 
 }
 

@@ -13,8 +13,11 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerEndpoint;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.kafka.config.MethodKafkaListenerEndpoint;
+import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.support.TopicPartitionOffset;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.stereotype.Service;
 
 import com.hsj.messagingdemo.dto.ChatMessage;
@@ -26,13 +29,16 @@ public class KafkaListenerCreator {
     private KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
 
     @Autowired
+    private SimpMessagingTemplate template;
+
+    @Autowired
     private KafkaListenerContainerFactory kafkaListenerContainerFactory;
 
-    private KafkaListenerEndpoint createKafkaListenerEndpoint(UUID chatUuid, String userId, int offset) {
+    private KafkaListenerEndpoint createKafkaListenerEndpoint(UUID chatUuid, String userId, String username,
+            int offset) {
         MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = createDefaultMethodKafkaListenerEndpoint(
                 chatUuid, userId, offset);
-        kafkaListenerEndpoint.setBean(new KafkaEventListener(userId));
-
+        kafkaListenerEndpoint.setBean(new KafkaEventListener(username, template));
 
         try {
             kafkaListenerEndpoint.setMethod(KafkaEventListener.class.getMethod("listen", ConsumerRecord.class));
@@ -43,7 +49,7 @@ public class KafkaListenerCreator {
     }
 
     private MethodKafkaListenerEndpoint<String, ChatMessage> createDefaultMethodKafkaListenerEndpoint(UUID chatUuid,
-            String userId , int offset) {
+            String userId, int offset) {
 
         MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = new MethodKafkaListenerEndpoint<>();
         String listenerId = generateListenerId(chatUuid, userId);
@@ -51,26 +57,31 @@ public class KafkaListenerCreator {
         kafkaListenerEndpoint.setGroupId(listenerId);
         kafkaListenerEndpoint.setAutoStartup(true);
         // ONLY WORKS IF ONE PARTITION PER TOPIC, THINK CAREFULLY ABOUT THIS
-        TopicPartitionOffset partionOffset = new TopicPartitionOffset(chatUuid.toString(),0);
-        partionOffset.setOffset((long)offset);
+        TopicPartitionOffset partionOffset = new TopicPartitionOffset(chatUuid.toString(), 0);
+        partionOffset.setOffset((long) offset);
         kafkaListenerEndpoint.setTopicPartitions(partionOffset);
 
         kafkaListenerEndpoint.setMessageHandlerMethodFactory(new DefaultMessageHandlerMethodFactory());
         return kafkaListenerEndpoint;
     }
 
-    public String generateListenerId(UUID chaUuid, String userId) {
-        return "%s-%s".formatted(chaUuid.toString(), userId);
+    public static String generateListenerId(UUID chaUuid, String userId) {
+        return "%s : %s".formatted(chaUuid.toString(), userId);
     }
 
-    public KafkaListenerEndpoint createAndRegisterListener(UUID chatUuid, String userId, int offset) {
+    public KafkaListenerEndpoint createAndRegisterListener(UUID chatUuid, String userId, String username, int offset) {
 
-        KafkaListenerEndpoint listener = createKafkaListenerEndpoint(chatUuid, userId, offset);
+        KafkaListenerEndpoint listener = createKafkaListenerEndpoint(chatUuid, userId, username, offset);
         kafkaListenerEndpointRegistry.registerListenerContainer(listener, kafkaListenerContainerFactory, true);
-        return listener; 
+        return listener;
     }
+    
 
-    public void stopListener(String litenerId){
-        Optional.of(kafkaListenerEndpointRegistry.getListenerContainer(litenerId)).orElseThrow().stop();
+    public void stopListener(String litenerId) {
+        MessageListenerContainer  container  = kafkaListenerEndpointRegistry.getListenerContainer(litenerId);
+        if (container == null)
+            return;
+        container.stop();
+        kafkaListenerEndpointRegistry.unregisterListenerContainer(litenerId);
     }
 }

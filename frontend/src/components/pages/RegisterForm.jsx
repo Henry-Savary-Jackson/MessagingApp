@@ -2,7 +2,7 @@ import { useEffect, useContext, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Button, Form, FormLabel, FormControl, FormGroup } from "react-bootstrap";
 import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair } from "../../utils/CryptoUtils"
-import { register, setAxiosCSRF } from "../../utils/RequestUtils"
+import { getCSRF, register, setAxiosCSRF } from "../../utils/RequestUtils"
 import { useLocation } from 'react-router'
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../../utils/EncodingUtils";
 import { userContext } from "../../globals";
@@ -12,7 +12,6 @@ function RegisterForm({setUserCallback}) {
 
     let location = useLocation()
 
-    let [user, setUser] = useContext(userContext)
     let [username, setUsername] = useState("")
     let [privKey, setPrivKey] = useState(null)
     let [pubKey, setPubKey] = useState(null)
@@ -46,9 +45,9 @@ function RegisterForm({setUserCallback}) {
         let registerRequest = { "username": username, "base64PubKey": pubKey }
 
         await performActionWithAlert(async () => {
-            let csrf_data = await register(registerRequest)
-            setAxiosCSRF(csrf_data)
-            setUserCallback(username)
+            let user_id = await register(registerRequest)
+            setAxiosCSRF(await getCSRF())
+            setUserCallback(username,user_id )
             location.pathname = "/"
         });
     }}>
@@ -68,8 +67,9 @@ function RegisterForm({setUserCallback}) {
         </FormGroup>}
         {pubKey && pubKeyURL && <FormGroup>
             <FormLabel><a htmlFor="pubKeyName" href={pubKeyURL} download={pubKeyName} >Save Public Key</a></FormLabel>
-            <FormControl id="pubKeyName" value={privKeyName} onChange={(e) => { setPubKeyName(e.target.value) }} />
+            <FormControl id="pubKeyName" value={pubKeyName} onChange={(e) => { setPubKeyName(e.target.value) }} />
         </FormGroup>}
+        <Button type="submit"> Register</Button>
         <Link to="/login">Login</Link>
     </Form >
     // TODO: allow user to set filenames to download

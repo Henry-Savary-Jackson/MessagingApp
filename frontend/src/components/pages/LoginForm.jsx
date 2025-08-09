@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Form, FormControl, FormGroup, FormLabel } from "react-bootstrap";
+import { Button, Form, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import { removeHeaderFooterToKey, signChallenge } from "../../utils/CryptoUtils";
 import { getCSRF, login , setAxiosCSRF} from "../../utils/RequestUtils";
 import { Link, useLocation } from "react-router";
@@ -10,7 +10,6 @@ import { performActionWithAlert } from "../../utils/UIUtils";
 function LoginForm({setUserCallback}) {
 
     let location = useLocation()
-    let [user, setUser] = useContext(userContext)
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
 
@@ -31,9 +30,9 @@ function LoginForm({setUserCallback}) {
             const authenticationRequest = await signChallenge(privKeyBuffer)
             authenticationRequest.username = username
             await performActionWithAlert(async () => {
-                let csrf_data = await login(authenticationRequest)
+                let user_id = await login(authenticationRequest)
                 setAxiosCSRF(await getCSRF())
-                setUserCallback(username)
+                setUserCallback(username, user_id)
                 location.pathname = "/"
             })
         }
@@ -47,6 +46,7 @@ function LoginForm({setUserCallback}) {
             <FormLabel>Private Key</FormLabel>
             <FormControl type="file" onChange={(e) => setFile(e.target.files[0])} />
         </FormGroup>
+        <Button type="submit">Login</Button>
         <Link to="/register">Register</Link>
     </Form>
 

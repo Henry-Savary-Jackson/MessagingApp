@@ -75,6 +75,10 @@ public class UserService {
         }
     }
 
+    public User getUserById(String userId){
+        return userRepo.findById(userId).orElseThrow();
+    }
+
     public User saveUser(RegistrationRequest request)
             throws AuthenticationException, InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         // verify inegrity of pubkey

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
@@ -28,27 +27,51 @@ public class ChatController {
     MessageService messageService;
 
     @PostMapping("/join")
-    public String postMethodName(@RequestBody UUID id) {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Chat postMethodName(@RequestBody UUID id) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Chat chat = messageService.getChatById(id).orElseThrow();
 
         messageService.addUserToChat(chat, user);
+        return chat;
+    }
+
+
+    @PostMapping("/delete")
+    public String delete(@RequestBody UUID id) throws Exception {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Chat chat = messageService.getChatById(id).orElseThrow();
+        if (!chat.getOwnerId().equals(user.getId())){
+            throw new Exception("Not owner."); 
+        }
+
+        messageService.deleteChat(chat);
+        return "Success";
+    }
+
+    @PostMapping("/leave")
+    public String leaveChat(@RequestBody UUID id) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Chat chat = messageService.getChatById(id).orElseThrow();
+
+        messageService.removeUserFromChat(chat, user);
         return "Success";
     }
 
     @GetMapping("/list")
-    public List<UUID> getChats(){
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return messageService.getChatByUserId(user.getId()).stream().map((chat)-> chat.getChatId()).toList();
+    public List<Chat> getChats() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return messageService.getChatByUserId(user.getId());
     }
 
-   @PostMapping("/create")
-   public UUID postMethodName() {
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (user == null){
+    @PostMapping("/create")
+    public Chat postMethodName(@RequestBody String name) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user == null) {
             return null; // TODO: add error handler
         }
-       return  messageService.createChat(user).getChatId();
-   }
+        return messageService.createChat(user, name);
+    }
 }

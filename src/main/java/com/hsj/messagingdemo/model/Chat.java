@@ -25,6 +25,10 @@ public class Chat {
     @Id
     UUID chatId;
 
+    String name;
+
+    String ownerId;
+
     @Indexed
     List<String> users;
     

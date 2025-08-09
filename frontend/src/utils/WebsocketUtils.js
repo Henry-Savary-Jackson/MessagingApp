@@ -2,25 +2,32 @@ import { Client } from '@stomp/stompjs'
 import axios from "axios"
 export var broker_url = "ws://localhost:8080/ws"
 
-export async function activate(client,onConnect) {
-    client.configure({connectheaders : {"x-csrf-token":axios.defaults.headers.common["x-csrf-token"] }})
+var client = new Client({ brokerURL: broker_url })
+
+export function activate(onConnect) {
+    client.configure({ connectHeaders: { "X-CSRF-TOKEN": axios.defaults.headers.common["X-CSRF-TOKEN"] } })
     client.onConnect = onConnect
     client.activate()
 }
 
-export async function send(client,chatMessage) {
-    client.publish({ destination: "/app/chat", body: JSON.stringify(chatMessage)})
+export function send(chatMessage) {
+    client.publish({
+        destination: "/chat", body: JSON.stringify(chatMessage)    })
 }
 
-export async function subscribe(client,topic, onMessage, offset) {
-    client.subscribe(`/app/chat/${topic}`, onMessage, { "offset": offset })
+export function subscribeToChat(topic, offset) {
+    client.subscribe(`/sub/${topic}`, (m)=>{},{ "offset": offset })
 }
 
-export async function unSubscribe(client,topic) {
-    client.unsubscribe(topic)
+export function listenForMessages( onMessage){
+    client.subscribe(`/user/messages`, onMessage)
 }
 
-export async function disconnect(client) {
+export function unSubscribe(topic) {
+    client.unsubscribe(`/sub/${topic}`)
+}
+
+export async function disconnect() {
     await client.deactivate()
 }
 
@@ -31,13 +38,14 @@ export class MessageContents {
         this.type = "MESSAGE"
     }
 }
+new MessageContents()
 
-export class ChatMessage {
-    constructor(chatId,contents, sender ="") {
-        this.messageId = crypto.randomUUID() 
+export class ChatWSMessage {
+    constructor(chatId, contents, sender = "") {
+        this.messageId = crypto.randomUUID()
         this.chatId = chatId
         this.sender = sender
-        this.timestamp = Math.floor(new Date().valueOf()/1000)
+        this.timestamp = Math.floor(new Date().valueOf() / 1000)
         this.contents = contents
     }
 }

@@ -2,26 +2,27 @@ import axios from 'axios'
 
 
 const api_url = "http://localhost:8080"
+const username_cache = new Map()
 
 export function setAxiosCSRF(csrf_data) {
     axios.defaults.headers.common[csrf_data.headerName] = csrf_data.token
     return csrf_data.token
 }
 
-export async function getCSRF(){
+export async function getCSRF() {
     return await performRequest(async () => (await axios.get(`${api_url}/csrf`, { withCredentials: true })).data)
 }
 
 
-export async function getChats(){
+export async function getChats() {
     return await performRequest(async () => (await axios.get(`${api_url}/chat/list`, { withCredentials: true, withXSRFToken: true })).data)
 }
 
-export async function join(chat_id){
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/join`, chat_id, { headers:{"Content-Type":"application/json"}, withCredentials: true, withXSRFToken: true })).data)
+export async function join(chat_id) {
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/join`, chat_id, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data)
 }
 
-export async function logout(){
+export async function logout() {
     return await performRequest(async () => (await axios.post(`${api_url}/user/logout`, null, { withCredentials: true, withXSRFToken: true })).data)
 }
 
@@ -46,6 +47,23 @@ export async function register(data) {
 }
 
 
-export async function createChat(){
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, null, { withCredentials: true })).data);
+export async function createChat(name) {
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, name, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data);
+}
+
+export async function leaveChatRequest(chat_id) {
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/leave`, chat_id, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data);
+}
+export async function deleteChatRequest(chat_id) {
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data);
+}
+
+export async function getUsername(user_id) {
+    if (user_id in username_cache) {
+        return username_cache[user_id];
+
+    }
+    let username = await performRequest(async () => (await axios.get(`${api_url}/user/username/${user_id}`, { withCredentials: true })).data)
+    username_cache[user_id] = username;
+    return username;
 }

@@ -6,7 +6,7 @@ import PrivateRoute from './PrivateRoute';
 import { setAxiosCSRF, getCSRF } from '../utils/RequestUtils.js';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie'
-import { userContext } from '../globals.js'
+import { userContext, userIdContext } from '../globals.js'
 import { broker_url } from '../utils/WebsocketUtils.js';
 import { useStompClient, withStompClient, useSubscription, StompSessionProvider } from 'react-stomp-hooks'
 
@@ -14,36 +14,41 @@ function App() {
 
   let [cookies, setCookies, removeCookies] = useCookies()
   let [user, setUser] = useState(cookies.user || "")
-  let [csrf , setCSRF ] = useState("")
+  let [user_id, setUserId] = useState(cookies.user_id || "")
+  let [csrf, setCSRF] = useState("")
 
   useEffect(() => {
-    (async () => { setCSRF(setAxiosCSRF(await getCSRF()) )})()
+    (async () => { setCSRF(setAxiosCSRF(await getCSRF())) })()
   }, [])
 
 
-  let setUserCallback = (username) => {
+  let setUserCallback = (username, user_id) => {
     setUser(username)
+    setUserId(user_id)
     setCookies("user", username)
+    setCookies("user_id", user_id)
   }
   let logoutCallback = () => {
     setUser("")
     removeCookies("user")
+    removeCookies("user_id")
   }
 
 
   return < userContext.Provider value={[user, setUser]}>
-    <MemoryRouter>
-      <Routes>
-        <Route element={<PrivateRoute auth={user} />} >
-          <Route element={
-            csrf && <StompSessionProvider connectHeaders={{ "X-CSRF-TOKEN": csrf }} enabled={false} brokerURL={broker_url}  >
+    <userIdContext.Provider value={[user_id, setUserId]}>
+      <MemoryRouter>
+        <Routes>
+          <Route element={<PrivateRoute auth={user} />} >
+            <Route element={
               <ChatPage logoutCallback={logoutCallback} />
-            </StompSessionProvider>} path='/' />
-        </Route>
-        <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />
-        <Route element={<RegisterForm setUserCallback={setUserCallback} />} path='/register' />
-      </Routes>
-    </MemoryRouter>
+            } path='/' />
+          </Route>
+          <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />
+          <Route element={<RegisterForm setUserCallback={setUserCallback} />} path='/register' />
+        </Routes>
+      </MemoryRouter>
+    </userIdContext.Provider>
   </userContext.Provider>;
 
 }

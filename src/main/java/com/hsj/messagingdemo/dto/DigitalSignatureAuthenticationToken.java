@@ -2,6 +2,7 @@ package com.hsj.messagingdemo.dto;
 
 import java.util.Collection;
 
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +23,7 @@ public class DigitalSignatureAuthenticationToken extends AbstractAuthenticationT
         this.authenticationRequest = authenticationRequest;
         setDetails(authenticationRequest);
     }
+
 
     @Override
     public AuthenticationRequest getCredentials() {

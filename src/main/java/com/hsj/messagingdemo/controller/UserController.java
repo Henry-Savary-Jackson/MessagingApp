@@ -1,10 +1,12 @@
 package com.hsj.messagingdemo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.GetExchange;
 
 import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.model.ProfileImage;
+import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +27,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-
 
 @RestController
 @RequestMapping("/user")
@@ -39,10 +40,14 @@ public class UserController {
     RememberMeServices rememberMeServices;
 
     @PostMapping("/register")
-    public CsrfToken registerPubKey(CsrfToken token,HttpServletRequest servletRequest, HttpServletResponse response,@RequestBody RegistrationRequest request) throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
-        
-        rememberMeServices.loginSuccess(servletRequest, response, userService.getSpingSecurityAuthentication(userService.saveUser(request)));
-        return token;
+    public String registerPubKey(CsrfToken token, HttpServletRequest servletRequest, HttpServletResponse response,
+            @RequestBody RegistrationRequest request)
+            throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
+
+        User user =userService.saveUser(request);
+        rememberMeServices.loginSuccess(servletRequest, response,
+                userService.getSpingSecurityAuthentication(user));
+        return user.getId();
     }
 
     @PutMapping("/profile/{id}")
@@ -50,6 +55,10 @@ public class UserController {
         userService.setProfile(id, entity);
         return "Success";
     }
-    
+
+    @GetMapping("/username/{id}")
+    public String userProfile(@PathVariable String id) {
+        return userService.getUserById(id).getUsername();
+    }
 
 }

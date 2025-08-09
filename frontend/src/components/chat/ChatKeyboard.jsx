@@ -1,8 +1,6 @@
 import { useState } from "react"
 import { Container, Form, Button, FormControl } from "react-bootstrap"
 
-
-
 function ChatKeyboard({ onMessageSend }) {
 
     let [message, setMessage] = useState("")
