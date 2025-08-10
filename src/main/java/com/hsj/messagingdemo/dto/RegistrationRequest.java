@@ -1,5 +1,7 @@
 package com.hsj.messagingdemo.dto;
 
+import com.hsj.messagingdemo.model.ProfileImage;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,4 +16,5 @@ import lombok.Setter;
 public class RegistrationRequest {
     String username;
     String base64PubKey;
+    ProfileImage profileImage;
 }

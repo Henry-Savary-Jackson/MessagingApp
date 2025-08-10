@@ -33,7 +33,7 @@ export async function disconnect() {
 
 export class MessageContents {
     constructor(text, file_uuid = null) {
-        this.file_uuid = file_uuid;
+        this.fileId = file_uuid;
         this.text = text
         this.type = "MESSAGE"
     }

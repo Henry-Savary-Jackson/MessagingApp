@@ -1,8 +1,6 @@
 package com.hsj.messagingdemo.dto;
 
-import java.util.UUID;
-
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.hsj.messagingdemo.model.ProfileImage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,17 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MessageContents {
-
-    String text;
-
-    UUID fileId;
-
-    MessageType type;
-    
+@Setter
+@Getter
+public class UserChangeDTO {
+    String username;
+    ProfileImage profile;
 }

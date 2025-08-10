@@ -33,10 +33,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
-
+import com.hsj.messagingdemo.controller.UserController;
 import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
 import com.hsj.messagingdemo.dto.RegistrationRequest;
+import com.hsj.messagingdemo.dto.UserChangeDTO;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.UserRepo;
@@ -45,11 +46,23 @@ import com.hsj.messagingdemo.utils.CryptoUtils;
 @Service
 public class UserService {
 
+
     @Autowired
     UserRepo userRepo;
 
+
     public Authentication getSpingSecurityAuthentication(User user) {
         return new DigitalSignatureAuthenticationToken(user, null);
+    }
+
+
+    public void modifyUser(User user, UserChangeDTO userChangeDTO){
+        if (userChangeDTO.getProfile() != null)
+            user.setProfilePicture(userChangeDTO.getProfile());
+        if (userChangeDTO.getUsername()!= null)
+            user.setUsername(userChangeDTO.getUsername());
+
+        userRepo.save(user);
     }
 
     public Authentication loginUser(AuthenticationRequest request) {
@@ -86,7 +99,7 @@ public class UserService {
             CryptoUtils.createPubKeyFrombase64(request.getBase64PubKey());
 
             User user = User.builder().id(UUID.randomUUID().toString()).username(request.getUsername())
-                    .base64PublicKey(request.getBase64PubKey()).build();
+                    .base64PublicKey(request.getBase64PubKey()).profilePicture(request.getProfileImage()).build();
             userRepo.save(user);
             return user;
         } catch (DuplicateKeyException mwe) {

@@ -8,11 +8,13 @@ import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from ".
 import { userContext } from "../../globals";
 import { performActionWithAlert } from "../../utils/UIUtils";
 
-function RegisterForm({setUserCallback}) {
+function RegisterForm({ setUserCallback }) {
 
     let location = useLocation()
 
     let [username, setUsername] = useState("")
+    let [profileImageBlob, setProfileImageBlob] = useState(undefined)
+
     let [privKey, setPrivKey] = useState(null)
     let [pubKey, setPubKey] = useState(null)
     let [privKeyName, setPrivKeyName] = useState("privateKey.pem")
@@ -42,14 +44,29 @@ function RegisterForm({setUserCallback}) {
 
     return <Form onSubmit={async (e) => {
         e.preventDefault()
-        let registerRequest = { "username": username, "base64PubKey": pubKey }
+        let profileImageData = undefined;
+        async function submit() {
+            let registerRequest = { "username": username, "base64PubKey": pubKey, "profileImage": profileImageData }
 
-        await performActionWithAlert(async () => {
-            let user_id = await register(registerRequest)
-            setAxiosCSRF(await getCSRF())
-            setUserCallback(username,user_id )
-            location.pathname = "/"
-        });
+            await performActionWithAlert(async () => {
+                let user_id = await register(registerRequest)
+                setAxiosCSRF(await getCSRF())
+                setUserCallback(username, user_id)
+                location.pathname = "/"
+            });
+        }
+        if (profileImageBlob) {
+            let reader = new FileReader();
+            reader.onloadend = async (ev) => {
+                profileImageData = { "datab64": reader.result.slice(reader.result.indexOf("base64," + 7)), "mimeType": profileImageBlob.type }
+                await submit()
+            }
+            reader.readAsDataURL(profileImageBlob)
+        }else{
+            await submit() 
+        }
+
+
     }}>
         <FormGroup>
             <FormLabel>Username</FormLabel>
@@ -69,10 +86,22 @@ function RegisterForm({setUserCallback}) {
             <FormLabel><a htmlFor="pubKeyName" href={pubKeyURL} download={pubKeyName} >Save Public Key</a></FormLabel>
             <FormControl id="pubKeyName" value={pubKeyName} onChange={(e) => { setPubKeyName(e.target.value) }} />
         </FormGroup>}
+        <FormGroup>
+            <FormLabel htmlFor="profileImage">Profile Image</FormLabel>
+            <FormControl id="profileImage" type="file" onChange={(e) => {
+                let file = (e.target.files ? e.target.files[0] : null)
+                if (file) {
+                    if (!file.type.startsWith("image/")){
+                        alert("Please upload an image file")
+                        return;
+                    }
+                    setProfileImageBlob(file)
+                }
+            }} />
+        </FormGroup>
         <Button type="submit"> Register</Button>
         <Link to="/login">Login</Link>
     </Form >
-    // TODO: allow user to set filenames to download
 }
 
 export default RegisterForm;

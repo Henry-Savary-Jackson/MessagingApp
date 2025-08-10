@@ -9,6 +9,7 @@ import { useCookies } from 'react-cookie'
 import { userContext, userIdContext } from '../globals.js'
 import { broker_url } from '../utils/WebsocketUtils.js';
 import { useStompClient, withStompClient, useSubscription, StompSessionProvider } from 'react-stomp-hooks'
+import ProfilePage from './pages/ProfilePage.jsx';
 
 function App() {
 
@@ -43,6 +44,11 @@ function App() {
             <Route element={
               <ChatPage logoutCallback={logoutCallback} />
             } path='/' />
+          </Route>
+          <Route element={<PrivateRoute auth={user} />} >
+            <Route element={
+              <ProfilePage />
+            } path='/profile' />
           </Route>
           <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />
           <Route element={<RegisterForm setUserCallback={setUserCallback} />} path='/register' />

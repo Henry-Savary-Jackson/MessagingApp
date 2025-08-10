@@ -4,14 +4,12 @@ import ChatKeyboard from "./ChatKeyboard";
 
 
 function ChatWindow({ messages, onMessageSend }) {
-
-    return <Container className="border h-100">
-        <Stack className="overflow-y-scroll">
+ 
+    return <Container fluid className="border position-relative vh-100">
+        <Stack className="overflow-y-scroll mh-100 ">
             {messages.sort((a, b) => a.timestamp - b.timestamp).map((message) => <ChatMessage key={message.messageId} contents={message.contents.text} sender={message.sender} />)}
         </Stack>
-        <Container className="position-sticky bottom-0 end-0" >
-            <ChatKeyboard onMessageSend={onMessageSend} />
-        </Container>
+        <ChatKeyboard  onMessageSend={onMessageSend} />
     </Container>
 
 }

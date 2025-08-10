@@ -21,8 +21,12 @@ import lombok.Setter;
 public class MessageFile {
 
     @Id
-    UUID file_id;
+    UUID fileId;
+
     String mimeType;
-    byte[] data;
+
+    String datab64;
+
+    String ownerId;
     
 }

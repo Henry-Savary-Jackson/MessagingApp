@@ -16,7 +16,7 @@ import lombok.Setter;
 @Builder
 public class ProfileImage {
 
-    Binary data;
+    String datab64;
     String mimeType;
     
 }

@@ -11,7 +11,6 @@ import { ChatWSMessage, MessageContents, activate, broker_url, disconnect, liste
 
 function ChatPage({ logoutCallback }) {
 
-    let [user_id, setUserID] = useContext(userIdContext)
     let [currentChat, setCurrentChat] = useState("")
 
     let [chats, chatsReducer] = useReducer((prev, action) => {
@@ -19,7 +18,7 @@ function ChatPage({ logoutCallback }) {
             case "init":
                 return action.data.map((chat) => { return { ...chat, "new_message": 0, "last_timestamp": 0 } })
             case "add":
-                return [...prev, { ...action.new ,"new_message": 0, "last_timestamp": 0 }].sort((a, b) => b.last_timestamp - a.last_timestamp)
+                return [...prev, { ...action.new, "new_message": 0, "last_timestamp": 0 }].sort((a, b) => b.last_timestamp - a.last_timestamp)
             case "del":
                 return prev.filter((chat) => chat.chatId !== action.chatId);
             case "mod":
@@ -52,7 +51,7 @@ function ChatPage({ logoutCallback }) {
     let readMessages = (chat_id) => { chatsReducer({ "chatId": chat_id, "action": "mod", "read": true }) }
     let addMessageToChatCount = (chat_id, timestamp) => { chatsReducer({ "chatId": chat_id, "action": "mod", "read": false, "last_timestamp": timestamp }) }
     let addNewChatUI = async (chat_id, owner_id, name) => {
-        chatsReducer({ "action": "add", "new":{"chatId": chat_id , "ownerId":owner_id, "name":name}})
+        chatsReducer({ "action": "add", "new": { "chatId": chat_id, "ownerId": owner_id, "name": name } })
     }
     let setNewChats = (newChats) => { chatsReducer({ "action": "init", "data": newChats }) }
     let delChatUI = (chat_id) => { chatsReducer({ "action": "del", "chatId": chat_id }) }
@@ -77,28 +76,29 @@ function ChatPage({ logoutCallback }) {
     }, [])
 
 
-    let sendMessage = async (contents) => {
-        let newMessage = new ChatWSMessage(currentChat.chatId, new MessageContents(contents))
+    let sendMessage = async (contents, file_id=undefined) => {
+        let newMessage = new ChatWSMessage(currentChat.chatId, new MessageContents(contents, file_id))
         // addMessageUI(newMessage)
         send(newMessage)
     }
 
 
     let createNewChat = async () => { let name = prompt("Enter Name:"); let chat = await createChat(name); addNewChatUI(chat.chatId, chat.ownerId, name); connect_chat(chat.chatId) }
-    let joinChat = async (chat_id) => { let chat =  await join(chat_id); addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) }
+    let joinChat = async (chat_id) => { let chat = await join(chat_id); addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) }
     let leaveChat = async (chat_id) => { await leaveChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
     let deleteChat = async (chat_id) => { await deleteChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
 
-    return <Container>
-        <Link to={"/login"} onClick={async (e) => {
+    return <Container className='vh-100 vw-100'>
+        <Link className='btn btn-danger position-fixed top-0 start-0' to={"/login"} onClick={async (e) => {
             await logout()
             setAxiosCSRF(await getCSRF())
             logoutCallback()
         }} >Logout</Link>
+        <Link className='btn btn-primary' to={"/profile"} >Edit Profile</Link>
         <Container>
             <Row fluid={"true"} >
                 <Col sm={4} >
-                    <ChatListBar user_id={user_id} chats={chats} onChatDelete={deleteChat} onChatLeave={leaveChat} onChatClick={setCurrentChat} onChatJoin={joinChat} onChatCreate={createNewChat} />
+                    <ChatListBar chats={chats} onChatDelete={deleteChat} onChatLeave={leaveChat} onChatClick={setCurrentChat} onChatJoin={joinChat} onChatCreate={createNewChat} />
                 </Col>
                 <Col sm={8}>
                     {currentChat && <ChatWindow onMessageSend={sendMessage} messages={messages[currentChat.chatId] || []} />}

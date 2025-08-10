@@ -5,6 +5,7 @@ import org.springframework.web.service.annotation.GetExchange;
 
 import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.dto.RegistrationRequest;
+import com.hsj.messagingdemo.dto.UserChangeDTO;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.UserService;
@@ -17,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -50,15 +52,25 @@ public class UserController {
         return user.getId();
     }
 
-    @PutMapping("/profile/{id}")
-    public String userProfile(@PathVariable String id, @RequestBody ProfileImage entity) {
-        userService.setProfile(id, entity);
+    @PutMapping("/profile")
+    public String putUser( @RequestBody UserChangeDTO userChangeDTO) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (currentUser == null){
+            throw new AuthenticationServiceException("User is not logged in.");
+        }
+        userService.modifyUser(currentUser, userChangeDTO);
         return "Success";
+    }
+
+    @GetMapping("/profile/{id}")
+    public ProfileImage getUserProfile(@PathVariable String id) {
+        return userService.getUserById(id).getProfilePicture();
     }
 
     @GetMapping("/username/{id}")
     public String userProfile(@PathVariable String id) {
         return userService.getUserById(id).getUsername();
     }
+
 
 }

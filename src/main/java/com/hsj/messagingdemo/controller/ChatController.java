@@ -57,6 +57,7 @@ public class ChatController {
         Chat chat = messageService.getChatById(id).orElseThrow();
 
         messageService.removeUserFromChat(chat, user);
+        
         return "Success";
     }
 

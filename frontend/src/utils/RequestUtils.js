@@ -3,6 +3,7 @@ import axios from 'axios'
 
 const api_url = "http://localhost:8080"
 const username_cache = new Map()
+const profile_cache = new Map()
 
 export function setAxiosCSRF(csrf_data) {
     axios.defaults.headers.common[csrf_data.headerName] = csrf_data.token
@@ -19,7 +20,7 @@ export async function getChats() {
 }
 
 export async function join(chat_id) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/join`, chat_id, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data)
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/join`, chat_id, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data)
 }
 
 export async function logout() {
@@ -48,14 +49,31 @@ export async function register(data) {
 
 
 export async function createChat(name) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, name, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, name, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data);
 }
 
 export async function leaveChatRequest(chat_id) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/leave`, chat_id, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/leave`, chat_id, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data);
 }
 export async function deleteChatRequest(chat_id) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { headers: { "Content-Type": "application/json" }, withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data);
+}
+
+export async function getUserProfile(user_id){
+    return await performRequest(async () => (await axios.get(`${api_url}/user/profile/${user_id}`, { withCredentials: true, withXSRFToken: true })).data);
+}
+export async function putUserProfile(data) {
+    return await performRequest(async () => (await axios.put(`${api_url}/user/profile`, data, { withCredentials: true, withXSRFToken: true })).data);
+}
+
+export async function uploadFile(data) {
+    return await performRequest(async () => (await axios.post(`${api_url}/file/upload`, data, { withCredentials: true, withXSRFToken: true })).data);
+}
+export async function deleteFile(uuid) {
+    return await performRequest(async () => (await axios.delete(`${api_url}/file/${uuid}`, null, { withCredentials: true, withXSRFToken: true })).data);
+}
+export async function getFile(uuid) {
+    return await performRequest(async () => (await axios.get(`${api_url}/file/${uuid}`, { withCredentials: true, withXSRFToken: true })).data);
 }
 
 export async function getUsername(user_id) {
