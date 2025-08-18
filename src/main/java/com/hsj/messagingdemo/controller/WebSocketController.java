@@ -98,6 +98,8 @@ public class WebSocketController {
         if (user == null) {
             throw new Exception("User not found.");
         }
+        // TODO: fix this  gives concurrent modification excpetion when closing
+        // ,maybe make it synchronized
         messageService.getKafkaListenersForUser(user.getId()).forEach((id) ->{
             kafkaListenerCreator.stopListener(id); 
             messageService.unLinkUserToKafkaEventListener(user.getId(), id);

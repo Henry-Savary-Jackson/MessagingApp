@@ -49,14 +49,14 @@ export async function register(data) {
 
 
 export async function createChat(name) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, name, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, name, {  withCredentials: true, withXSRFToken: true })).data);
 }
 
 export async function leaveChatRequest(chat_id) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/leave`, chat_id, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/leave`, chat_id, {  withCredentials: true, withXSRFToken: true })).data);
 }
 export async function deleteChatRequest(chat_id) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { withCredentials: true, withXSRFToken: true })).data);
 }
 
 export async function getUserProfile(user_id){
