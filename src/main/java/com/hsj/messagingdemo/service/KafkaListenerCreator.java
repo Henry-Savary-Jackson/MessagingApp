@@ -34,11 +34,11 @@ public class KafkaListenerCreator {
     @Autowired
     private KafkaListenerContainerFactory kafkaListenerContainerFactory;
 
-    private KafkaListenerEndpoint createKafkaListenerEndpoint(UUID chatUuid, String userId, String username,
+    private KafkaListenerEndpoint createKafkaListenerEndpoint(UUID chatUuid, String userId, String username, String sessionId,
             int offset) {
         MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = createDefaultMethodKafkaListenerEndpoint(
-                chatUuid, userId, offset);
-        kafkaListenerEndpoint.setBean(new KafkaEventListener(username, template));
+                chatUuid, userId, sessionId, offset);
+        kafkaListenerEndpoint.setBean(new KafkaEventListener(username, sessionId, template));
 
         try {
             kafkaListenerEndpoint.setMethod(KafkaEventListener.class.getMethod("listen", ConsumerRecord.class));
@@ -49,10 +49,10 @@ public class KafkaListenerCreator {
     }
 
     private MethodKafkaListenerEndpoint<String, ChatMessage> createDefaultMethodKafkaListenerEndpoint(UUID chatUuid,
-            String userId, int offset) {
+            String userId,String sessionId, int offset) {
 
         MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = new MethodKafkaListenerEndpoint<>();
-        String listenerId = generateListenerId(chatUuid, userId);
+        String listenerId = generateListenerId(chatUuid, userId, sessionId);
         kafkaListenerEndpoint.setId(listenerId);
         kafkaListenerEndpoint.setGroupId(listenerId);
         kafkaListenerEndpoint.setAutoStartup(true);
@@ -65,13 +65,12 @@ public class KafkaListenerCreator {
         return kafkaListenerEndpoint;
     }
 
-    public static String generateListenerId(UUID chaUuid, String userId) {
-        return "%s : %s".formatted(chaUuid.toString(), userId);
+    public static String generateListenerId(UUID chaUuid, String userId, String sessionId) {
+        return "%s : %s : %s".formatted(chaUuid.toString(), userId, sessionId);
     }
 
-    public KafkaListenerEndpoint createAndRegisterListener(UUID chatUuid, String userId, String username, int offset) {
-
-        KafkaListenerEndpoint listener = createKafkaListenerEndpoint(chatUuid, userId, username, offset);
+    public KafkaListenerEndpoint createAndRegisterListener(UUID chatUuid, String userId, String username, String sessionId, int offset) {
+        KafkaListenerEndpoint listener = createKafkaListenerEndpoint(chatUuid, userId, username, sessionId,offset);
         kafkaListenerEndpointRegistry.registerListenerContainer(listener, kafkaListenerContainerFactory, true);
         return listener;
     }

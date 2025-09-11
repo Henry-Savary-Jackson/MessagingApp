@@ -70,9 +70,6 @@ public class ChatController {
     @PostMapping("/create")
     public Chat postMethodName(@RequestBody String name) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (user == null) {
-            return null; // TODO: add error handler
-        }
         return messageService.createChat(user, name);
     }
 }

@@ -38,7 +38,6 @@ export class MessageContents {
         this.type = "MESSAGE"
     }
 }
-new MessageContents()
 
 export class ChatWSMessage {
     constructor(chatId, contents, sender = "") {

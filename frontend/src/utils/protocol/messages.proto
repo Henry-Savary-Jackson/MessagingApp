@@ -1,0 +1,52 @@
+syntax =  "proto3";
+
+enum MessageType {
+  JOINED= 0;
+  CHAT = 1;
+  LEFT = 2;
+}
+
+message MessageContents{
+  string text =1;
+  optional string file_id =2;
+}
+
+message MessageHeader{
+  MessageType type;
+  bytes ratchet_public_key = 2;
+  uint32 message_count = 3;
+  uint32 prev_count = 4;
+  optional bytes ephemeral_key = 3;
+  optional bytes one_time_prekey = 4;
+}
+
+message ChatMessage {
+  string message_id = 1;
+  string sender_id = 2;
+  string chat_id = 3;
+  MessageHeader message_header = 6;
+  MessageContents message_contents= 6;
+  bytes public_key = 7;
+
+}
+message PreKeyBundle {
+  string id = 1;
+  bytes identity_key = 2;
+  bytes signed_prekey = 3;
+  bytes prekey_signature = 4; 
+  repeated bytes one_time_prekey = 5;
+}
+
+message KeyPair {
+    bytes public_key = 1;
+    bytes private_key = 2;
+}
+
+message Identity{
+    string user_id = 1;
+    KeyPair identity_key = 2;
+    KeyPair signed_prekey = 3;
+    uint64 signed_prekey_expiration= 4 ;
+    repeated KeyPair one_time_prekey= 5;
+}
+

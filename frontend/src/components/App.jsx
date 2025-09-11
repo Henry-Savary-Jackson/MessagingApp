@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage.jsx';
 function App() {
 
   let [cookies, setCookies, removeCookies] = useCookies()
+  let [offsets, setOffsets] = useState(cookies.offsets && JSON.parse(cookies.offsets) || {})
   let [user, setUser] = useState(cookies.user || "")
   let [user_id, setUserId] = useState(cookies.user_id || "")
   let [csrf, setCSRF] = useState("")
@@ -27,6 +28,9 @@ function App() {
     setUser(username)
     setUserId(user_id)
     setCookies("user", username)
+    if (!offsets){
+      setCookies("offsets", offsets)
+    }
     setCookies("user_id", user_id)
   }
   let logoutCallback = () => {
@@ -35,6 +39,11 @@ function App() {
     removeCookies("user_id")
   }
 
+  let modifyOffsetCookie = (object)=>{
+    const new_offsets = {...offsets, ...object}
+    setOffsets( new_offsets)
+    setCookies("offsets", JSON.stringify(new_offsets) )
+  }
 
   return < userContext.Provider value={[user, setUser]}>
     <userIdContext.Provider value={[user_id, setUserId]}>

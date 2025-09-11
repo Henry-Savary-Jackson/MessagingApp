@@ -2,6 +2,8 @@ package com.hsj.messagingdemo.service;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry;
 import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
@@ -15,17 +17,23 @@ import com.hsj.messagingdemo.dto.ChatMessage;
 public class KafkaEventListener {
 
     private SimpMessagingTemplate template;
-    private String userId ;
+    private String username ;
 
+    private String sessionId;
 
-    public KafkaEventListener(String userId, SimpMessagingTemplate template){
-        this.userId = userId;
+    public KafkaEventListener(String username,String sessionId, SimpMessagingTemplate template){
+        this.username = username;
         this.template = template;
+        this.sessionId = sessionId;
     }
 
     
     public void listen(ConsumerRecord<String, ChatMessage> data) {
-        template.convertAndSendToUser(userId,"/messages",data.value()); 
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        headerAccessor.setSessionId(sessionId);
+        headerAccessor.setLeaveMutable(true);
+        // do you still need to send to user
+        template.convertAndSendToUser(username,"/messages",data.value(), headerAccessor.getMessageHeaders()); 
     }
     
 }

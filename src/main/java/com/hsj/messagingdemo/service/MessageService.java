@@ -54,13 +54,17 @@ public class MessageService {
         listener.remove(listenerId);
     }
 
+    public void removeUsersKafkaEventListeners(String userId){
+        userToKafkaListener.remove(userId);
+    }
+
     public Set<String> getKafkaListenersForUser(String userId) {
         return userToKafkaListener.getOrDefault(userId, new HashSet<>());
     }
 
-    public boolean isUserListeningToChat(String userId, UUID chatUuid) {
+    public boolean isUserListeningToChat(String userId, UUID chatUuid, String sessionId) {
         return getKafkaListenersForUser(userId).stream()
-                .anyMatch((listenerId) -> listenerId.equals(KafkaListenerCreator.generateListenerId(chatUuid, userId)));
+                .anyMatch((listenerId) -> listenerId.equals(KafkaListenerCreator.generateListenerId(chatUuid, userId, sessionId)));
     }
 
     public List<Chat> getChatByUserId(String userId) {
