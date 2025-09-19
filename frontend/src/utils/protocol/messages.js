@@ -16,351 +16,20 @@
     // Exported root namespace
     var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
     
-    $root.ConsersationStart = (function() {
-    
-        /**
-         * Properties of a ConsersationStart.
-         * @exports IConsersationStart
-         * @interface IConsersationStart
-         * @property {string|null} [id] ConsersationStart id
-         * @property {Uint8Array|null} [ciphertext] ConsersationStart ciphertext
-         * @property {Uint8Array|null} [ephemeralKey] ConsersationStart ephemeralKey
-         * @property {Uint8Array|null} [ratchetPublicKey] ConsersationStart ratchetPublicKey
-         * @property {Uint8Array|null} [oneTimePrekey] ConsersationStart oneTimePrekey
-         */
-    
-        /**
-         * Constructs a new ConsersationStart.
-         * @exports ConsersationStart
-         * @classdesc Represents a ConsersationStart.
-         * @implements IConsersationStart
-         * @constructor
-         * @param {IConsersationStart=} [properties] Properties to set
-         */
-        function ConsersationStart(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-    
-        /**
-         * ConsersationStart id.
-         * @member {string} id
-         * @memberof ConsersationStart
-         * @instance
-         */
-        ConsersationStart.prototype.id = "";
-    
-        /**
-         * ConsersationStart ciphertext.
-         * @member {Uint8Array} ciphertext
-         * @memberof ConsersationStart
-         * @instance
-         */
-        ConsersationStart.prototype.ciphertext = $util.newBuffer([]);
-    
-        /**
-         * ConsersationStart ephemeralKey.
-         * @member {Uint8Array} ephemeralKey
-         * @memberof ConsersationStart
-         * @instance
-         */
-        ConsersationStart.prototype.ephemeralKey = $util.newBuffer([]);
-    
-        /**
-         * ConsersationStart ratchetPublicKey.
-         * @member {Uint8Array} ratchetPublicKey
-         * @memberof ConsersationStart
-         * @instance
-         */
-        ConsersationStart.prototype.ratchetPublicKey = $util.newBuffer([]);
-    
-        /**
-         * ConsersationStart oneTimePrekey.
-         * @member {Uint8Array|null|undefined} oneTimePrekey
-         * @memberof ConsersationStart
-         * @instance
-         */
-        ConsersationStart.prototype.oneTimePrekey = null;
-    
-        // OneOf field names bound to virtual getters and setters
-        var $oneOfFields;
-    
-        /**
-         * ConsersationStart _oneTimePrekey.
-         * @member {"oneTimePrekey"|undefined} _oneTimePrekey
-         * @memberof ConsersationStart
-         * @instance
-         */
-        Object.defineProperty(ConsersationStart.prototype, "_oneTimePrekey", {
-            get: $util.oneOfGetter($oneOfFields = ["oneTimePrekey"]),
-            set: $util.oneOfSetter($oneOfFields)
-        });
-    
-        /**
-         * Creates a new ConsersationStart instance using the specified properties.
-         * @function create
-         * @memberof ConsersationStart
-         * @static
-         * @param {IConsersationStart=} [properties] Properties to set
-         * @returns {ConsersationStart} ConsersationStart instance
-         */
-        ConsersationStart.create = function create(properties) {
-            return new ConsersationStart(properties);
-        };
-    
-        /**
-         * Encodes the specified ConsersationStart message. Does not implicitly {@link ConsersationStart.verify|verify} messages.
-         * @function encode
-         * @memberof ConsersationStart
-         * @static
-         * @param {IConsersationStart} message ConsersationStart message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ConsersationStart.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
-            if (message.ciphertext != null && Object.hasOwnProperty.call(message, "ciphertext"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.ciphertext);
-            if (message.ephemeralKey != null && Object.hasOwnProperty.call(message, "ephemeralKey"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.ephemeralKey);
-            if (message.ratchetPublicKey != null && Object.hasOwnProperty.call(message, "ratchetPublicKey"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.ratchetPublicKey);
-            if (message.oneTimePrekey != null && Object.hasOwnProperty.call(message, "oneTimePrekey"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.oneTimePrekey);
-            return writer;
-        };
-    
-        /**
-         * Encodes the specified ConsersationStart message, length delimited. Does not implicitly {@link ConsersationStart.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof ConsersationStart
-         * @static
-         * @param {IConsersationStart} message ConsersationStart message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        ConsersationStart.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-    
-        /**
-         * Decodes a ConsersationStart message from the specified reader or buffer.
-         * @function decode
-         * @memberof ConsersationStart
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {ConsersationStart} ConsersationStart
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ConsersationStart.decode = function decode(reader, length, error) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ConsersationStart();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                if (tag === error)
-                    break;
-                switch (tag >>> 3) {
-                case 1: {
-                        message.id = reader.string();
-                        break;
-                    }
-                case 2: {
-                        message.ciphertext = reader.bytes();
-                        break;
-                    }
-                case 3: {
-                        message.ephemeralKey = reader.bytes();
-                        break;
-                    }
-                case 4: {
-                        message.ratchetPublicKey = reader.bytes();
-                        break;
-                    }
-                case 5: {
-                        message.oneTimePrekey = reader.bytes();
-                        break;
-                    }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-    
-        /**
-         * Decodes a ConsersationStart message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof ConsersationStart
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {ConsersationStart} ConsersationStart
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        ConsersationStart.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-    
-        /**
-         * Verifies a ConsersationStart message.
-         * @function verify
-         * @memberof ConsersationStart
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        ConsersationStart.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            var properties = {};
-            if (message.id != null && message.hasOwnProperty("id"))
-                if (!$util.isString(message.id))
-                    return "id: string expected";
-            if (message.ciphertext != null && message.hasOwnProperty("ciphertext"))
-                if (!(message.ciphertext && typeof message.ciphertext.length === "number" || $util.isString(message.ciphertext)))
-                    return "ciphertext: buffer expected";
-            if (message.ephemeralKey != null && message.hasOwnProperty("ephemeralKey"))
-                if (!(message.ephemeralKey && typeof message.ephemeralKey.length === "number" || $util.isString(message.ephemeralKey)))
-                    return "ephemeralKey: buffer expected";
-            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey"))
-                if (!(message.ratchetPublicKey && typeof message.ratchetPublicKey.length === "number" || $util.isString(message.ratchetPublicKey)))
-                    return "ratchetPublicKey: buffer expected";
-            if (message.oneTimePrekey != null && message.hasOwnProperty("oneTimePrekey")) {
-                properties._oneTimePrekey = 1;
-                if (!(message.oneTimePrekey && typeof message.oneTimePrekey.length === "number" || $util.isString(message.oneTimePrekey)))
-                    return "oneTimePrekey: buffer expected";
-            }
-            return null;
-        };
-    
-        /**
-         * Creates a ConsersationStart message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof ConsersationStart
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {ConsersationStart} ConsersationStart
-         */
-        ConsersationStart.fromObject = function fromObject(object) {
-            if (object instanceof $root.ConsersationStart)
-                return object;
-            var message = new $root.ConsersationStart();
-            if (object.id != null)
-                message.id = String(object.id);
-            if (object.ciphertext != null)
-                if (typeof object.ciphertext === "string")
-                    $util.base64.decode(object.ciphertext, message.ciphertext = $util.newBuffer($util.base64.length(object.ciphertext)), 0);
-                else if (object.ciphertext.length >= 0)
-                    message.ciphertext = object.ciphertext;
-            if (object.ephemeralKey != null)
-                if (typeof object.ephemeralKey === "string")
-                    $util.base64.decode(object.ephemeralKey, message.ephemeralKey = $util.newBuffer($util.base64.length(object.ephemeralKey)), 0);
-                else if (object.ephemeralKey.length >= 0)
-                    message.ephemeralKey = object.ephemeralKey;
-            if (object.ratchetPublicKey != null)
-                if (typeof object.ratchetPublicKey === "string")
-                    $util.base64.decode(object.ratchetPublicKey, message.ratchetPublicKey = $util.newBuffer($util.base64.length(object.ratchetPublicKey)), 0);
-                else if (object.ratchetPublicKey.length >= 0)
-                    message.ratchetPublicKey = object.ratchetPublicKey;
-            if (object.oneTimePrekey != null)
-                if (typeof object.oneTimePrekey === "string")
-                    $util.base64.decode(object.oneTimePrekey, message.oneTimePrekey = $util.newBuffer($util.base64.length(object.oneTimePrekey)), 0);
-                else if (object.oneTimePrekey.length >= 0)
-                    message.oneTimePrekey = object.oneTimePrekey;
-            return message;
-        };
-    
-        /**
-         * Creates a plain object from a ConsersationStart message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof ConsersationStart
-         * @static
-         * @param {ConsersationStart} message ConsersationStart
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        ConsersationStart.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.id = "";
-                if (options.bytes === String)
-                    object.ciphertext = "";
-                else {
-                    object.ciphertext = [];
-                    if (options.bytes !== Array)
-                        object.ciphertext = $util.newBuffer(object.ciphertext);
-                }
-                if (options.bytes === String)
-                    object.ephemeralKey = "";
-                else {
-                    object.ephemeralKey = [];
-                    if (options.bytes !== Array)
-                        object.ephemeralKey = $util.newBuffer(object.ephemeralKey);
-                }
-                if (options.bytes === String)
-                    object.ratchetPublicKey = "";
-                else {
-                    object.ratchetPublicKey = [];
-                    if (options.bytes !== Array)
-                        object.ratchetPublicKey = $util.newBuffer(object.ratchetPublicKey);
-                }
-            }
-            if (message.id != null && message.hasOwnProperty("id"))
-                object.id = message.id;
-            if (message.ciphertext != null && message.hasOwnProperty("ciphertext"))
-                object.ciphertext = options.bytes === String ? $util.base64.encode(message.ciphertext, 0, message.ciphertext.length) : options.bytes === Array ? Array.prototype.slice.call(message.ciphertext) : message.ciphertext;
-            if (message.ephemeralKey != null && message.hasOwnProperty("ephemeralKey"))
-                object.ephemeralKey = options.bytes === String ? $util.base64.encode(message.ephemeralKey, 0, message.ephemeralKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.ephemeralKey) : message.ephemeralKey;
-            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey"))
-                object.ratchetPublicKey = options.bytes === String ? $util.base64.encode(message.ratchetPublicKey, 0, message.ratchetPublicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.ratchetPublicKey) : message.ratchetPublicKey;
-            if (message.oneTimePrekey != null && message.hasOwnProperty("oneTimePrekey")) {
-                object.oneTimePrekey = options.bytes === String ? $util.base64.encode(message.oneTimePrekey, 0, message.oneTimePrekey.length) : options.bytes === Array ? Array.prototype.slice.call(message.oneTimePrekey) : message.oneTimePrekey;
-                if (options.oneofs)
-                    object._oneTimePrekey = "oneTimePrekey";
-            }
-            return object;
-        };
-    
-        /**
-         * Converts this ConsersationStart to JSON.
-         * @function toJSON
-         * @memberof ConsersationStart
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        ConsersationStart.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-    
-        /**
-         * Gets the default type url for ConsersationStart
-         * @function getTypeUrl
-         * @memberof ConsersationStart
-         * @static
-         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-         * @returns {string} The default type url
-         */
-        ConsersationStart.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-            if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
-            }
-            return typeUrlPrefix + "/ConsersationStart";
-        };
-    
-        return ConsersationStart;
+    /**
+     * MessageType enum.
+     * @exports MessageType
+     * @enum {number}
+     * @property {number} JOINED=0 JOINED value
+     * @property {number} CHAT=1 CHAT value
+     * @property {number} LEFT=2 LEFT value
+     */
+    $root.MessageType = (function() {
+        var valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[0] = "JOINED"] = 0;
+        values[valuesById[1] = "CHAT"] = 1;
+        values[valuesById[2] = "LEFT"] = 2;
+        return values;
     })();
     
     $root.MessageContents = (function() {
@@ -371,6 +40,7 @@
          * @interface IMessageContents
          * @property {string|null} [text] MessageContents text
          * @property {string|null} [fileId] MessageContents fileId
+         * @property {Uint8Array|null} [fileIv] MessageContents fileIv
          */
     
         /**
@@ -404,6 +74,14 @@
          */
         MessageContents.prototype.fileId = null;
     
+        /**
+         * MessageContents fileIv.
+         * @member {Uint8Array|null|undefined} fileIv
+         * @memberof MessageContents
+         * @instance
+         */
+        MessageContents.prototype.fileIv = null;
+    
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
     
@@ -415,6 +93,17 @@
          */
         Object.defineProperty(MessageContents.prototype, "_fileId", {
             get: $util.oneOfGetter($oneOfFields = ["fileId"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+    
+        /**
+         * MessageContents _fileIv.
+         * @member {"fileIv"|undefined} _fileIv
+         * @memberof MessageContents
+         * @instance
+         */
+        Object.defineProperty(MessageContents.prototype, "_fileIv", {
+            get: $util.oneOfGetter($oneOfFields = ["fileIv"]),
             set: $util.oneOfSetter($oneOfFields)
         });
     
@@ -446,6 +135,8 @@
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
             if (message.fileId != null && Object.hasOwnProperty.call(message, "fileId"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.fileId);
+            if (message.fileIv != null && Object.hasOwnProperty.call(message, "fileIv"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.fileIv);
             return writer;
         };
     
@@ -488,6 +179,10 @@
                     }
                 case 2: {
                         message.fileId = reader.string();
+                        break;
+                    }
+                case 3: {
+                        message.fileIv = reader.bytes();
                         break;
                     }
                 default:
@@ -534,6 +229,11 @@
                 if (!$util.isString(message.fileId))
                     return "fileId: string expected";
             }
+            if (message.fileIv != null && message.hasOwnProperty("fileIv")) {
+                properties._fileIv = 1;
+                if (!(message.fileIv && typeof message.fileIv.length === "number" || $util.isString(message.fileIv)))
+                    return "fileIv: buffer expected";
+            }
             return null;
         };
     
@@ -553,6 +253,11 @@
                 message.text = String(object.text);
             if (object.fileId != null)
                 message.fileId = String(object.fileId);
+            if (object.fileIv != null)
+                if (typeof object.fileIv === "string")
+                    $util.base64.decode(object.fileIv, message.fileIv = $util.newBuffer($util.base64.length(object.fileIv)), 0);
+                else if (object.fileIv.length >= 0)
+                    message.fileIv = object.fileIv;
             return message;
         };
     
@@ -577,6 +282,11 @@
                 object.fileId = message.fileId;
                 if (options.oneofs)
                     object._fileId = "fileId";
+            }
+            if (message.fileIv != null && message.hasOwnProperty("fileIv")) {
+                object.fileIv = options.bytes === String ? $util.base64.encode(message.fileIv, 0, message.fileIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.fileIv) : message.fileIv;
+                if (options.oneofs)
+                    object._fileIv = "fileIv";
             }
             return object;
         };
@@ -610,6 +320,423 @@
         return MessageContents;
     })();
     
+    $root.MessageHeader = (function() {
+    
+        /**
+         * Properties of a MessageHeader.
+         * @exports IMessageHeader
+         * @interface IMessageHeader
+         * @property {MessageType|null} [type] MessageHeader type
+         * @property {Uint8Array|null} [ratchetPublicKey] MessageHeader ratchetPublicKey
+         * @property {number|null} [messageCount] MessageHeader messageCount
+         * @property {number|null} [prevCount] MessageHeader prevCount
+         * @property {number|null} [iv] MessageHeader iv
+         * @property {Uint8Array|null} [ephemeralKey] MessageHeader ephemeralKey
+         * @property {Uint8Array|null} [oneTimePrekey] MessageHeader oneTimePrekey
+         */
+    
+        /**
+         * Constructs a new MessageHeader.
+         * @exports MessageHeader
+         * @classdesc Represents a MessageHeader.
+         * @implements IMessageHeader
+         * @constructor
+         * @param {IMessageHeader=} [properties] Properties to set
+         */
+        function MessageHeader(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * MessageHeader type.
+         * @member {MessageType} type
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.type = 0;
+    
+        /**
+         * MessageHeader ratchetPublicKey.
+         * @member {Uint8Array} ratchetPublicKey
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.ratchetPublicKey = $util.newBuffer([]);
+    
+        /**
+         * MessageHeader messageCount.
+         * @member {number} messageCount
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.messageCount = 0;
+    
+        /**
+         * MessageHeader prevCount.
+         * @member {number} prevCount
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.prevCount = 0;
+    
+        /**
+         * MessageHeader iv.
+         * @member {number} iv
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.iv = 0;
+    
+        /**
+         * MessageHeader ephemeralKey.
+         * @member {Uint8Array|null|undefined} ephemeralKey
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.ephemeralKey = null;
+    
+        /**
+         * MessageHeader oneTimePrekey.
+         * @member {Uint8Array|null|undefined} oneTimePrekey
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.oneTimePrekey = null;
+    
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+    
+        /**
+         * MessageHeader _ephemeralKey.
+         * @member {"ephemeralKey"|undefined} _ephemeralKey
+         * @memberof MessageHeader
+         * @instance
+         */
+        Object.defineProperty(MessageHeader.prototype, "_ephemeralKey", {
+            get: $util.oneOfGetter($oneOfFields = ["ephemeralKey"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+    
+        /**
+         * MessageHeader _oneTimePrekey.
+         * @member {"oneTimePrekey"|undefined} _oneTimePrekey
+         * @memberof MessageHeader
+         * @instance
+         */
+        Object.defineProperty(MessageHeader.prototype, "_oneTimePrekey", {
+            get: $util.oneOfGetter($oneOfFields = ["oneTimePrekey"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+    
+        /**
+         * Creates a new MessageHeader instance using the specified properties.
+         * @function create
+         * @memberof MessageHeader
+         * @static
+         * @param {IMessageHeader=} [properties] Properties to set
+         * @returns {MessageHeader} MessageHeader instance
+         */
+        MessageHeader.create = function create(properties) {
+            return new MessageHeader(properties);
+        };
+    
+        /**
+         * Encodes the specified MessageHeader message. Does not implicitly {@link MessageHeader.verify|verify} messages.
+         * @function encode
+         * @memberof MessageHeader
+         * @static
+         * @param {IMessageHeader} message MessageHeader message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        MessageHeader.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+            if (message.ratchetPublicKey != null && Object.hasOwnProperty.call(message, "ratchetPublicKey"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.ratchetPublicKey);
+            if (message.messageCount != null && Object.hasOwnProperty.call(message, "messageCount"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.messageCount);
+            if (message.prevCount != null && Object.hasOwnProperty.call(message, "prevCount"))
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.prevCount);
+            if (message.iv != null && Object.hasOwnProperty.call(message, "iv"))
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.iv);
+            if (message.ephemeralKey != null && Object.hasOwnProperty.call(message, "ephemeralKey"))
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.ephemeralKey);
+            if (message.oneTimePrekey != null && Object.hasOwnProperty.call(message, "oneTimePrekey"))
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.oneTimePrekey);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified MessageHeader message, length delimited. Does not implicitly {@link MessageHeader.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof MessageHeader
+         * @static
+         * @param {IMessageHeader} message MessageHeader message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        MessageHeader.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes a MessageHeader message from the specified reader or buffer.
+         * @function decode
+         * @memberof MessageHeader
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {MessageHeader} MessageHeader
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        MessageHeader.decode = function decode(reader, length, error) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.MessageHeader();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                if (tag === error)
+                    break;
+                switch (tag >>> 3) {
+                case 1: {
+                        message.type = reader.int32();
+                        break;
+                    }
+                case 2: {
+                        message.ratchetPublicKey = reader.bytes();
+                        break;
+                    }
+                case 3: {
+                        message.messageCount = reader.uint32();
+                        break;
+                    }
+                case 4: {
+                        message.prevCount = reader.uint32();
+                        break;
+                    }
+                case 5: {
+                        message.iv = reader.uint32();
+                        break;
+                    }
+                case 6: {
+                        message.ephemeralKey = reader.bytes();
+                        break;
+                    }
+                case 7: {
+                        message.oneTimePrekey = reader.bytes();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes a MessageHeader message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof MessageHeader
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {MessageHeader} MessageHeader
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        MessageHeader.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies a MessageHeader message.
+         * @function verify
+         * @memberof MessageHeader
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        MessageHeader.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.type != null && message.hasOwnProperty("type"))
+                switch (message.type) {
+                default:
+                    return "type: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                    break;
+                }
+            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey"))
+                if (!(message.ratchetPublicKey && typeof message.ratchetPublicKey.length === "number" || $util.isString(message.ratchetPublicKey)))
+                    return "ratchetPublicKey: buffer expected";
+            if (message.messageCount != null && message.hasOwnProperty("messageCount"))
+                if (!$util.isInteger(message.messageCount))
+                    return "messageCount: integer expected";
+            if (message.prevCount != null && message.hasOwnProperty("prevCount"))
+                if (!$util.isInteger(message.prevCount))
+                    return "prevCount: integer expected";
+            if (message.iv != null && message.hasOwnProperty("iv"))
+                if (!$util.isInteger(message.iv))
+                    return "iv: integer expected";
+            if (message.ephemeralKey != null && message.hasOwnProperty("ephemeralKey")) {
+                properties._ephemeralKey = 1;
+                if (!(message.ephemeralKey && typeof message.ephemeralKey.length === "number" || $util.isString(message.ephemeralKey)))
+                    return "ephemeralKey: buffer expected";
+            }
+            if (message.oneTimePrekey != null && message.hasOwnProperty("oneTimePrekey")) {
+                properties._oneTimePrekey = 1;
+                if (!(message.oneTimePrekey && typeof message.oneTimePrekey.length === "number" || $util.isString(message.oneTimePrekey)))
+                    return "oneTimePrekey: buffer expected";
+            }
+            return null;
+        };
+    
+        /**
+         * Creates a MessageHeader message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof MessageHeader
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {MessageHeader} MessageHeader
+         */
+        MessageHeader.fromObject = function fromObject(object) {
+            if (object instanceof $root.MessageHeader)
+                return object;
+            var message = new $root.MessageHeader();
+            switch (object.type) {
+            default:
+                if (typeof object.type === "number") {
+                    message.type = object.type;
+                    break;
+                }
+                break;
+            case "JOINED":
+            case 0:
+                message.type = 0;
+                break;
+            case "CHAT":
+            case 1:
+                message.type = 1;
+                break;
+            case "LEFT":
+            case 2:
+                message.type = 2;
+                break;
+            }
+            if (object.ratchetPublicKey != null)
+                if (typeof object.ratchetPublicKey === "string")
+                    $util.base64.decode(object.ratchetPublicKey, message.ratchetPublicKey = $util.newBuffer($util.base64.length(object.ratchetPublicKey)), 0);
+                else if (object.ratchetPublicKey.length >= 0)
+                    message.ratchetPublicKey = object.ratchetPublicKey;
+            if (object.messageCount != null)
+                message.messageCount = object.messageCount >>> 0;
+            if (object.prevCount != null)
+                message.prevCount = object.prevCount >>> 0;
+            if (object.iv != null)
+                message.iv = object.iv >>> 0;
+            if (object.ephemeralKey != null)
+                if (typeof object.ephemeralKey === "string")
+                    $util.base64.decode(object.ephemeralKey, message.ephemeralKey = $util.newBuffer($util.base64.length(object.ephemeralKey)), 0);
+                else if (object.ephemeralKey.length >= 0)
+                    message.ephemeralKey = object.ephemeralKey;
+            if (object.oneTimePrekey != null)
+                if (typeof object.oneTimePrekey === "string")
+                    $util.base64.decode(object.oneTimePrekey, message.oneTimePrekey = $util.newBuffer($util.base64.length(object.oneTimePrekey)), 0);
+                else if (object.oneTimePrekey.length >= 0)
+                    message.oneTimePrekey = object.oneTimePrekey;
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from a MessageHeader message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof MessageHeader
+         * @static
+         * @param {MessageHeader} message MessageHeader
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        MessageHeader.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.type = options.enums === String ? "JOINED" : 0;
+                if (options.bytes === String)
+                    object.ratchetPublicKey = "";
+                else {
+                    object.ratchetPublicKey = [];
+                    if (options.bytes !== Array)
+                        object.ratchetPublicKey = $util.newBuffer(object.ratchetPublicKey);
+                }
+                object.messageCount = 0;
+                object.prevCount = 0;
+                object.iv = 0;
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = options.enums === String ? $root.MessageType[message.type] === undefined ? message.type : $root.MessageType[message.type] : message.type;
+            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey"))
+                object.ratchetPublicKey = options.bytes === String ? $util.base64.encode(message.ratchetPublicKey, 0, message.ratchetPublicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.ratchetPublicKey) : message.ratchetPublicKey;
+            if (message.messageCount != null && message.hasOwnProperty("messageCount"))
+                object.messageCount = message.messageCount;
+            if (message.prevCount != null && message.hasOwnProperty("prevCount"))
+                object.prevCount = message.prevCount;
+            if (message.iv != null && message.hasOwnProperty("iv"))
+                object.iv = message.iv;
+            if (message.ephemeralKey != null && message.hasOwnProperty("ephemeralKey")) {
+                object.ephemeralKey = options.bytes === String ? $util.base64.encode(message.ephemeralKey, 0, message.ephemeralKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.ephemeralKey) : message.ephemeralKey;
+                if (options.oneofs)
+                    object._ephemeralKey = "ephemeralKey";
+            }
+            if (message.oneTimePrekey != null && message.hasOwnProperty("oneTimePrekey")) {
+                object.oneTimePrekey = options.bytes === String ? $util.base64.encode(message.oneTimePrekey, 0, message.oneTimePrekey.length) : options.bytes === Array ? Array.prototype.slice.call(message.oneTimePrekey) : message.oneTimePrekey;
+                if (options.oneofs)
+                    object._oneTimePrekey = "oneTimePrekey";
+            }
+            return object;
+        };
+    
+        /**
+         * Converts this MessageHeader to JSON.
+         * @function toJSON
+         * @memberof MessageHeader
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        MessageHeader.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        /**
+         * Gets the default type url for MessageHeader
+         * @function getTypeUrl
+         * @memberof MessageHeader
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        MessageHeader.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/MessageHeader";
+        };
+    
+        return MessageHeader;
+    })();
+    
     $root.ChatMessage = (function() {
     
         /**
@@ -619,8 +746,8 @@
          * @property {string|null} [messageId] ChatMessage messageId
          * @property {string|null} [senderId] ChatMessage senderId
          * @property {string|null} [chatId] ChatMessage chatId
-         * @property {number|null} [messageCount] ChatMessage messageCount
-         * @property {IMessageContents|null} [messageContents] ChatMessage messageContents
+         * @property {IMessageHeader|null} [messageHeader] ChatMessage messageHeader
+         * @property {Uint8Array|null} [messageContentsEncrypted] ChatMessage messageContentsEncrypted
          * @property {Uint8Array|null} [publicKey] ChatMessage publicKey
          */
     
@@ -664,20 +791,20 @@
         ChatMessage.prototype.chatId = "";
     
         /**
-         * ChatMessage messageCount.
-         * @member {number} messageCount
+         * ChatMessage messageHeader.
+         * @member {IMessageHeader|null|undefined} messageHeader
          * @memberof ChatMessage
          * @instance
          */
-        ChatMessage.prototype.messageCount = 0;
+        ChatMessage.prototype.messageHeader = null;
     
         /**
-         * ChatMessage messageContents.
-         * @member {IMessageContents|null|undefined} messageContents
+         * ChatMessage messageContentsEncrypted.
+         * @member {Uint8Array} messageContentsEncrypted
          * @memberof ChatMessage
          * @instance
          */
-        ChatMessage.prototype.messageContents = null;
+        ChatMessage.prototype.messageContentsEncrypted = $util.newBuffer([]);
     
         /**
          * ChatMessage publicKey.
@@ -717,10 +844,10 @@
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.senderId);
             if (message.chatId != null && Object.hasOwnProperty.call(message, "chatId"))
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.chatId);
-            if (message.messageCount != null && Object.hasOwnProperty.call(message, "messageCount"))
-                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.messageCount);
-            if (message.messageContents != null && Object.hasOwnProperty.call(message, "messageContents"))
-                $root.MessageContents.encode(message.messageContents, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.messageHeader != null && Object.hasOwnProperty.call(message, "messageHeader"))
+                $root.MessageHeader.encode(message.messageHeader, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.messageContentsEncrypted != null && Object.hasOwnProperty.call(message, "messageContentsEncrypted"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.messageContentsEncrypted);
             if (message.publicKey != null && Object.hasOwnProperty.call(message, "publicKey"))
                 writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.publicKey);
             return writer;
@@ -772,11 +899,11 @@
                         break;
                     }
                 case 4: {
-                        message.messageCount = reader.uint32();
+                        message.messageHeader = $root.MessageHeader.decode(reader, reader.uint32());
                         break;
                     }
                 case 5: {
-                        message.messageContents = $root.MessageContents.decode(reader, reader.uint32());
+                        message.messageContentsEncrypted = reader.bytes();
                         break;
                     }
                 case 6: {
@@ -827,14 +954,14 @@
             if (message.chatId != null && message.hasOwnProperty("chatId"))
                 if (!$util.isString(message.chatId))
                     return "chatId: string expected";
-            if (message.messageCount != null && message.hasOwnProperty("messageCount"))
-                if (!$util.isInteger(message.messageCount))
-                    return "messageCount: integer expected";
-            if (message.messageContents != null && message.hasOwnProperty("messageContents")) {
-                var error = $root.MessageContents.verify(message.messageContents);
+            if (message.messageHeader != null && message.hasOwnProperty("messageHeader")) {
+                var error = $root.MessageHeader.verify(message.messageHeader);
                 if (error)
-                    return "messageContents." + error;
+                    return "messageHeader." + error;
             }
+            if (message.messageContentsEncrypted != null && message.hasOwnProperty("messageContentsEncrypted"))
+                if (!(message.messageContentsEncrypted && typeof message.messageContentsEncrypted.length === "number" || $util.isString(message.messageContentsEncrypted)))
+                    return "messageContentsEncrypted: buffer expected";
             if (message.publicKey != null && message.hasOwnProperty("publicKey"))
                 if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
                     return "publicKey: buffer expected";
@@ -859,13 +986,16 @@
                 message.senderId = String(object.senderId);
             if (object.chatId != null)
                 message.chatId = String(object.chatId);
-            if (object.messageCount != null)
-                message.messageCount = object.messageCount >>> 0;
-            if (object.messageContents != null) {
-                if (typeof object.messageContents !== "object")
-                    throw TypeError(".ChatMessage.messageContents: object expected");
-                message.messageContents = $root.MessageContents.fromObject(object.messageContents);
+            if (object.messageHeader != null) {
+                if (typeof object.messageHeader !== "object")
+                    throw TypeError(".ChatMessage.messageHeader: object expected");
+                message.messageHeader = $root.MessageHeader.fromObject(object.messageHeader);
             }
+            if (object.messageContentsEncrypted != null)
+                if (typeof object.messageContentsEncrypted === "string")
+                    $util.base64.decode(object.messageContentsEncrypted, message.messageContentsEncrypted = $util.newBuffer($util.base64.length(object.messageContentsEncrypted)), 0);
+                else if (object.messageContentsEncrypted.length >= 0)
+                    message.messageContentsEncrypted = object.messageContentsEncrypted;
             if (object.publicKey != null)
                 if (typeof object.publicKey === "string")
                     $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
@@ -891,8 +1021,14 @@
                 object.messageId = "";
                 object.senderId = "";
                 object.chatId = "";
-                object.messageCount = 0;
-                object.messageContents = null;
+                object.messageHeader = null;
+                if (options.bytes === String)
+                    object.messageContentsEncrypted = "";
+                else {
+                    object.messageContentsEncrypted = [];
+                    if (options.bytes !== Array)
+                        object.messageContentsEncrypted = $util.newBuffer(object.messageContentsEncrypted);
+                }
                 if (options.bytes === String)
                     object.publicKey = "";
                 else {
@@ -907,10 +1043,10 @@
                 object.senderId = message.senderId;
             if (message.chatId != null && message.hasOwnProperty("chatId"))
                 object.chatId = message.chatId;
-            if (message.messageCount != null && message.hasOwnProperty("messageCount"))
-                object.messageCount = message.messageCount;
-            if (message.messageContents != null && message.hasOwnProperty("messageContents"))
-                object.messageContents = $root.MessageContents.toObject(message.messageContents, options);
+            if (message.messageHeader != null && message.hasOwnProperty("messageHeader"))
+                object.messageHeader = $root.MessageHeader.toObject(message.messageHeader, options);
+            if (message.messageContentsEncrypted != null && message.hasOwnProperty("messageContentsEncrypted"))
+                object.messageContentsEncrypted = options.bytes === String ? $util.base64.encode(message.messageContentsEncrypted, 0, message.messageContentsEncrypted.length) : options.bytes === Array ? Array.prototype.slice.call(message.messageContentsEncrypted) : message.messageContentsEncrypted;
             if (message.publicKey != null && message.hasOwnProperty("publicKey"))
                 object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
             return object;
@@ -952,6 +1088,7 @@
          * @exports IPreKeyBundle
          * @interface IPreKeyBundle
          * @property {string|null} [id] PreKeyBundle id
+         * @property {string|null} [username] PreKeyBundle username
          * @property {Uint8Array|null} [identityKey] PreKeyBundle identityKey
          * @property {Uint8Array|null} [signedPrekey] PreKeyBundle signedPrekey
          * @property {Uint8Array|null} [prekeySignature] PreKeyBundle prekeySignature
@@ -976,11 +1113,19 @@
     
         /**
          * PreKeyBundle id.
-         * @member {string} id
+         * @member {string|null|undefined} id
          * @memberof PreKeyBundle
          * @instance
          */
-        PreKeyBundle.prototype.id = "";
+        PreKeyBundle.prototype.id = null;
+    
+        /**
+         * PreKeyBundle username.
+         * @member {string|null|undefined} username
+         * @memberof PreKeyBundle
+         * @instance
+         */
+        PreKeyBundle.prototype.username = null;
     
         /**
          * PreKeyBundle identityKey.
@@ -1013,6 +1158,31 @@
          * @instance
          */
         PreKeyBundle.prototype.oneTimePrekey = $util.emptyArray;
+    
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+    
+        /**
+         * PreKeyBundle _id.
+         * @member {"id"|undefined} _id
+         * @memberof PreKeyBundle
+         * @instance
+         */
+        Object.defineProperty(PreKeyBundle.prototype, "_id", {
+            get: $util.oneOfGetter($oneOfFields = ["id"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+    
+        /**
+         * PreKeyBundle _username.
+         * @member {"username"|undefined} _username
+         * @memberof PreKeyBundle
+         * @instance
+         */
+        Object.defineProperty(PreKeyBundle.prototype, "_username", {
+            get: $util.oneOfGetter($oneOfFields = ["username"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
     
         /**
          * Creates a new PreKeyBundle instance using the specified properties.
@@ -1049,6 +1219,8 @@
             if (message.oneTimePrekey != null && message.oneTimePrekey.length)
                 for (var i = 0; i < message.oneTimePrekey.length; ++i)
                     writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.oneTimePrekey[i]);
+            if (message.username != null && Object.hasOwnProperty.call(message, "username"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.username);
             return writer;
         };
     
@@ -1087,6 +1259,10 @@
                 switch (tag >>> 3) {
                 case 1: {
                         message.id = reader.string();
+                        break;
+                    }
+                case 6: {
+                        message.username = reader.string();
                         break;
                     }
                 case 2: {
@@ -1142,9 +1318,17 @@
         PreKeyBundle.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.id != null && message.hasOwnProperty("id"))
+            var properties = {};
+            if (message.id != null && message.hasOwnProperty("id")) {
+                properties._id = 1;
                 if (!$util.isString(message.id))
                     return "id: string expected";
+            }
+            if (message.username != null && message.hasOwnProperty("username")) {
+                properties._username = 1;
+                if (!$util.isString(message.username))
+                    return "username: string expected";
+            }
             if (message.identityKey != null && message.hasOwnProperty("identityKey"))
                 if (!(message.identityKey && typeof message.identityKey.length === "number" || $util.isString(message.identityKey)))
                     return "identityKey: buffer expected";
@@ -1178,6 +1362,8 @@
             var message = new $root.PreKeyBundle();
             if (object.id != null)
                 message.id = String(object.id);
+            if (object.username != null)
+                message.username = String(object.username);
             if (object.identityKey != null)
                 if (typeof object.identityKey === "string")
                     $util.base64.decode(object.identityKey, message.identityKey = $util.newBuffer($util.base64.length(object.identityKey)), 0);
@@ -1222,7 +1408,6 @@
             if (options.arrays || options.defaults)
                 object.oneTimePrekey = [];
             if (options.defaults) {
-                object.id = "";
                 if (options.bytes === String)
                     object.identityKey = "";
                 else {
@@ -1245,8 +1430,11 @@
                         object.prekeySignature = $util.newBuffer(object.prekeySignature);
                 }
             }
-            if (message.id != null && message.hasOwnProperty("id"))
+            if (message.id != null && message.hasOwnProperty("id")) {
                 object.id = message.id;
+                if (options.oneofs)
+                    object._id = "id";
+            }
             if (message.identityKey != null && message.hasOwnProperty("identityKey"))
                 object.identityKey = options.bytes === String ? $util.base64.encode(message.identityKey, 0, message.identityKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.identityKey) : message.identityKey;
             if (message.signedPrekey != null && message.hasOwnProperty("signedPrekey"))
@@ -1257,6 +1445,11 @@
                 object.oneTimePrekey = [];
                 for (var j = 0; j < message.oneTimePrekey.length; ++j)
                     object.oneTimePrekey[j] = options.bytes === String ? $util.base64.encode(message.oneTimePrekey[j], 0, message.oneTimePrekey[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.oneTimePrekey[j]) : message.oneTimePrekey[j];
+            }
+            if (message.username != null && message.hasOwnProperty("username")) {
+                object.username = message.username;
+                if (options.oneofs)
+                    object._username = "username";
             }
             return object;
         };

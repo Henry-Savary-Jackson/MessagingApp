@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -38,6 +39,7 @@ import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
 import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.dto.UserChangeDTO;
+import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.UserRepo;
@@ -68,7 +70,7 @@ public class UserService {
     public Authentication loginUser(AuthenticationRequest request) {
         try {
             User user = getUserByUsername(request.getUsername()).orElseThrow();
-            if (!CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(),
+            if (!CryptoUtils.verifySignature(user.getPreKeyBundle().getIdentityKey().toByteArray(), request.getChallenge(),
                     request.getChallengeSignature())) {
                 throw new SignatureException("");
             }
@@ -78,13 +80,12 @@ public class UserService {
         } catch (NoSuchAlgorithmException nsae) {
 
             throw new AuthenticationServiceException("No such algo.");
-        } catch (InvalidKeySpecException invse) {
-
-            throw new AuthenticationServiceException("Invalid key spec.");
         } catch (InvalidKeyException e) {
             throw new AuthenticationServiceException("Invalid public key.");
         } catch (IOException e) {
             throw new AuthenticationServiceException("IOException.");
+        } catch (CertificateException e) {
+            throw new AuthenticationServiceException("Certificate Exception.");
         }
     }
 
@@ -96,10 +97,11 @@ public class UserService {
             throws AuthenticationException, InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         // verify inegrity of pubkey
         try {
-            CryptoUtils.createPubKeyFrombase64(request.getBase64PubKey());
+            byte[] preKeyBundleBytes = Base64.getDecoder().decode(request.getBase64PrekeyBundle());
+            PreKeyBundle preKeyBundle = PreKeyBundle.parseFrom(preKeyBundleBytes);
 
             User user = User.builder().id(UUID.randomUUID().toString()).username(request.getUsername())
-                    .base64PublicKey(request.getBase64PubKey()).profilePicture(request.getProfileImage()).build();
+                    .preKeyBundle(preKeyBundle).profilePicture(request.getProfileImage()).build();
             userRepo.save(user);
             return user;
         } catch (DuplicateKeyException mwe) {

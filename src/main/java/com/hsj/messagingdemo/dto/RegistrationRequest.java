@@ -1,5 +1,6 @@
 package com.hsj.messagingdemo.dto;
 
+import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 import com.hsj.messagingdemo.model.ProfileImage;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RegistrationRequest {
     String username;
-    String base64PubKey;
+    String base64PrekeyBundle;
     ProfileImage profileImage;
 }

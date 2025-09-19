@@ -1,55 +1,63 @@
 import { useEffect, useContext, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Button, Form, FormLabel, FormControl, FormGroup } from "react-bootstrap";
-import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair } from "../../utils/CryptoUtils"
+import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair, create_new_identity, create_new_prekey_bundle } from "../../utils/CryptoUtils"
 import { getCSRF, register, setAxiosCSRF } from "../../utils/RequestUtils"
 import { useLocation } from 'react-router'
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../../utils/EncodingUtils";
 import { userContext } from "../../globals";
 import { performActionWithAlert } from "../../utils/UIUtils";
+import { storeUserData, useIndexedDB } from "../../utils/StorageUtils";
+import { Identity,PreKeyBundle } from "../../utils/protocol/messages";
 
 function RegisterForm({ setUserCallback }) {
 
     let location = useLocation()
+    let {db ,loading} = useIndexedDB()
 
     let [username, setUsername] = useState("")
     let [profileImageBlob, setProfileImageBlob] = useState(undefined)
 
-    let [privKey, setPrivKey] = useState(null)
-    let [pubKey, setPubKey] = useState(null)
-    let [privKeyName, setPrivKeyName] = useState("privateKey.pem")
-    let [pubKeyName, setPubKeyName] = useState("publicKey.pem")
+    let [identity_file_name, set_identity_file_name] = useState("IdentityFile.bin")
+    let [identity_data, set_identity_data] = useState(null)
+    let [identity_file_url, set_identity_file_url] = useState("");
 
-    let [privKeyURL, setPrivKeyURL] = useState("");
-    let [pubKeyURL, setPubKeyURL] = useState("");
 
     const revokeURLs = () => {
-        if (privKeyURL)
-            URL.revokeObjectURL(privKeyURL)
-        if (pubKeyURL)
-            URL.revokeObjectURL(pubKeyURL)
+        if (identity_file_url)
+            URL.revokeObjectURL(identity_file_url)
     }
 
     useEffect(() => {
-        if (privKey) {
-            setPrivKeyURL(URL.createObjectURL(new Blob([addHeaderFooterToKey("private", privKey)], { type: "application/x-pem-file" })))
+        if (identity_data) {
 
-        }
-        if (pubKey) {
-            setPubKeyURL(URL.createObjectURL(new Blob([addHeaderFooterToKey("public", pubKey)], { type: "application/x-pem-file" })))
+            let identity_protobuf = Identity.fromObject(identity_data)
+            let identity_bytes = identity_protobuf.encode().finish()
+            set_identity_file_url(URL.createObjectURL(new Blob([identity_bytes], { type: "application/octet-stream" })))
         }
         return revokeURLs //as cleanup
-    }, [privKey, pubKey])
+    }, [identity_data])
 
 
     return <Form onSubmit={async (e) => {
         e.preventDefault()
         let profileImageData = undefined;
         async function submit() {
-            let registerRequest = { "username": username, "base64PubKey": pubKey, "profileImage": profileImageData }
+
+            let prekey_bundle = create_new_prekey_bundle(identity_data)
+            let prekey_bundle_protobuf = PreKeyBundle.fromObject(prekey_bundle)
+            let prekey_bundle_base64 = convertArrayBufferToBase64(prekey_bundle_protobuf.encode().finish())
+
+            let registerRequest = { "username": username, "base64PrekeyBundle":prekey_bundle_base64, "profileImage": profileImageData }
 
             await performActionWithAlert(async () => {
                 let user_id = await register(registerRequest)
+                // now put it into indexeddb
+                if (db) {
+                    await storeUserData(db, {...identity_data, "user_id":user_id}) 
+                } else {
+                    throw new  Error("no database object found")
+                }
                 setAxiosCSRF(await getCSRF())
                 setUserCallback(username, user_id)
                 location.pathname = "/"
@@ -58,6 +66,7 @@ function RegisterForm({ setUserCallback }) {
         if (profileImageBlob) {
             let reader = new FileReader();
             reader.onloadend = async (ev) => {
+                
                 profileImageData = { "datab64": reader.result.slice(reader.result.indexOf("base64," + 7)), "mimeType": profileImageBlob.type }
                 await submit()
             }
@@ -73,18 +82,13 @@ function RegisterForm({ setUserCallback }) {
             <FormControl value={username} onChange={(e) => setUsername(e.target.value)} type="text" />
         </FormGroup>
         <Button onClick={async (e) => {
-            let keypair = await generatePrivatePublicKeyPair()
+            let identity_js_object = await create_new_identity()
             revokeURLs()
-            setPrivKey(keypair.privateKey)
-            setPubKey(keypair.publicKey)
-        }} >{privKey ? "Regenerate Public/Private Key pair" : "Generate Public/Private Key pair"}</Button>
-        {privKey && privKeyURL && <FormGroup>
-            <FormLabel htmlFor="privKeyName"><a href={privKeyURL} download={privKeyName} >Save Private Key</a></FormLabel>
-            <FormControl id="privKeyName" value={privKeyName} onChange={(e) => { setPrivKeyName(e.target.value) }} />
-        </FormGroup>}
-        {pubKey && pubKeyURL && <FormGroup>
-            <FormLabel><a htmlFor="pubKeyName" href={pubKeyURL} download={pubKeyName} >Save Public Key</a></FormLabel>
-            <FormControl id="pubKeyName" value={pubKeyName} onChange={(e) => { setPubKeyName(e.target.value) }} />
+            set_identity_data(identity_js_object)
+        }} >{ identity_data ? "Regenerate identity file" : "Generate Identity file"}</Button>
+        { identity_data && identity_file_url && <FormGroup>
+            <FormLabel htmlFor="identityFileName"><a href={identity_file_url} download={identity_file_name} >Save Identity File</a></FormLabel>
+            <FormControl id="identityFileName" value={identity_file_name} onChange={(e) => { set_identity_file_name(e.target.value) }} />
         </FormGroup>}
         <FormGroup>
             <FormLabel htmlFor="profileImage">Profile Image</FormLabel>

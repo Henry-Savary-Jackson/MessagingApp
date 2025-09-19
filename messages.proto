@@ -1,5 +1,5 @@
 syntax =  "proto3";
-
+option java_package = "com.hsj.messagingdemo.dto";
 enum MessageType {
   JOINED= 0;
   CHAT = 1;
@@ -9,28 +9,31 @@ enum MessageType {
 message MessageContents{
   string text =1;
   optional string file_id =2;
+  optional bytes file_iv = 3;
 }
 
 message MessageHeader{
-  MessageType type;
+  MessageType type = 1;
   bytes ratchet_public_key = 2;
   uint32 message_count = 3;
   uint32 prev_count = 4;
-  optional bytes ephemeral_key = 3;
-  optional bytes one_time_prekey = 4;
+  uint32 iv = 5;
+  optional bytes ephemeral_key = 6;
+  optional bytes one_time_prekey = 7;
 }
 
 message ChatMessage {
   string message_id = 1;
   string sender_id = 2;
   string chat_id = 3;
-  MessageHeader message_header = 6;
-  MessageContents message_contents= 6;
-  bytes public_key = 7;
+  MessageHeader message_header = 4;
+  bytes message_contents_encrypted= 5;
+  bytes public_key = 6;
 
 }
 message PreKeyBundle {
-  string id = 1;
+  optional string id = 1;
+  optional string username = 6;
   bytes identity_key = 2;
   bytes signed_prekey = 3;
   bytes prekey_signature = 4; 

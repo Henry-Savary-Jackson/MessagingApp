@@ -27,7 +27,7 @@ public class ChatController {
     MessageService messageService;
 
     @PostMapping("/join")
-    public Chat postMethodName(@RequestBody UUID id) {
+    public Chat postMethodName(@RequestBody String id) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Chat chat = messageService.getChatById(id).orElseThrow();

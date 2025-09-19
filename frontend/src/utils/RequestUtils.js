@@ -76,6 +76,15 @@ export async function getFile(uuid) {
     return await performRequest(async () => (await axios.get(`${api_url}/file/${uuid}`, { withCredentials: true, withXSRFToken: true })).data);
 }
 
+export async function getPrekeyBundle(user_id) {
+    // return await performRequest(async () => (await axios.get(`${api_url}/file/${uuid}`, { withCredentials: true, withXSRFToken: true })).data);
+}
+
+export async function updateOTPs(otps) {
+    // return await performRequest(async () => (await axios.get(`${api_url}/file/${uuid}`, { withCredentials: true, withXSRFToken: true })).data);
+}
+
+
 export async function getUsername(user_id) {
     if (user_id in username_cache) {
         return username_cache[user_id];

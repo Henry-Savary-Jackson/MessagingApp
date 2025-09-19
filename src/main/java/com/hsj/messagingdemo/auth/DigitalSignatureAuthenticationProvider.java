@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
@@ -40,15 +41,14 @@ public class DigitalSignatureAuthenticationProvider implements AuthenticationPro
 
             AuthenticationRequest request = token.getCredentials();
             User user = (User) userDetailsService.loadUserByUsername(request.getUsername());
-            if (!CryptoUtils.verifySignature(user.getBase64PublicKey(), request.getChallenge(),
+            if (!CryptoUtils.verifySignature(user.getPreKeyBundle().getIdentityKey().toByteArray(), request.getChallenge(),
                     request.getChallengeSignature())) {
 
                 throw new SignatureException("Digital signature did not match.");
             }
             // token.setAuthenticated(true);
             return new DigitalSignatureAuthenticationToken(user, request);
-        } catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException | InvalidKeySpecException
-                | IOException e) {
+        } catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException | IOException | CertificateException e) {
             throw new AuthenticationServiceException(e.getMessage());
         }
     }

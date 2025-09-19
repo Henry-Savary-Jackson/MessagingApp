@@ -59,9 +59,11 @@ function ChatPage({ logoutCallback }) {
     let onMessage = async (message) => {
         console.log(message)
         let message_body = JSON.parse(message.body)
+        // add Double ratchet logic
         addMessageUI(message_body)
         addMessageToChatCount(message_body.chatId, message_body.timestamp)
     } // PUT notification symbol on chat
+
     let connect_chat = (chat_id) => { subscribeToChat(chat_id, 0) }
     let disconnect_chat = (chat_id) => { unSubscribe(chat_id) }
 
@@ -84,7 +86,9 @@ function ChatPage({ logoutCallback }) {
 
 
     let createNewChat = async () => { let name = prompt("Enter Name:"); let chat = await createChat(name); addNewChatUI(chat.chatId, chat.ownerId, name); connect_chat(chat.chatId) }
-    let joinChat = async (chat_id) => { let chat = await join(chat_id); addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) }
+    let joinChat = async (chat_id) => { let chat = await join(chat_id);
+        addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) 
+        }
     let leaveChat = async (chat_id) => { await leaveChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
     let deleteChat = async (chat_id) => { await deleteChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
 

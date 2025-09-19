@@ -5,20 +5,20 @@ export function generateChallengeBuffer() {
 }
 
 export async function generateX25519KeyPair() {
-    let keyPair = await crypto.subtle.generateKey("X25519", true, ["sign", "verify"])
+    let keyPair = await crypto.subtle.generateKey("X25519", true, ["sign", "verify", "deriveBits" ,"deriveKey" ])
     return keyPair
 }
 
 export async function extractX25519PublicKey(publicKey) {
-    return await crypto.subtle.importKey("spki", publicKey, "X25519", true, ["sign", "verify"]);
+    return await crypto.subtle.importKey("spki", publicKey, "X25519", true, ["sign", "verify", "deriveBits" ,"deriveKey" ]);
 }
 export async function exportX25519PublicKey(publicKey) {
     return await crypto.subtle.exportKey("spki", publicKey)
 }
 
 export async function extractX25519KeyPair(keyPairMessage) {
-    let publicKey = await crypto.subtle.importKey("spki", keyPairMessage.public_key, "X25519", true, ["sign", "verify", "deriveKey"]);
-    let privateKey = await crypto.subtle.importKey("pkcs8", keyPairMessage.private_key, "X25519", true, ["sign", "verify", "deriveBits"]);
+    let publicKey = await crypto.subtle.importKey("spki", keyPairMessage.public_key, "X25519", true, ["sign", "verify", "deriveBits" ,"deriveKey"]);
+    let privateKey = await crypto.subtle.importKey("pkcs8", keyPairMessage.private_key, "X25519", true, ["sign", "verify", "deriveBits", "deriveKey"]);
     let subleKeyPair= {
         privateKey,
         publicKey,
@@ -27,7 +27,7 @@ export async function extractX25519KeyPair(keyPairMessage) {
 }
 
 
-export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, AD_encrypted, AD_iv, one_time_prekey_bytes=null){
+export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, AD_encrypted, AD_iv, one_time_prekey=null){
     let identityCryptoKeyPair = await extractX25519KeyPair(identity.identity_key)
     let signed_prekey_keypair = await extractX25519KeyPair(identity.signed_prekey)
 
@@ -36,7 +36,6 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
     
     let ephemeralKey = await extractX25519PublicKey(ephemeral_key_bytes)
 
-    let onetime_prekey_public  = one_time_prekey_bytes && await extractX25519PublicKey(one_time_prekey_bytes)
     // find relevant onetime prek private key in identity
 
     let otherPreKeySignature = prekey_bundle.prekey_signature
@@ -44,7 +43,7 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
     await verify_signed_prekey(otherIdentityKey, otherPreKeySignature, prekey_bundle.signed_prekey)
 
     // derive root key
-    let KM = await derive_root_key_recipient(identityCryptoKeyPair, otherIdentityKey, signed_prekey_keypair, ephemeralKey, onetime_prekey_public )
+    let KM = await derive_root_key_recipient(identityCryptoKeyPair, otherIdentityKey, signed_prekey_keypair, ephemeralKey, one_time_prekey )
     
     let SK = await create_shared_key(KM)
 
@@ -54,7 +53,7 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
     let AD_derived =concatenateUIntArray(bytesSenderIdentityPubKey,bytesRecipientIdentityPubKey) 
 
     let SK_key = await crypto.subtle.importKey("raw", SK, {"name":"AES-GCM"} )
-    let AD_decrypted = await crypto.subtle.decrypt({"name":"AES-GCM", AD_iv}, SK_key, data)
+    let AD_decrypted = await crypto.subtle.decrypt({"name":"AES-GCM", AD_iv}, SK_key, AD_encrypted)
 
     // verify the ad byte sequence is correct
     if (AD_decrypted != AD_derived){
@@ -203,9 +202,40 @@ export async function convertKeyToBase64(type, key) {
 }
 
 export function addHeaderFooterToKey(type, base64Key) {
-    return `-----BEGIN ${type.toUpperCase()} KEY-----\n${base64Key}\n-----END ${type.toUpperCase()} KEY-----`
+    const text =type == "public"? "CERTIFICATE": "PRIVATE KEY"
+    return `-----BEGIN ${text}-----\n${base64Key}\n-----END ${text}-----`
 }
 
 export function removeHeaderFooterToKey(rawStr) {
     return rawStr.slice(rawStr.indexOf("\n") + 1, rawStr.lastIndexOf("\n"))
+}
+
+
+export async function create_new_identity(){
+    let identity_key  = generateX25519KeyPair();
+    let signed_prekey = generateX25519KeyPair();
+
+    let current_date = new Date()
+    let expiration = current_date.getTime() + 5*24*60*60*1000 
+
+    let n_otp = 100;
+    let one_time_prekeys  = []
+    for (let i=0 ; i< n_otp; i++){
+        one_time_prekeys.push(generateX25519KeyPair())
+    }
+    return {identity_key, signed_prekey, expiration, one_time_prekeys}
+}
+
+export async function create_new_prekey_bundle(js_identity){
+    let identityKeyPair = js_identity.identity_key
+    let identity_key = await exportX25519PublicKey(js_identity.identity.publicKey)
+    let signed_prekey = await exportX25519PublicKey(js_identity.signed_prekey.publicKey)
+    let prekey_signature = signBytes(identityKeyPair,signed_prekey_bytes )
+    let one_time_prekey = js_identity.one_time_prekeys.map((otp)=> exportX25519PublicKey(otp.publicKey))
+
+    return { identity_key, signed_prekey,prekey_signature , one_time_prekey}
+}
+
+export async function convert_js_identity_to_protobuf_identity(js_identity){
+    return Identity.fromObject({identity})
 }

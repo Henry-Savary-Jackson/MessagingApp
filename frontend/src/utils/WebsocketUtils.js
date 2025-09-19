@@ -2,6 +2,8 @@ import { Client } from '@stomp/stompjs'
 import axios from "axios"
 export var broker_url = "ws://localhost:8080/ws"
 
+import {ChatMessage, MessageContents ,MessageHeader} from "./protocol/messages"
+import {convertArrayBufferToBase64} from './EncodingUtils'
 var client = new Client({ brokerURL: broker_url })
 
 export function activate(onConnect) {
@@ -12,7 +14,13 @@ export function activate(onConnect) {
 
 export function send(chatMessage) {
     client.publish({
-        destination: "/chat", body: JSON.stringify(chatMessage)    })
+        destination: "/chat", body: convertArrayBufferToBase64(chatMessage.encode().finish())   })
+}
+
+export function parseMessage(message_bytes){
+    let chatMessage = ChatMessage.decode(message_bytes);
+    // TODO handle verification errors
+    return chatMessage;
 }
 
 export function subscribeToChat(topic, offset) {
@@ -29,22 +37,4 @@ export function unSubscribe(topic) {
 
 export async function disconnect() {
     await client.deactivate()
-}
-
-export class MessageContents {
-    constructor(text, file_uuid = null) {
-        this.fileId = file_uuid;
-        this.text = text
-        this.type = "MESSAGE"
-    }
-}
-
-export class ChatWSMessage {
-    constructor(chatId, contents, sender = "") {
-        this.messageId = crypto.randomUUID()
-        this.chatId = chatId
-        this.sender = sender
-        this.timestamp = Math.floor(new Date().valueOf() / 1000)
-        this.contents = contents
-    }
 }

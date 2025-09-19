@@ -6,44 +6,53 @@ import { Link, useLocation } from "react-router";
 import { userContext  } from "../../globals";
 import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
 import { performActionWithAlert } from "../../utils/UIUtils";
+import {convertProtoBufIdentityToObject, import_identity, storeUserData, useIndexedDB} from "../../utils/StorageUtils"
 
 function LoginForm({setUserCallback}) {
 
     let location = useLocation()
+    let {db,loading} = useIndexedDB()
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
 
     return <Form onSubmit={async (e) => {
         e.preventDefault()
 
-        let privKeyFile = file ? file : null
-        if (!privKeyFile) {
+        let identityFile = file ? file : null
+        if (!identityFile) {
             alert("Please give the private key.")
             return;
         }
         let reader = new FileReader()
         reader.onloadend = async (event) => {
-            let privateKeyFileRawStr = reader.result
-            let privateKeyBase64 = removeHeaderFooterToKey(privateKeyFileRawStr)
-            let privKeyBuffer = convertBase64StringToArrayBuffer(privateKeyBase64)
+            let identity_file_raw_bytes = reader.result
+            let identity_protobuf_obj = await import_identity(identity_file_raw_bytes)
+            let identity_js_object = await convertProtoBufIdentityToObject(identity_protobuf_obj)
 
-            const authenticationRequest = await signChallenge(privKeyBuffer)
+            const authenticationRequest = await signChallenge(identity_js_object.identity)
             authenticationRequest.username = username
             await performActionWithAlert(async () => {
                 let user_id = await login(authenticationRequest)
+                if (db){
+                    await storeUserData(db,  identity_js_object)
+
+                }else{
+                    throw new Error("No db initialized") 
+                }
+                // Great, store user_id into idb
                 setAxiosCSRF(await getCSRF())
                 setUserCallback(username, user_id)
                 location.pathname = "/"
             })
         }
-        reader.readAsText(privKeyFile)
+        reader.readAsArrayBuffer(identityFile)
     }}>
         <FormGroup>
             <FormLabel>Username</FormLabel>
             <FormControl value={username} onChange={(e) => setUsername(e.target.value)} type="text" />
         </FormGroup>
         <FormGroup>
-            <FormLabel>Private Key</FormLabel>
+            <FormLabel>Identity File</FormLabel>
             <FormControl type="file" onChange={(e) => setFile(e.target.files[0])} />
         </FormGroup>
         <Button type="submit">Login</Button>

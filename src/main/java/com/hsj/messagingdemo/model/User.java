@@ -1,5 +1,6 @@
 package com.hsj.messagingdemo.model;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +35,7 @@ public class User implements UserDetails {
     @Indexed(unique = true)
     String username;
 
-    String base64PublicKey;
+    PreKeyBundle preKeyBundle;
 
     ProfileImage profilePicture;
 
@@ -43,7 +45,7 @@ public class User implements UserDetails {
     }
     @Override
     public String getPassword() {
-        return base64PublicKey; 
+        return Arrays.toString(preKeyBundle.getIdentityKey().toByteArray()); 
     }
 
 }
