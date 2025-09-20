@@ -29,6 +29,7 @@ message ChatMessage {
   MessageHeader message_header = 4;
   bytes message_contents_encrypted= 5;
   bytes public_key = 6;
+  uint64 timestamp = 7;
 
 }
 message PreKeyBundle {

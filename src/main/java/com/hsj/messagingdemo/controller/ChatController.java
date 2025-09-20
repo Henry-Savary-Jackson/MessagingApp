@@ -7,6 +7,7 @@ import com.hsj.messagingdemo.model.Chat;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.ChatRepo;
 import com.hsj.messagingdemo.service.MessageService;
+import com.hsj.messagingdemo.service.UserService;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,16 +27,8 @@ public class ChatController {
     @Autowired
     MessageService messageService;
 
-    @PostMapping("/join")
-    public Chat postMethodName(@RequestBody String id) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        Chat chat = messageService.getChatById(id).orElseThrow();
-
-        messageService.addUserToChat(chat, user);
-        return chat;
-    }
-
+    @Autowired
+    UserService userService;
 
     @PostMapping("/delete")
     public String delete(@RequestBody UUID id) throws Exception {
@@ -48,28 +41,5 @@ public class ChatController {
 
         messageService.deleteChat(chat);
         return "Success";
-    }
-
-    @PostMapping("/leave")
-    public String leaveChat(@RequestBody UUID id) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        Chat chat = messageService.getChatById(id).orElseThrow();
-
-        messageService.removeUserFromChat(chat, user);
-        
-        return "Success";
-    }
-
-    @GetMapping("/list")
-    public List<Chat> getChats() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return messageService.getChatByUserId(user.getId());
-    }
-
-    @PostMapping("/create")
-    public Chat postMethodName(@RequestBody String name) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return messageService.createChat(user, name);
     }
 }

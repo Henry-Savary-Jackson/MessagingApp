@@ -1,9 +1,24 @@
 package com.hsj.messagingdemo.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.GetExchange;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 
-import com.hsj.messagingdemo.dto.AuthenticationRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.dto.UserChangeDTO;
 import com.hsj.messagingdemo.model.ProfileImage;
@@ -13,24 +28,6 @@ import com.hsj.messagingdemo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.RememberMeAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/user")
@@ -71,6 +68,13 @@ public class UserController {
     public String userProfile(@PathVariable String id) {
         return userService.getUserById(id).getUsername();
     }
+
+    @GetMapping("/prekeybundle/{id}")
+    public String fetchPrekeyBundle(@RequestParam String user_id) {
+        User user = userService.getUserById(user_id);
+        return Base64.getEncoder().encodeToString(user.getPreKeyBundle().toByteArray()); 
+    }
+    
 
 
 }

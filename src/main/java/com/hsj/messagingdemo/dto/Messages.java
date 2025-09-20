@@ -1963,6 +1963,12 @@ public final class Messages {
      * @return The publicKey.
      */
     com.google.protobuf.ByteString getPublicKey();
+
+    /**
+     * <code>uint64 timestamp = 7;</code>
+     * @return The timestamp.
+     */
+    long getTimestamp();
   }
   /**
    * Protobuf type {@code ChatMessage}
@@ -2172,6 +2178,17 @@ public final class Messages {
       return publicKey_;
     }
 
+    public static final int TIMESTAMP_FIELD_NUMBER = 7;
+    private long timestamp_ = 0L;
+    /**
+     * <code>uint64 timestamp = 7;</code>
+     * @return The timestamp.
+     */
+    @java.lang.Override
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2204,6 +2221,9 @@ public final class Messages {
       if (!publicKey_.isEmpty()) {
         output.writeBytes(6, publicKey_);
       }
+      if (timestamp_ != 0L) {
+        output.writeUInt64(7, timestamp_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2233,6 +2253,10 @@ public final class Messages {
       if (!publicKey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(6, publicKey_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(7, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2264,6 +2288,8 @@ public final class Messages {
           .equals(other.getMessageContentsEncrypted())) return false;
       if (!getPublicKey()
           .equals(other.getPublicKey())) return false;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -2289,6 +2315,9 @@ public final class Messages {
       hash = (53 * hash) + getMessageContentsEncrypted().hashCode();
       hash = (37 * hash) + PUBLIC_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getPublicKey().hashCode();
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2436,6 +2465,7 @@ public final class Messages {
         }
         messageContentsEncrypted_ = com.google.protobuf.ByteString.EMPTY;
         publicKey_ = com.google.protobuf.ByteString.EMPTY;
+        timestamp_ = 0L;
         return this;
       }
 
@@ -2491,6 +2521,9 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000020) != 0)) {
           result.publicKey_ = publicKey_;
         }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
         result.bitField0_ |= to_bitField0_;
       }
 
@@ -2529,6 +2562,9 @@ public final class Messages {
         }
         if (!other.getPublicKey().isEmpty()) {
           setPublicKey(other.getPublicKey());
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -2588,6 +2624,11 @@ public final class Messages {
                 bitField0_ |= 0x00000020;
                 break;
               } // case 50
+              case 56: {
+                timestamp_ = input.readUInt64();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 56
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -3002,6 +3043,38 @@ public final class Messages {
       public Builder clearPublicKey() {
         bitField0_ = (bitField0_ & ~0x00000020);
         publicKey_ = getDefaultInstance().getPublicKey();
+        onChanged();
+        return this;
+      }
+
+      private long timestamp_ ;
+      /**
+       * <code>uint64 timestamp = 7;</code>
+       * @return The timestamp.
+       */
+      @java.lang.Override
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>uint64 timestamp = 7;</code>
+       * @param value The timestamp to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimestamp(long value) {
+
+        timestamp_ = value;
+        bitField0_ |= 0x00000040;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 timestamp = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTimestamp() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        timestamp_ = 0L;
         onChanged();
         return this;
       }
@@ -6085,23 +6158,24 @@ public final class Messages {
       "ge_count\030\003 \001(\r\022\022\n\nprev_count\030\004 \001(\r\022\n\n\002iv" +
       "\030\005 \001(\r\022\032\n\rephemeral_key\030\006 \001(\014H\000\210\001\001\022\034\n\017on" +
       "e_time_prekey\030\007 \001(\014H\001\210\001\001B\020\n\016_ephemeral_k" +
-      "eyB\022\n\020_one_time_prekey\"\245\001\n\013ChatMessage\022\022" +
+      "eyB\022\n\020_one_time_prekey\"\270\001\n\013ChatMessage\022\022" +
       "\n\nmessage_id\030\001 \001(\t\022\021\n\tsender_id\030\002 \001(\t\022\017\n" +
       "\007chat_id\030\003 \001(\t\022&\n\016message_header\030\004 \001(\0132\016" +
       ".MessageHeader\022\"\n\032message_contents_encry" +
-      "pted\030\005 \001(\014\022\022\n\npublic_key\030\006 \001(\014\"\252\001\n\014PreKe" +
-      "yBundle\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\025\n\010username\030\006 \001" +
-      "(\tH\001\210\001\001\022\024\n\014identity_key\030\002 \001(\014\022\025\n\rsigned_" +
-      "prekey\030\003 \001(\014\022\030\n\020prekey_signature\030\004 \001(\014\022\027" +
-      "\n\017one_time_prekey\030\005 \003(\014B\005\n\003_idB\013\n\t_usern" +
-      "ame\"2\n\007KeyPair\022\022\n\npublic_key\030\001 \001(\014\022\023\n\013pr" +
-      "ivate_key\030\002 \001(\014\"\241\001\n\010Identity\022\017\n\007user_id\030" +
-      "\001 \001(\t\022\036\n\014identity_key\030\002 \001(\0132\010.KeyPair\022\037\n" +
-      "\rsigned_prekey\030\003 \001(\0132\010.KeyPair\022 \n\030signed" +
-      "_prekey_expiration\030\004 \001(\004\022!\n\017one_time_pre" +
-      "key\030\005 \003(\0132\010.KeyPair*-\n\013MessageType\022\n\n\006JO" +
-      "INED\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002B\033\n\031com.hsj.me" +
-      "ssagingdemo.dtob\006proto3"
+      "pted\030\005 \001(\014\022\022\n\npublic_key\030\006 \001(\014\022\021\n\ttimest" +
+      "amp\030\007 \001(\004\"\252\001\n\014PreKeyBundle\022\017\n\002id\030\001 \001(\tH\000" +
+      "\210\001\001\022\025\n\010username\030\006 \001(\tH\001\210\001\001\022\024\n\014identity_k" +
+      "ey\030\002 \001(\014\022\025\n\rsigned_prekey\030\003 \001(\014\022\030\n\020preke" +
+      "y_signature\030\004 \001(\014\022\027\n\017one_time_prekey\030\005 \003" +
+      "(\014B\005\n\003_idB\013\n\t_username\"2\n\007KeyPair\022\022\n\npub" +
+      "lic_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\241\001\n\010I" +
+      "dentity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_key" +
+      "\030\002 \001(\0132\010.KeyPair\022\037\n\rsigned_prekey\030\003 \001(\0132" +
+      "\010.KeyPair\022 \n\030signed_prekey_expiration\030\004 " +
+      "\001(\004\022!\n\017one_time_prekey\030\005 \003(\0132\010.KeyPair*-" +
+      "\n\013MessageType\022\n\n\006JOINED\020\000\022\010\n\004CHAT\020\001\022\010\n\004L" +
+      "EFT\020\002B\033\n\031com.hsj.messagingdemo.dtob\006prot" +
+      "o3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -6124,7 +6198,7 @@ public final class Messages {
     internal_static_ChatMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ChatMessage_descriptor,
-        new java.lang.String[] { "MessageId", "SenderId", "ChatId", "MessageHeader", "MessageContentsEncrypted", "PublicKey", });
+        new java.lang.String[] { "MessageId", "SenderId", "ChatId", "MessageHeader", "MessageContentsEncrypted", "PublicKey", "Timestamp", });
     internal_static_PreKeyBundle_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_PreKeyBundle_fieldAccessorTable = new

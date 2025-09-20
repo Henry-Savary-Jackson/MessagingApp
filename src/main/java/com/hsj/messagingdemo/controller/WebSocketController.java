@@ -20,7 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
-import com.hsj.messagingdemo.dto.ChatMessage;
+import com.hsj.messagingdemo.dto.Messages.ChatMessage;
 import com.hsj.messagingdemo.model.Chat;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
@@ -38,21 +38,14 @@ public class WebSocketController {
     @Autowired
     KafkaListenerCreator kafkaListenerCreator;
 
-    @MessageMapping("/chat")
-    public void sendMessageMap(@Payload ChatMessage message, Principal principal) throws Exception {
+    @MessageMapping("/send/{user_id}")
+    public void sendMessageMap(@DestinationVariable String user_id,@Payload ChatMessage message, Principal principal) throws Exception {
         User user = (User) ((Authentication) principal).getPrincipal();
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
-        message.setSender(user.getId());
-
-        Chat chat = messageService.getChatById(UUID.fromString(message.getChatId())).orElseThrow();
-        if (!chat.getUsers().contains(user.getId())) {
-            throw new Exception("User not in chat.");
-        }
-        // verify joining chats
-        message.setTimestamp((int) LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
-        kafkaTemplate.send(new ProducerRecord<String, ChatMessage>(message.getChatId(), message));
+        ChatMessage newMessage = message.toBuilder().setTimestamp((long) LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)).build();
+        kafkaTemplate.send(new ProducerRecord<String, ChatMessage>(user_id, newMessage));
     }
 
     @SubscribeMapping("/sub/{id}")
