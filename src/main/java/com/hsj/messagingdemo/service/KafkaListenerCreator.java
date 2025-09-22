@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
+import org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerEndpoint;
@@ -20,7 +21,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.stereotype.Service;
 
-import com.hsj.messagingdemo.dto.ChatMessage;
+import com.hsj.messagingdemo.dto.Messages.ChatMessage;
 
 @Service
 public class KafkaListenerCreator {
@@ -34,10 +35,10 @@ public class KafkaListenerCreator {
     @Autowired
     private KafkaListenerContainerFactory kafkaListenerContainerFactory;
 
-    private KafkaListenerEndpoint createKafkaListenerEndpoint(UUID chatUuid, String userId, String username, String sessionId,
+    private KafkaListenerEndpoint createKafkaListenerEndpoint( String userId, String username, String sessionId,
             int offset) {
         MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = createDefaultMethodKafkaListenerEndpoint(
-                chatUuid, userId, sessionId, offset);
+                 userId, sessionId, offset);
         kafkaListenerEndpoint.setBean(new KafkaEventListener(username, sessionId, template));
 
         try {
@@ -48,16 +49,16 @@ public class KafkaListenerCreator {
         return kafkaListenerEndpoint;
     }
 
-    private MethodKafkaListenerEndpoint<String, ChatMessage> createDefaultMethodKafkaListenerEndpoint(UUID chatUuid,
+    private MethodKafkaListenerEndpoint<String, ChatMessage> createDefaultMethodKafkaListenerEndpoint(
             String userId,String sessionId, int offset) {
 
         MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = new MethodKafkaListenerEndpoint<>();
-        String listenerId = generateListenerId(chatUuid, userId, sessionId);
+        String listenerId = generateListenerId( userId, sessionId);
         kafkaListenerEndpoint.setId(listenerId);
         kafkaListenerEndpoint.setGroupId(listenerId);
         kafkaListenerEndpoint.setAutoStartup(true);
         // ONLY WORKS IF ONE PARTITION PER TOPIC, THINK CAREFULLY ABOUT THIS
-        TopicPartitionOffset partionOffset = new TopicPartitionOffset(chatUuid.toString(), 0);
+        TopicPartitionOffset partionOffset = new TopicPartitionOffset(userId, 0);
         partionOffset.setOffset((long) offset);
         kafkaListenerEndpoint.setTopicPartitions(partionOffset);
 
@@ -65,12 +66,12 @@ public class KafkaListenerCreator {
         return kafkaListenerEndpoint;
     }
 
-    public static String generateListenerId(UUID chaUuid, String userId, String sessionId) {
-        return "%s : %s : %s".formatted(chaUuid.toString(), userId, sessionId);
+    public static String generateListenerId( String userId, String sessionId) {
+        return "%s : %s".formatted(userId, sessionId);
     }
 
-    public KafkaListenerEndpoint createAndRegisterListener(UUID chatUuid, String userId, String username, String sessionId, int offset) {
-        KafkaListenerEndpoint listener = createKafkaListenerEndpoint(chatUuid, userId, username, sessionId,offset);
+    public KafkaListenerEndpoint createAndRegisterListener( String userId, String username, String sessionId, int offset) {
+        KafkaListenerEndpoint listener = createKafkaListenerEndpoint( userId, username, sessionId,offset);
         kafkaListenerEndpointRegistry.registerListenerContainer(listener, kafkaListenerContainerFactory, true);
         return listener;
     }

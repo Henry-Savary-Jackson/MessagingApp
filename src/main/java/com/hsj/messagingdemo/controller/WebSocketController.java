@@ -21,7 +21,6 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 import com.hsj.messagingdemo.dto.Messages.ChatMessage;
-import com.hsj.messagingdemo.model.Chat;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
 import com.hsj.messagingdemo.service.MessageService;
@@ -48,20 +47,15 @@ public class WebSocketController {
         kafkaTemplate.send(new ProducerRecord<String, ChatMessage>(user_id, newMessage));
     }
 
-    @SubscribeMapping("/sub/{id}")
-    private void onSubscribe(@DestinationVariable String id,SimpMessageHeaderAccessor headerAccessor,  Principal principal, @Header("offset") int offset)
+    @SubscribeMapping("/sub")
+    private void onSubscribe(SimpMessageHeaderAccessor headerAccessor,  Principal principal, @Header("offset") int offset)
             throws Exception {
         User user = (User) ((Authentication) principal).getPrincipal();
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
-        UUID chatUuid = UUID.fromString(id);
-        Chat chat = messageService.getChatById(chatUuid).orElseThrow();
-        if (!chat.getUsers().contains(user.getId())) {
-            throw new Exception("User not in chat.");
-        }
 
-        KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(chatUuid,
+        KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(
                 user.getId(), user.getUsername(),headerAccessor.getSessionId(), offset);
 
         messageService.linkUserToKafkaEventListener(user.getId(), endpoint.getId());
@@ -99,8 +93,7 @@ public class WebSocketController {
         String destination = headers.getDestination();
         if (destination == null)
             return;
-        String chatId = destination.substring(destination.lastIndexOf("/") + 1);
-        String listenerId = KafkaListenerCreator.generateListenerId(UUID.fromString(chatId), user.getId(), headers.getSessionId());
+        String listenerId = KafkaListenerCreator.generateListenerId(user.getId(), headers.getSessionId());
 
         messageService.unLinkUserToKafkaEventListener(user.getId(), listenerId);
         kafkaListenerCreator.stopListener(listenerId);

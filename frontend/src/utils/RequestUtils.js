@@ -1,9 +1,11 @@
 import axios from 'axios'
 
+import { PreKeyBundle } from "../utils/protocol/messages"
 
 const api_url = "http://localhost:8080"
 const username_cache = new Map()
 const profile_cache = new Map()
+const protobuf_mimetype="application/x-protobuf"
 
 export function setAxiosCSRF(csrf_data) {
     axios.defaults.headers.common[csrf_data.headerName] = csrf_data.token
@@ -49,17 +51,17 @@ export async function register(data) {
 
 
 export async function createChat(name) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, name, {  withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/create`, name, { withCredentials: true, withXSRFToken: true })).data);
 }
 
 export async function leaveChatRequest(chat_id) {
-    return await performRequest(async () => (await axios.post(`${api_url}/chat/leave`, chat_id, {  withCredentials: true, withXSRFToken: true })).data);
+    return await performRequest(async () => (await axios.post(`${api_url}/chat/leave`, chat_id, { withCredentials: true, withXSRFToken: true })).data);
 }
 export async function deleteChatRequest(chat_id) {
     return await performRequest(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { withCredentials: true, withXSRFToken: true })).data);
 }
 
-export async function getUserProfile(user_id){
+export async function getUserProfile(user_id) {
     return await performRequest(async () => (await axios.get(`${api_url}/user/profile/${user_id}`, { withCredentials: true, withXSRFToken: true })).data);
 }
 export async function putUserProfile(data) {
@@ -76,8 +78,16 @@ export async function getFile(uuid) {
     return await performRequest(async () => (await axios.get(`${api_url}/file/${uuid}`, { withCredentials: true, withXSRFToken: true })).data);
 }
 
-export async function getPrekeyBundle(user_id) {
-    // return await performRequest(async () => (await axios.get(`${api_url}/file/${uuid}`, { withCredentials: true, withXSRFToken: true })).data);
+export async function getPrekeyBundle(username) {
+    return await performRequest(async () => {
+        let rawData = (await axios.get(`${api_url}/user/prekeybundle/${username}`, { withCredentials: true, withXSRFToken: true })).data
+        try {
+            return PreKeyBundle.decode(rawData);
+        } catch (e) {
+            throw e;
+        }
+    });
+
 }
 
 export async function updateOTPs(otps) {

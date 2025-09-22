@@ -34,6 +34,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.hsj.messagingdemo.controller.UserController;
 import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
@@ -106,6 +108,9 @@ public class UserService {
             return user;
         } catch (DuplicateKeyException mwe) {
             throw new AuthenticationServiceException("User %s already exist".formatted(request.getUsername()));
+        } catch (InvalidProtocolBufferException ipbe){
+
+            throw new AuthenticationServiceException("Invalid prekey bundle");
         }
 
     }

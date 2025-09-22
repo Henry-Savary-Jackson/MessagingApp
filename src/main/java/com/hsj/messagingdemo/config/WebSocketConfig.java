@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.lang.NonNull;
@@ -26,6 +27,11 @@ import org.springframework.security.messaging.access.intercept.MessageMatcherDel
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
+
+    @Bean
+    ProtobufHttpMessageConverter protobufHttpMessageConverter(){
+        return new ProtobufHttpMessageConverter();
+    }
 
     @Bean
     AuthorizationManager<Message<?>> authorizationManager(

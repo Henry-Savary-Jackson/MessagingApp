@@ -1,6 +1,6 @@
 import {openDB}  from "idb"
 import { useEffect, useState } from "react"
-import { generateX25519KeyPair,extractX25519KeyPair, exportX25519KeyPair} from "./CryptoUtils"
+import { generate25519KeyExchangePair,extractC25519KeyExchangePair, exportX25519KeyPair} from "./CryptoUtils"
 import {Identity} from "./protocol/messages"
 
 
@@ -18,8 +18,10 @@ export  function useIndexedDB(){
     let [loading, setLoading] = useState(true)
     
     useEffect(()=>{
+        let db_obj = null
         const open = async () =>{ 
-        let db_obj  = await openDB(db_string,1, { upgrade(db_obj, oldVersion, newVersion, transaction) {
+        
+            db_obj  = await openDB(db_string,1, { upgrade(db_obj, oldVersion, newVersion, transaction) {
             const identity_store = db_obj.createObjectStore(identity_store_name, {keyPath:"user_id"});
             const chat_store = db_obj.createObjectStore(chat_store_name, {keyPath:"chat_id"});
             const otp_store = db_obj.createObjectStore(otp_store_name, {keyPath:"public_key"} );
@@ -60,18 +62,18 @@ export function useIdentityInformation(indexed_db, user_id){
 }
 
 export async function storeUserData(indexed_db, identity){
-    await indexed_db.put(identity_store, identity, identity.user_id )
+    await indexed_db.put(identity_store_name, identity, identity.user_id )
 }
 
 
 export async function get_user_data(indexed_db,user_id){
-    return await indexed_db.get(identity_store,user_id )
+    return await indexed_db.get(identity_store_name,user_id )
 }
 
 export async function refill_otp(indexed_db){
     let numOTP = getLengthOtp(indexed_db)
     for (let index = numOTP; index < max_otp; index++) {
-        let keyPair = await generateX25519KeyPair()
+        let keyPair = await generate25519KeyExchangePair()
         let keyPairObject = await exportX25519KeyPair(keyPair)
         indexed_db.put(otp_store_name,keyPairObject, keyPairObject.public_key)
     }
@@ -110,9 +112,9 @@ export async function convertProtoBufIdentityToObject(identity_protobuf){
     let expiration = identity_protobuf.signed_prekey_expiration
     let one_time_prekeys = identity_protobuf.one_time_prekeys
 
-    let identity_object = await extractX25519KeyPair(identity)
-    let signed_prekey_object = await  extractX25519KeyPair(signed_prekey)
-    let one_time_prekey_objects = one_time_prekeys.map((obj)=>extractX25519KeyPair(obj))
+    let identity_object = await extractC25519KeyExchangePair(identity)
+    let signed_prekey_object = await  extractC25519KeyExchangePair(signed_prekey)
+    let one_time_prekey_objects = one_time_prekeys.map((obj)=>extractC25519KeyExchangePair(obj))
 
     return {identity_object,signed_prekey_object, expiration,one_time_prekey_objects}
 }

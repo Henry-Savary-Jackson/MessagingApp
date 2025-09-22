@@ -14,22 +14,22 @@ message MessageContents{
 
 message MessageHeader{
   MessageType type = 1;
-  bytes ratchet_public_key = 2;
+  optional bytes ratchet_public_key = 2;
   uint32 message_count = 3;
   uint32 prev_count = 4;
-  uint32 iv = 5;
-  optional bytes ephemeral_key = 6;
-  optional bytes one_time_prekey = 7;
+  bytes message_iv = 5;
+  optional string sender_id = 6;
+  optional bytes ephemeral_key = 7;
+  optional bytes one_time_prekey = 8;
+
 }
 
 message ChatMessage {
-  string message_id = 1;
-  string sender_id = 2;
-  string chat_id = 3;
-  MessageHeader message_header = 4;
-  bytes message_contents_encrypted= 5;
-  bytes public_key = 6;
-  uint64 timestamp = 7;
+  string chat_id = 2;
+  MessageHeader message_header = 3;
+  bytes message_contents_encrypted= 4;
+  uint64 timestamp = 5;
+  optional bytes header_iv = 6;
 
 }
 message PreKeyBundle {

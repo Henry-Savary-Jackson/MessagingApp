@@ -1,7 +1,7 @@
 import { useEffect, useContext, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Button, Form, FormLabel, FormControl, FormGroup } from "react-bootstrap";
-import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair, create_new_identity, create_new_prekey_bundle } from "../../utils/CryptoUtils"
+import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair, convert_js_identity_to_protobuf_identity, create_new_identity, create_new_prekey_bundle, signBytes, signPreKey } from "../../utils/CryptoUtils"
 import { getCSRF, register, setAxiosCSRF } from "../../utils/RequestUtils"
 import { useLocation } from 'react-router'
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../../utils/EncodingUtils";
@@ -9,6 +9,7 @@ import { userContext } from "../../globals";
 import { performActionWithAlert } from "../../utils/UIUtils";
 import { storeUserData, useIndexedDB } from "../../utils/StorageUtils";
 import { Identity,PreKeyBundle } from "../../utils/protocol/messages";
+import messages from "../../utils/protocol/messages";
 
 function RegisterForm({ setUserCallback }) {
 
@@ -29,12 +30,13 @@ function RegisterForm({ setUserCallback }) {
     }
 
     useEffect(() => {
+        (async ()=>{
         if (identity_data) {
-
-            let identity_protobuf = Identity.fromObject(identity_data)
-            let identity_bytes = identity_protobuf.encode().finish()
+            let ms = messages
+            let identity_protobuf =await convert_js_identity_to_protobuf_identity(identity_data)
+            let identity_bytes = Identity.encode(identity_protobuf).finish()
             set_identity_file_url(URL.createObjectURL(new Blob([identity_bytes], { type: "application/octet-stream" })))
-        }
+        } }) ()
         return revokeURLs //as cleanup
     }, [identity_data])
 
@@ -44,9 +46,9 @@ function RegisterForm({ setUserCallback }) {
         let profileImageData = undefined;
         async function submit() {
 
-            let prekey_bundle = create_new_prekey_bundle(identity_data)
+            let prekey_bundle = await create_new_prekey_bundle(identity_data)
             let prekey_bundle_protobuf = PreKeyBundle.fromObject(prekey_bundle)
-            let prekey_bundle_base64 = convertArrayBufferToBase64(prekey_bundle_protobuf.encode().finish())
+            let prekey_bundle_base64 = convertArrayBufferToBase64(PreKeyBundle.encode(prekey_bundle_protobuf).finish())
 
             let registerRequest = { "username": username, "base64PrekeyBundle":prekey_bundle_base64, "profileImage": profileImageData }
 

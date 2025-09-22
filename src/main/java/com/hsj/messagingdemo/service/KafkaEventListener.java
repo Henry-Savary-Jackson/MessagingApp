@@ -12,7 +12,7 @@ import org.springframework.messaging.simp.user.UserDestinationMessageHandler;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.web.socket.messaging.DefaultSimpUserRegistry;
 
-import com.hsj.messagingdemo.dto.ChatMessage;
+import com.hsj.messagingdemo.dto.Messages.ChatMessage;
 
 public class KafkaEventListener {
 
@@ -32,7 +32,6 @@ public class KafkaEventListener {
         SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
         headerAccessor.setSessionId(sessionId);
         headerAccessor.setLeaveMutable(true);
-        // do you still need to send to user
         template.convertAndSendToUser(username,"/messages",data.value(), headerAccessor.getMessageHeaders()); 
     }
     

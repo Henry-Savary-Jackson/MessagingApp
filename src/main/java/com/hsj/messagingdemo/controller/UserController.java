@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.dto.UserChangeDTO;
+import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.UserService;
@@ -69,10 +70,10 @@ public class UserController {
         return userService.getUserById(id).getUsername();
     }
 
-    @GetMapping("/prekeybundle/{id}")
-    public String fetchPrekeyBundle(@RequestParam String user_id) {
-        User user = userService.getUserById(user_id);
-        return Base64.getEncoder().encodeToString(user.getPreKeyBundle().toByteArray()); 
+    @GetMapping(value="/prekeybundle/{username}",produces="application/x-protobuf")
+    public PreKeyBundle fetchPrekeyBundle(@RequestParam String username) {
+        User user = userService.getUserByUsername(username).orElseThrow();
+        return user.getPreKeyBundle(); 
     }
     
 

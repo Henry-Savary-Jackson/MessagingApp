@@ -2,11 +2,15 @@ import { useContext, useEffect, useReducer, useRef, useState } from 'react'
 import { Button, Col, Container, ListGroup, ListGroupItem, Row, Stack } from 'react-bootstrap'
 import { Link } from 'react-router'
 import { userContext, userIdContext } from '../../globals'
-import { createChat, deleteChatRequest, getChats, getCSRF, join, leaveChatRequest, logout, setAxiosCSRF } from '../../utils/RequestUtils'
+import { createChat, deleteChatRequest, getChats, getCSRF, getPrekeyBundle, join, leaveChatRequest, logout, setAxiosCSRF } from '../../utils/RequestUtils'
 import { performActionWithAlert } from '../../utils/UIUtils'
 import ChatWindow from "./../chat/ChatWindow"
 import ChatListBar from "./../chat/ChatListBar"
-import { ChatWSMessage, MessageContents, activate, broker_url, disconnect, listenForMessages, send, subscribe, subscribeToChat, unSubscribe } from '../../utils/WebsocketUtils'
+import {  activate, broker_url, disconnect, handle_X3DH_message, listenForMessages, send, subscribe, unSubscribe } from '../../utils/WebsocketUtils'
+import {ChatMessage, MessageType,MessageHeader, MessageContents} from '../../utils/protocol/messages' 
+import { exportX25519PublicKey, X3DH_send } from '../../utils/CryptoUtils'
+import { useIdentityInformation, useIndexedDB } from '../../utils/StorageUtils'
+import {v4} from 'uuid'
 
 
 function ChatPage({ logoutCallback }) {
@@ -56,22 +60,34 @@ function ChatPage({ logoutCallback }) {
     let setNewChats = (newChats) => { chatsReducer({ "action": "init", "data": newChats }) }
     let delChatUI = (chat_id) => { chatsReducer({ "action": "del", "chatId": chat_id }) }
 
+    let [user_id, set_user_id ] = useContext(userIdContext)
+    let [db, loading] = useIndexedDB() 
+
+
+    let {identity, signed_prekey, expiration, otps } = useIdentityInformation(db,user_id)
+
     let onMessage = async (message) => {
         console.log(message)
-        let message_body = JSON.parse(message.body)
+        let chat_message = ChatMessage.decode(message.binaryBody)
+        if (chat_message.message_header.type == MessageType.JOINED){
+            // X3DH message
+            let SK = handle_X3DH_message(identity, chat_message)
+            console.log(SK)
+        }
+
         // add Double ratchet logic
-        addMessageUI(message_body)
-        addMessageToChatCount(message_body.chatId, message_body.timestamp)
+        // addMessageUI(message_body)
+        // addMessageToChatCount(message_body.chatId, message_body.timestamp)
     } // PUT notification symbol on chat
 
-    let connect_chat = (chat_id) => { subscribeToChat(chat_id, 0) }
+    // let connect_chat = (chat_id) => { subscribeToChat(chat_id, 0) }
     let disconnect_chat = (chat_id) => { unSubscribe(chat_id) }
 
 
     useEffect(() => {
         async function getChatsConnect() {
             let newChats = await getChats()
-            activate((frame) => { setNewChats(newChats); newChats.forEach((chat) => connect_chat(chat.chatId)); listenForMessages(onMessage); })
+            // activate((frame) => { setNewChats(newChats); newChats.forEach((chat) => connect_chat(chat.chatId)); listenForMessages(onMessage); })
         }
         getChatsConnect()
         return () => { disconnect() }
@@ -79,16 +95,33 @@ function ChatPage({ logoutCallback }) {
 
 
     let sendMessage = async (contents, file_id=undefined) => {
-        let newMessage = new ChatWSMessage(currentChat.chatId, new MessageContents(contents, file_id))
         // addMessageUI(newMessage)
-        send(newMessage)
     }
 
 
-    let createNewChat = async () => { let name = prompt("Enter Name:"); let chat = await createChat(name); addNewChatUI(chat.chatId, chat.ownerId, name); connect_chat(chat.chatId) }
-    let joinChat = async (chat_id) => { let chat = await join(chat_id);
-        addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) 
-        }
+    let createNewChat = async () => { 
+        if (!identity || !signed_prekey){
+            alert("No identity loaded");
+            return
+        } 
+        let name = prompt("Enter Username:"); 
+        let prekey_bundle =await getPrekeyBundle(name)
+        let {SK, AD,AD_encrypted, AD_IV, ephemeralKeyPair, one_time_prekey} = await X3DH_send({identity:identity, signed_prekey:signed_prekey}, prekey_bundle)
+        let ephemeral_key_bytes = await exportX25519PublicKey(ephemeralKeyPair.publicKey)
+        let messageHeader = MessageHeader.fromObject({type:"JOINED", message_iv:AD_IV, message_count:0, prev_count:0, ephemeral_key:ephemeral_key_bytes, one_time_prekey:one_time_prekey })
+        let chat_id = v4() // generate chat_id
+        let chat_message = ChatMessage.fromObject({chat_id:chat_id, message_header:messageHeader, message_contents_encrypted:AD_encrypted, timestamp:new Date().getTime() })
+
+        send(chat_message)
+        console.log("shared root key")
+        console.log(SK)
+        console.log(`AD:${AD}`)
+        // addNewChatUI(chat_id, user_id, name)
+        // ChatMessage.fromObject({ })
+    }
+    // let joinChat = async (chat_id) => { let chat = await join(chat_id);
+    //     addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) 
+    //     }
     let leaveChat = async (chat_id) => { await leaveChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
     let deleteChat = async (chat_id) => { await deleteChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
 
@@ -102,7 +135,7 @@ function ChatPage({ logoutCallback }) {
         <Container>
             <Row fluid={"true"} >
                 <Col sm={4} >
-                    <ChatListBar chats={chats} onChatDelete={deleteChat} onChatLeave={leaveChat} onChatClick={setCurrentChat} onChatJoin={joinChat} onChatCreate={createNewChat} />
+                    <ChatListBar chats={chats} onChatDelete={deleteChat} onChatLeave={leaveChat} onChatClick={setCurrentChat} onChatJoin={(e)=>{}} onChatCreate={createNewChat} />
                 </Col>
                 <Col sm={8}>
                     {currentChat && <ChatWindow onMessageSend={sendMessage} messages={messages[currentChat.chatId] || []} />}

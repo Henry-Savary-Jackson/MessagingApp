@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.hsj.messagingdemo.model.Chat;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.ChatRepo;
-import com.hsj.messagingdemo.repo.MessageRepo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +22,6 @@ import lombok.Setter;
 @Service
 public class MessageService {
 
-    @Autowired
-    MessageRepo messageRepo;
 
     @Autowired
     ChatRepo chatRepo;
@@ -62,9 +59,9 @@ public class MessageService {
         return userToKafkaListener.getOrDefault(userId, new HashSet<>());
     }
 
-    public boolean isUserListeningToChat(String userId, UUID chatUuid, String sessionId) {
+    public boolean isUserListeningToChat(String userId, String sessionId) {
         return getKafkaListenersForUser(userId).stream()
-                .anyMatch((listenerId) -> listenerId.equals(KafkaListenerCreator.generateListenerId(chatUuid, userId, sessionId)));
+                .anyMatch((listenerId) -> listenerId.equals(KafkaListenerCreator.generateListenerId( userId, sessionId)));
     }
 
     public List<Chat> getChatByUserId(String userId) {

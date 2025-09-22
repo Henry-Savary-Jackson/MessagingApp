@@ -330,7 +330,8 @@
          * @property {Uint8Array|null} [ratchetPublicKey] MessageHeader ratchetPublicKey
          * @property {number|null} [messageCount] MessageHeader messageCount
          * @property {number|null} [prevCount] MessageHeader prevCount
-         * @property {number|null} [iv] MessageHeader iv
+         * @property {Uint8Array|null} [messageIv] MessageHeader messageIv
+         * @property {string|null} [senderId] MessageHeader senderId
          * @property {Uint8Array|null} [ephemeralKey] MessageHeader ephemeralKey
          * @property {Uint8Array|null} [oneTimePrekey] MessageHeader oneTimePrekey
          */
@@ -360,11 +361,11 @@
     
         /**
          * MessageHeader ratchetPublicKey.
-         * @member {Uint8Array} ratchetPublicKey
+         * @member {Uint8Array|null|undefined} ratchetPublicKey
          * @memberof MessageHeader
          * @instance
          */
-        MessageHeader.prototype.ratchetPublicKey = $util.newBuffer([]);
+        MessageHeader.prototype.ratchetPublicKey = null;
     
         /**
          * MessageHeader messageCount.
@@ -383,12 +384,20 @@
         MessageHeader.prototype.prevCount = 0;
     
         /**
-         * MessageHeader iv.
-         * @member {number} iv
+         * MessageHeader messageIv.
+         * @member {Uint8Array} messageIv
          * @memberof MessageHeader
          * @instance
          */
-        MessageHeader.prototype.iv = 0;
+        MessageHeader.prototype.messageIv = $util.newBuffer([]);
+    
+        /**
+         * MessageHeader senderId.
+         * @member {string|null|undefined} senderId
+         * @memberof MessageHeader
+         * @instance
+         */
+        MessageHeader.prototype.senderId = null;
     
         /**
          * MessageHeader ephemeralKey.
@@ -408,6 +417,28 @@
     
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
+    
+        /**
+         * MessageHeader _ratchetPublicKey.
+         * @member {"ratchetPublicKey"|undefined} _ratchetPublicKey
+         * @memberof MessageHeader
+         * @instance
+         */
+        Object.defineProperty(MessageHeader.prototype, "_ratchetPublicKey", {
+            get: $util.oneOfGetter($oneOfFields = ["ratchetPublicKey"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+    
+        /**
+         * MessageHeader _senderId.
+         * @member {"senderId"|undefined} _senderId
+         * @memberof MessageHeader
+         * @instance
+         */
+        Object.defineProperty(MessageHeader.prototype, "_senderId", {
+            get: $util.oneOfGetter($oneOfFields = ["senderId"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
     
         /**
          * MessageHeader _ephemeralKey.
@@ -463,12 +494,14 @@
                 writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.messageCount);
             if (message.prevCount != null && Object.hasOwnProperty.call(message, "prevCount"))
                 writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.prevCount);
-            if (message.iv != null && Object.hasOwnProperty.call(message, "iv"))
-                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.iv);
+            if (message.messageIv != null && Object.hasOwnProperty.call(message, "messageIv"))
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.messageIv);
+            if (message.senderId != null && Object.hasOwnProperty.call(message, "senderId"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.senderId);
             if (message.ephemeralKey != null && Object.hasOwnProperty.call(message, "ephemeralKey"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.ephemeralKey);
+                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.ephemeralKey);
             if (message.oneTimePrekey != null && Object.hasOwnProperty.call(message, "oneTimePrekey"))
-                writer.uint32(/* id 7, wireType 2 =*/58).bytes(message.oneTimePrekey);
+                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.oneTimePrekey);
             return writer;
         };
     
@@ -522,14 +555,18 @@
                         break;
                     }
                 case 5: {
-                        message.iv = reader.uint32();
+                        message.messageIv = reader.bytes();
                         break;
                     }
                 case 6: {
-                        message.ephemeralKey = reader.bytes();
+                        message.senderId = reader.string();
                         break;
                     }
                 case 7: {
+                        message.ephemeralKey = reader.bytes();
+                        break;
+                    }
+                case 8: {
                         message.oneTimePrekey = reader.bytes();
                         break;
                     }
@@ -578,18 +615,25 @@
                 case 2:
                     break;
                 }
-            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey"))
+            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey")) {
+                properties._ratchetPublicKey = 1;
                 if (!(message.ratchetPublicKey && typeof message.ratchetPublicKey.length === "number" || $util.isString(message.ratchetPublicKey)))
                     return "ratchetPublicKey: buffer expected";
+            }
             if (message.messageCount != null && message.hasOwnProperty("messageCount"))
                 if (!$util.isInteger(message.messageCount))
                     return "messageCount: integer expected";
             if (message.prevCount != null && message.hasOwnProperty("prevCount"))
                 if (!$util.isInteger(message.prevCount))
                     return "prevCount: integer expected";
-            if (message.iv != null && message.hasOwnProperty("iv"))
-                if (!$util.isInteger(message.iv))
-                    return "iv: integer expected";
+            if (message.messageIv != null && message.hasOwnProperty("messageIv"))
+                if (!(message.messageIv && typeof message.messageIv.length === "number" || $util.isString(message.messageIv)))
+                    return "messageIv: buffer expected";
+            if (message.senderId != null && message.hasOwnProperty("senderId")) {
+                properties._senderId = 1;
+                if (!$util.isString(message.senderId))
+                    return "senderId: string expected";
+            }
             if (message.ephemeralKey != null && message.hasOwnProperty("ephemeralKey")) {
                 properties._ephemeralKey = 1;
                 if (!(message.ephemeralKey && typeof message.ephemeralKey.length === "number" || $util.isString(message.ephemeralKey)))
@@ -644,8 +688,13 @@
                 message.messageCount = object.messageCount >>> 0;
             if (object.prevCount != null)
                 message.prevCount = object.prevCount >>> 0;
-            if (object.iv != null)
-                message.iv = object.iv >>> 0;
+            if (object.messageIv != null)
+                if (typeof object.messageIv === "string")
+                    $util.base64.decode(object.messageIv, message.messageIv = $util.newBuffer($util.base64.length(object.messageIv)), 0);
+                else if (object.messageIv.length >= 0)
+                    message.messageIv = object.messageIv;
+            if (object.senderId != null)
+                message.senderId = String(object.senderId);
             if (object.ephemeralKey != null)
                 if (typeof object.ephemeralKey === "string")
                     $util.base64.decode(object.ephemeralKey, message.ephemeralKey = $util.newBuffer($util.base64.length(object.ephemeralKey)), 0);
@@ -674,27 +723,34 @@
             var object = {};
             if (options.defaults) {
                 object.type = options.enums === String ? "JOINED" : 0;
-                if (options.bytes === String)
-                    object.ratchetPublicKey = "";
-                else {
-                    object.ratchetPublicKey = [];
-                    if (options.bytes !== Array)
-                        object.ratchetPublicKey = $util.newBuffer(object.ratchetPublicKey);
-                }
                 object.messageCount = 0;
                 object.prevCount = 0;
-                object.iv = 0;
+                if (options.bytes === String)
+                    object.messageIv = "";
+                else {
+                    object.messageIv = [];
+                    if (options.bytes !== Array)
+                        object.messageIv = $util.newBuffer(object.messageIv);
+                }
             }
             if (message.type != null && message.hasOwnProperty("type"))
                 object.type = options.enums === String ? $root.MessageType[message.type] === undefined ? message.type : $root.MessageType[message.type] : message.type;
-            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey"))
+            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey")) {
                 object.ratchetPublicKey = options.bytes === String ? $util.base64.encode(message.ratchetPublicKey, 0, message.ratchetPublicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.ratchetPublicKey) : message.ratchetPublicKey;
+                if (options.oneofs)
+                    object._ratchetPublicKey = "ratchetPublicKey";
+            }
             if (message.messageCount != null && message.hasOwnProperty("messageCount"))
                 object.messageCount = message.messageCount;
             if (message.prevCount != null && message.hasOwnProperty("prevCount"))
                 object.prevCount = message.prevCount;
-            if (message.iv != null && message.hasOwnProperty("iv"))
-                object.iv = message.iv;
+            if (message.messageIv != null && message.hasOwnProperty("messageIv"))
+                object.messageIv = options.bytes === String ? $util.base64.encode(message.messageIv, 0, message.messageIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.messageIv) : message.messageIv;
+            if (message.senderId != null && message.hasOwnProperty("senderId")) {
+                object.senderId = message.senderId;
+                if (options.oneofs)
+                    object._senderId = "senderId";
+            }
             if (message.ephemeralKey != null && message.hasOwnProperty("ephemeralKey")) {
                 object.ephemeralKey = options.bytes === String ? $util.base64.encode(message.ephemeralKey, 0, message.ephemeralKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.ephemeralKey) : message.ephemeralKey;
                 if (options.oneofs)
@@ -743,12 +799,11 @@
          * Properties of a ChatMessage.
          * @exports IChatMessage
          * @interface IChatMessage
-         * @property {string|null} [messageId] ChatMessage messageId
-         * @property {string|null} [senderId] ChatMessage senderId
          * @property {string|null} [chatId] ChatMessage chatId
          * @property {IMessageHeader|null} [messageHeader] ChatMessage messageHeader
          * @property {Uint8Array|null} [messageContentsEncrypted] ChatMessage messageContentsEncrypted
-         * @property {Uint8Array|null} [publicKey] ChatMessage publicKey
+         * @property {number|Long|null} [timestamp] ChatMessage timestamp
+         * @property {Uint8Array|null} [headerIv] ChatMessage headerIv
          */
     
         /**
@@ -765,22 +820,6 @@
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
-    
-        /**
-         * ChatMessage messageId.
-         * @member {string} messageId
-         * @memberof ChatMessage
-         * @instance
-         */
-        ChatMessage.prototype.messageId = "";
-    
-        /**
-         * ChatMessage senderId.
-         * @member {string} senderId
-         * @memberof ChatMessage
-         * @instance
-         */
-        ChatMessage.prototype.senderId = "";
     
         /**
          * ChatMessage chatId.
@@ -807,12 +846,34 @@
         ChatMessage.prototype.messageContentsEncrypted = $util.newBuffer([]);
     
         /**
-         * ChatMessage publicKey.
-         * @member {Uint8Array} publicKey
+         * ChatMessage timestamp.
+         * @member {number|Long} timestamp
          * @memberof ChatMessage
          * @instance
          */
-        ChatMessage.prototype.publicKey = $util.newBuffer([]);
+        ChatMessage.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+    
+        /**
+         * ChatMessage headerIv.
+         * @member {Uint8Array|null|undefined} headerIv
+         * @memberof ChatMessage
+         * @instance
+         */
+        ChatMessage.prototype.headerIv = null;
+    
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+    
+        /**
+         * ChatMessage _headerIv.
+         * @member {"headerIv"|undefined} _headerIv
+         * @memberof ChatMessage
+         * @instance
+         */
+        Object.defineProperty(ChatMessage.prototype, "_headerIv", {
+            get: $util.oneOfGetter($oneOfFields = ["headerIv"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
     
         /**
          * Creates a new ChatMessage instance using the specified properties.
@@ -838,18 +899,16 @@
         ChatMessage.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.messageId != null && Object.hasOwnProperty.call(message, "messageId"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.messageId);
-            if (message.senderId != null && Object.hasOwnProperty.call(message, "senderId"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.senderId);
             if (message.chatId != null && Object.hasOwnProperty.call(message, "chatId"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.chatId);
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.chatId);
             if (message.messageHeader != null && Object.hasOwnProperty.call(message, "messageHeader"))
-                $root.MessageHeader.encode(message.messageHeader, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.MessageHeader.encode(message.messageHeader, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.messageContentsEncrypted != null && Object.hasOwnProperty.call(message, "messageContentsEncrypted"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.messageContentsEncrypted);
-            if (message.publicKey != null && Object.hasOwnProperty.call(message, "publicKey"))
-                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.publicKey);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.messageContentsEncrypted);
+            if (message.timestamp != null && Object.hasOwnProperty.call(message, "timestamp"))
+                writer.uint32(/* id 5, wireType 0 =*/40).uint64(message.timestamp);
+            if (message.headerIv != null && Object.hasOwnProperty.call(message, "headerIv"))
+                writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.headerIv);
             return writer;
         };
     
@@ -886,28 +945,24 @@
                 if (tag === error)
                     break;
                 switch (tag >>> 3) {
-                case 1: {
-                        message.messageId = reader.string();
-                        break;
-                    }
                 case 2: {
-                        message.senderId = reader.string();
-                        break;
-                    }
-                case 3: {
                         message.chatId = reader.string();
                         break;
                     }
-                case 4: {
+                case 3: {
                         message.messageHeader = $root.MessageHeader.decode(reader, reader.uint32());
                         break;
                     }
-                case 5: {
+                case 4: {
                         message.messageContentsEncrypted = reader.bytes();
                         break;
                     }
+                case 5: {
+                        message.timestamp = reader.uint64();
+                        break;
+                    }
                 case 6: {
-                        message.publicKey = reader.bytes();
+                        message.headerIv = reader.bytes();
                         break;
                     }
                 default:
@@ -945,12 +1000,7 @@
         ChatMessage.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.messageId != null && message.hasOwnProperty("messageId"))
-                if (!$util.isString(message.messageId))
-                    return "messageId: string expected";
-            if (message.senderId != null && message.hasOwnProperty("senderId"))
-                if (!$util.isString(message.senderId))
-                    return "senderId: string expected";
+            var properties = {};
             if (message.chatId != null && message.hasOwnProperty("chatId"))
                 if (!$util.isString(message.chatId))
                     return "chatId: string expected";
@@ -962,9 +1012,14 @@
             if (message.messageContentsEncrypted != null && message.hasOwnProperty("messageContentsEncrypted"))
                 if (!(message.messageContentsEncrypted && typeof message.messageContentsEncrypted.length === "number" || $util.isString(message.messageContentsEncrypted)))
                     return "messageContentsEncrypted: buffer expected";
-            if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-                if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
-                    return "publicKey: buffer expected";
+            if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                    return "timestamp: integer|Long expected";
+            if (message.headerIv != null && message.hasOwnProperty("headerIv")) {
+                properties._headerIv = 1;
+                if (!(message.headerIv && typeof message.headerIv.length === "number" || $util.isString(message.headerIv)))
+                    return "headerIv: buffer expected";
+            }
             return null;
         };
     
@@ -980,10 +1035,6 @@
             if (object instanceof $root.ChatMessage)
                 return object;
             var message = new $root.ChatMessage();
-            if (object.messageId != null)
-                message.messageId = String(object.messageId);
-            if (object.senderId != null)
-                message.senderId = String(object.senderId);
             if (object.chatId != null)
                 message.chatId = String(object.chatId);
             if (object.messageHeader != null) {
@@ -996,11 +1047,20 @@
                     $util.base64.decode(object.messageContentsEncrypted, message.messageContentsEncrypted = $util.newBuffer($util.base64.length(object.messageContentsEncrypted)), 0);
                 else if (object.messageContentsEncrypted.length >= 0)
                     message.messageContentsEncrypted = object.messageContentsEncrypted;
-            if (object.publicKey != null)
-                if (typeof object.publicKey === "string")
-                    $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
-                else if (object.publicKey.length >= 0)
-                    message.publicKey = object.publicKey;
+            if (object.timestamp != null)
+                if ($util.Long)
+                    (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = true;
+                else if (typeof object.timestamp === "string")
+                    message.timestamp = parseInt(object.timestamp, 10);
+                else if (typeof object.timestamp === "number")
+                    message.timestamp = object.timestamp;
+                else if (typeof object.timestamp === "object")
+                    message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber(true);
+            if (object.headerIv != null)
+                if (typeof object.headerIv === "string")
+                    $util.base64.decode(object.headerIv, message.headerIv = $util.newBuffer($util.base64.length(object.headerIv)), 0);
+                else if (object.headerIv.length >= 0)
+                    message.headerIv = object.headerIv;
             return message;
         };
     
@@ -1018,8 +1078,6 @@
                 options = {};
             var object = {};
             if (options.defaults) {
-                object.messageId = "";
-                object.senderId = "";
                 object.chatId = "";
                 object.messageHeader = null;
                 if (options.bytes === String)
@@ -1029,26 +1087,28 @@
                     if (options.bytes !== Array)
                         object.messageContentsEncrypted = $util.newBuffer(object.messageContentsEncrypted);
                 }
-                if (options.bytes === String)
-                    object.publicKey = "";
-                else {
-                    object.publicKey = [];
-                    if (options.bytes !== Array)
-                        object.publicKey = $util.newBuffer(object.publicKey);
-                }
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, true);
+                    object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.timestamp = options.longs === String ? "0" : 0;
             }
-            if (message.messageId != null && message.hasOwnProperty("messageId"))
-                object.messageId = message.messageId;
-            if (message.senderId != null && message.hasOwnProperty("senderId"))
-                object.senderId = message.senderId;
             if (message.chatId != null && message.hasOwnProperty("chatId"))
                 object.chatId = message.chatId;
             if (message.messageHeader != null && message.hasOwnProperty("messageHeader"))
                 object.messageHeader = $root.MessageHeader.toObject(message.messageHeader, options);
             if (message.messageContentsEncrypted != null && message.hasOwnProperty("messageContentsEncrypted"))
                 object.messageContentsEncrypted = options.bytes === String ? $util.base64.encode(message.messageContentsEncrypted, 0, message.messageContentsEncrypted.length) : options.bytes === Array ? Array.prototype.slice.call(message.messageContentsEncrypted) : message.messageContentsEncrypted;
-            if (message.publicKey != null && message.hasOwnProperty("publicKey"))
-                object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
+            if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                if (typeof message.timestamp === "number")
+                    object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                else
+                    object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber(true) : message.timestamp;
+            if (message.headerIv != null && message.hasOwnProperty("headerIv")) {
+                object.headerIv = options.bytes === String ? $util.base64.encode(message.headerIv, 0, message.headerIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.headerIv) : message.headerIv;
+                if (options.oneofs)
+                    object._headerIv = "headerIv";
+            }
             return object;
         };
     

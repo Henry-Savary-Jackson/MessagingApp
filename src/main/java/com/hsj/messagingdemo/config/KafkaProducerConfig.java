@@ -19,7 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.messaging.web.socket.server.CsrfTokenHandshakeInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.hsj.messagingdemo.dto.ChatMessage;
+import com.hsj.messagingdemo.dto.Messages.ChatMessage;
 import com.hsj.messagingdemo.service.UserService;
 
 @EnableKafka
