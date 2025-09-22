@@ -34,11 +34,11 @@ message ChatMessage {
 }
 message PreKeyBundle {
   optional string id = 1;
-  optional string username = 6;
   bytes identity_key = 2;
-  bytes signed_prekey = 3;
-  bytes prekey_signature = 4; 
-  repeated bytes one_time_prekey = 5;
+  bytes verifier_key = 3;
+  bytes signed_prekey = 4;
+  bytes prekey_signature = 5; 
+  repeated bytes one_time_prekey = 6;
 }
 
 message KeyPair {
@@ -49,8 +49,9 @@ message KeyPair {
 message Identity{
     string user_id = 1;
     KeyPair identity_key = 2;
-    KeyPair signed_prekey = 3;
-    uint64 signed_prekey_expiration= 4 ;
-    repeated KeyPair one_time_prekey= 5;
+    KeyPair verifier_key = 3;
+    KeyPair signed_prekey = 4;
+    uint64 signed_prekey_expiration= 5 ;
+    repeated KeyPair one_time_prekey= 6;
 }
 

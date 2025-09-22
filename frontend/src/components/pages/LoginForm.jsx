@@ -25,16 +25,16 @@ function LoginForm({setUserCallback}) {
         }
         let reader = new FileReader()
         reader.onloadend = async (event) => {
-            let identity_file_raw_bytes = reader.result
+            let identity_file_raw_bytes = new Uint8Array(reader.result)
             let identity_protobuf_obj = await import_identity(identity_file_raw_bytes)
             let identity_js_object = await convertProtoBufIdentityToObject(identity_protobuf_obj)
 
-            const authenticationRequest = await signChallenge(identity_js_object.identity)
+            const authenticationRequest = await signChallenge(identity_js_object.verifierKey.privateKey)
             authenticationRequest.username = username
             await performActionWithAlert(async () => {
                 let user_id = await login(authenticationRequest)
                 if (db){
-                    await storeUserData(db,  identity_js_object)
+                    await storeUserData(db,  {...identity_js_object, user_id:user_id})
 
                 }else{
                     throw new Error("No db initialized") 

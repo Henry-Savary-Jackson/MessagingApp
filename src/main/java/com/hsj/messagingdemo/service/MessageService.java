@@ -1,6 +1,5 @@
 package com.hsj.messagingdemo.service;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +14,6 @@ import org.springframework.stereotype.Service;
 import com.hsj.messagingdemo.model.Chat;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.ChatRepo;
-
-import lombok.Getter;
-import lombok.Setter;
 
 @Service
 public class MessageService {

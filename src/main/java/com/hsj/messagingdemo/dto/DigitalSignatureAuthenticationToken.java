@@ -2,11 +2,8 @@ package com.hsj.messagingdemo.dto;
 
 import java.util.Collection;
 
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class DigitalSignatureAuthenticationToken extends AbstractAuthenticationToken {
 

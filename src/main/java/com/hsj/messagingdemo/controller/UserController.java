@@ -3,8 +3,6 @@ package com.hsj.messagingdemo.controller;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.dto.UserChangeDTO;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.User;
@@ -70,8 +69,8 @@ public class UserController {
         return userService.getUserById(id).getUsername();
     }
 
-    @GetMapping(value="/prekeybundle/{username}",produces="application/x-protobuf")
-    public PreKeyBundle fetchPrekeyBundle(@RequestParam String username) {
+    @GetMapping(value="/prekeybundle/{username}",produces="application/octet-stream")
+    public byte[] fetchPrekeyBundle(@PathVariable String username) throws InvalidProtocolBufferException {
         User user = userService.getUserByUsername(username).orElseThrow();
         return user.getPreKeyBundle(); 
     }

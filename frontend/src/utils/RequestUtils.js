@@ -80,9 +80,9 @@ export async function getFile(uuid) {
 
 export async function getPrekeyBundle(username) {
     return await performRequest(async () => {
-        let rawData = (await axios.get(`${api_url}/user/prekeybundle/${username}`, { withCredentials: true, withXSRFToken: true })).data
+        let response = (await axios.get(`${api_url}/user/prekeybundle/${username}`, {  responseType: 'arraybuffer', withCredentials: true, withXSRFToken: true }))
         try {
-            return PreKeyBundle.decode(rawData);
+            return PreKeyBundle.decode(new Uint8Array(response.data));
         } catch (e) {
             throw e;
         }

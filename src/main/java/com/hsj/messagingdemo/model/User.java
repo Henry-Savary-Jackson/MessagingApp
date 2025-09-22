@@ -2,10 +2,8 @@ package com.hsj.messagingdemo.model;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -35,7 +33,7 @@ public class User implements UserDetails {
     @Indexed(unique = true)
     String username;
 
-    PreKeyBundle preKeyBundle;
+    byte[] preKeyBundle;
 
     ProfileImage profilePicture;
 
@@ -45,7 +43,7 @@ public class User implements UserDetails {
     }
     @Override
     public String getPassword() {
-        return Arrays.toString(preKeyBundle.getIdentityKey().toByteArray()); 
+        return Arrays.toString(preKeyBundle); 
     }
 
 }

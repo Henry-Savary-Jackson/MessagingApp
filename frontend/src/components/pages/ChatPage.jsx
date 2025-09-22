@@ -61,37 +61,33 @@ function ChatPage({ logoutCallback }) {
     let delChatUI = (chat_id) => { chatsReducer({ "action": "del", "chatId": chat_id }) }
 
     let [user_id, set_user_id ] = useContext(userIdContext)
-    let [db, loading] = useIndexedDB() 
+    let {db, loading} = useIndexedDB() 
 
 
-    let {identity, signed_prekey, expiration, otps } = useIdentityInformation(db,user_id)
+    useEffect(()=>{
+        activate(()=>{listenForMessages(onMessage)})
+    },[])
+
+    let {identity, verifier_key, signed_prekey, expiration, otps } = useIdentityInformation(db,user_id)
 
     let onMessage = async (message) => {
         console.log(message)
         let chat_message = ChatMessage.decode(message.binaryBody)
         if (chat_message.message_header.type == MessageType.JOINED){
             // X3DH message
-            let SK = handle_X3DH_message(identity, chat_message)
+            let SK = handle_X3DH_message(identity, verifier_key, chat_message)
             console.log(SK)
         }
 
         // add Double ratchet logic
+
         // addMessageUI(message_body)
         // addMessageToChatCount(message_body.chatId, message_body.timestamp)
+
     } // PUT notification symbol on chat
 
     // let connect_chat = (chat_id) => { subscribeToChat(chat_id, 0) }
-    let disconnect_chat = (chat_id) => { unSubscribe(chat_id) }
-
-
-    useEffect(() => {
-        async function getChatsConnect() {
-            let newChats = await getChats()
-            // activate((frame) => { setNewChats(newChats); newChats.forEach((chat) => connect_chat(chat.chatId)); listenForMessages(onMessage); })
-        }
-        getChatsConnect()
-        return () => { disconnect() }
-    }, [])
+    let disconnect_chat = (chat_id) => { unSubscribe() }
 
 
     let sendMessage = async (contents, file_id=undefined) => {
@@ -106,11 +102,11 @@ function ChatPage({ logoutCallback }) {
         } 
         let name = prompt("Enter Username:"); 
         let prekey_bundle =await getPrekeyBundle(name)
-        let {SK, AD,AD_encrypted, AD_IV, ephemeralKeyPair, one_time_prekey} = await X3DH_send({identity:identity, signed_prekey:signed_prekey}, prekey_bundle)
+        let {SK, AD,AD_encrypted, AD_IV, ephemeralKeyPair, one_time_prekey} = await X3DH_send({identityKey:identity,verifierKey:verifier_key, signedPrekey:signed_prekey}, prekey_bundle)
         let ephemeral_key_bytes = await exportX25519PublicKey(ephemeralKeyPair.publicKey)
-        let messageHeader = MessageHeader.fromObject({type:"JOINED", message_iv:AD_IV, message_count:0, prev_count:0, ephemeral_key:ephemeral_key_bytes, one_time_prekey:one_time_prekey })
+        let messageHeader = MessageHeader.fromObject({type:"JOINED", messageIv:AD_IV, messageCount:0, prev_count:0, ephemeralKey:ephemeral_key_bytes, oneTimePrekey:one_time_prekey })
         let chat_id = v4() // generate chat_id
-        let chat_message = ChatMessage.fromObject({chat_id:chat_id, message_header:messageHeader, message_contents_encrypted:AD_encrypted, timestamp:new Date().getTime() })
+        let chat_message = ChatMessage.fromObject({chatId:chat_id, messageHeader:messageHeader, messageContentsEncrypted:AD_encrypted, timestamp:new Date().getTime() })
 
         send(chat_message)
         console.log("shared root key")
@@ -119,11 +115,8 @@ function ChatPage({ logoutCallback }) {
         // addNewChatUI(chat_id, user_id, name)
         // ChatMessage.fromObject({ })
     }
-    // let joinChat = async (chat_id) => { let chat = await join(chat_id);
-    //     addNewChatUI(chat_id, chat.ownerId, chat.name); connect_chat(chat_id) 
-    //     }
-    let leaveChat = async (chat_id) => { await leaveChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
-    let deleteChat = async (chat_id) => { await deleteChatRequest(chat_id); delChatUI(chat_id); disconnect_chat(chat_id) }
+    let leaveChat = async (chat_id) => {  delChatUI(chat_id);  }
+    let deleteChat = async (chat_id) => {  delChatUI(chat_id);  }
 
     return <Container className='vh-100 vw-100'>
         <Link className='btn btn-danger position-fixed top-0 start-0' to={"/login"} onClick={async (e) => {

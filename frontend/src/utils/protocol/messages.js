@@ -1148,8 +1148,8 @@
          * @exports IPreKeyBundle
          * @interface IPreKeyBundle
          * @property {string|null} [id] PreKeyBundle id
-         * @property {string|null} [username] PreKeyBundle username
          * @property {Uint8Array|null} [identityKey] PreKeyBundle identityKey
+         * @property {Uint8Array|null} [verifierKey] PreKeyBundle verifierKey
          * @property {Uint8Array|null} [signedPrekey] PreKeyBundle signedPrekey
          * @property {Uint8Array|null} [prekeySignature] PreKeyBundle prekeySignature
          * @property {Array.<Uint8Array>|null} [oneTimePrekey] PreKeyBundle oneTimePrekey
@@ -1180,20 +1180,20 @@
         PreKeyBundle.prototype.id = null;
     
         /**
-         * PreKeyBundle username.
-         * @member {string|null|undefined} username
-         * @memberof PreKeyBundle
-         * @instance
-         */
-        PreKeyBundle.prototype.username = null;
-    
-        /**
          * PreKeyBundle identityKey.
          * @member {Uint8Array} identityKey
          * @memberof PreKeyBundle
          * @instance
          */
         PreKeyBundle.prototype.identityKey = $util.newBuffer([]);
+    
+        /**
+         * PreKeyBundle verifierKey.
+         * @member {Uint8Array} verifierKey
+         * @memberof PreKeyBundle
+         * @instance
+         */
+        PreKeyBundle.prototype.verifierKey = $util.newBuffer([]);
     
         /**
          * PreKeyBundle signedPrekey.
@@ -1234,17 +1234,6 @@
         });
     
         /**
-         * PreKeyBundle _username.
-         * @member {"username"|undefined} _username
-         * @memberof PreKeyBundle
-         * @instance
-         */
-        Object.defineProperty(PreKeyBundle.prototype, "_username", {
-            get: $util.oneOfGetter($oneOfFields = ["username"]),
-            set: $util.oneOfSetter($oneOfFields)
-        });
-    
-        /**
          * Creates a new PreKeyBundle instance using the specified properties.
          * @function create
          * @memberof PreKeyBundle
@@ -1272,15 +1261,15 @@
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.id);
             if (message.identityKey != null && Object.hasOwnProperty.call(message, "identityKey"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.identityKey);
+            if (message.verifierKey != null && Object.hasOwnProperty.call(message, "verifierKey"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.verifierKey);
             if (message.signedPrekey != null && Object.hasOwnProperty.call(message, "signedPrekey"))
-                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.signedPrekey);
+                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.signedPrekey);
             if (message.prekeySignature != null && Object.hasOwnProperty.call(message, "prekeySignature"))
-                writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.prekeySignature);
+                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.prekeySignature);
             if (message.oneTimePrekey != null && message.oneTimePrekey.length)
                 for (var i = 0; i < message.oneTimePrekey.length; ++i)
-                    writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.oneTimePrekey[i]);
-            if (message.username != null && Object.hasOwnProperty.call(message, "username"))
-                writer.uint32(/* id 6, wireType 2 =*/50).string(message.username);
+                    writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.oneTimePrekey[i]);
             return writer;
         };
     
@@ -1321,23 +1310,23 @@
                         message.id = reader.string();
                         break;
                     }
-                case 6: {
-                        message.username = reader.string();
-                        break;
-                    }
                 case 2: {
                         message.identityKey = reader.bytes();
                         break;
                     }
                 case 3: {
-                        message.signedPrekey = reader.bytes();
+                        message.verifierKey = reader.bytes();
                         break;
                     }
                 case 4: {
-                        message.prekeySignature = reader.bytes();
+                        message.signedPrekey = reader.bytes();
                         break;
                     }
                 case 5: {
+                        message.prekeySignature = reader.bytes();
+                        break;
+                    }
+                case 6: {
                         if (!(message.oneTimePrekey && message.oneTimePrekey.length))
                             message.oneTimePrekey = [];
                         message.oneTimePrekey.push(reader.bytes());
@@ -1384,14 +1373,12 @@
                 if (!$util.isString(message.id))
                     return "id: string expected";
             }
-            if (message.username != null && message.hasOwnProperty("username")) {
-                properties._username = 1;
-                if (!$util.isString(message.username))
-                    return "username: string expected";
-            }
             if (message.identityKey != null && message.hasOwnProperty("identityKey"))
                 if (!(message.identityKey && typeof message.identityKey.length === "number" || $util.isString(message.identityKey)))
                     return "identityKey: buffer expected";
+            if (message.verifierKey != null && message.hasOwnProperty("verifierKey"))
+                if (!(message.verifierKey && typeof message.verifierKey.length === "number" || $util.isString(message.verifierKey)))
+                    return "verifierKey: buffer expected";
             if (message.signedPrekey != null && message.hasOwnProperty("signedPrekey"))
                 if (!(message.signedPrekey && typeof message.signedPrekey.length === "number" || $util.isString(message.signedPrekey)))
                     return "signedPrekey: buffer expected";
@@ -1422,13 +1409,16 @@
             var message = new $root.PreKeyBundle();
             if (object.id != null)
                 message.id = String(object.id);
-            if (object.username != null)
-                message.username = String(object.username);
             if (object.identityKey != null)
                 if (typeof object.identityKey === "string")
                     $util.base64.decode(object.identityKey, message.identityKey = $util.newBuffer($util.base64.length(object.identityKey)), 0);
                 else if (object.identityKey.length >= 0)
                     message.identityKey = object.identityKey;
+            if (object.verifierKey != null)
+                if (typeof object.verifierKey === "string")
+                    $util.base64.decode(object.verifierKey, message.verifierKey = $util.newBuffer($util.base64.length(object.verifierKey)), 0);
+                else if (object.verifierKey.length >= 0)
+                    message.verifierKey = object.verifierKey;
             if (object.signedPrekey != null)
                 if (typeof object.signedPrekey === "string")
                     $util.base64.decode(object.signedPrekey, message.signedPrekey = $util.newBuffer($util.base64.length(object.signedPrekey)), 0);
@@ -1476,6 +1466,13 @@
                         object.identityKey = $util.newBuffer(object.identityKey);
                 }
                 if (options.bytes === String)
+                    object.verifierKey = "";
+                else {
+                    object.verifierKey = [];
+                    if (options.bytes !== Array)
+                        object.verifierKey = $util.newBuffer(object.verifierKey);
+                }
+                if (options.bytes === String)
                     object.signedPrekey = "";
                 else {
                     object.signedPrekey = [];
@@ -1497,6 +1494,8 @@
             }
             if (message.identityKey != null && message.hasOwnProperty("identityKey"))
                 object.identityKey = options.bytes === String ? $util.base64.encode(message.identityKey, 0, message.identityKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.identityKey) : message.identityKey;
+            if (message.verifierKey != null && message.hasOwnProperty("verifierKey"))
+                object.verifierKey = options.bytes === String ? $util.base64.encode(message.verifierKey, 0, message.verifierKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.verifierKey) : message.verifierKey;
             if (message.signedPrekey != null && message.hasOwnProperty("signedPrekey"))
                 object.signedPrekey = options.bytes === String ? $util.base64.encode(message.signedPrekey, 0, message.signedPrekey.length) : options.bytes === Array ? Array.prototype.slice.call(message.signedPrekey) : message.signedPrekey;
             if (message.prekeySignature != null && message.hasOwnProperty("prekeySignature"))
@@ -1505,11 +1504,6 @@
                 object.oneTimePrekey = [];
                 for (var j = 0; j < message.oneTimePrekey.length; ++j)
                     object.oneTimePrekey[j] = options.bytes === String ? $util.base64.encode(message.oneTimePrekey[j], 0, message.oneTimePrekey[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.oneTimePrekey[j]) : message.oneTimePrekey[j];
-            }
-            if (message.username != null && message.hasOwnProperty("username")) {
-                object.username = message.username;
-                if (options.oneofs)
-                    object._username = "username";
             }
             return object;
         };
@@ -1798,6 +1792,7 @@
          * @interface IIdentity
          * @property {string|null} [userId] Identity userId
          * @property {IKeyPair|null} [identityKey] Identity identityKey
+         * @property {IKeyPair|null} [verifierKey] Identity verifierKey
          * @property {IKeyPair|null} [signedPrekey] Identity signedPrekey
          * @property {number|Long|null} [signedPrekeyExpiration] Identity signedPrekeyExpiration
          * @property {Array.<IKeyPair>|null} [oneTimePrekey] Identity oneTimePrekey
@@ -1834,6 +1829,14 @@
          * @instance
          */
         Identity.prototype.identityKey = null;
+    
+        /**
+         * Identity verifierKey.
+         * @member {IKeyPair|null|undefined} verifierKey
+         * @memberof Identity
+         * @instance
+         */
+        Identity.prototype.verifierKey = null;
     
         /**
          * Identity signedPrekey.
@@ -1887,13 +1890,15 @@
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.userId);
             if (message.identityKey != null && Object.hasOwnProperty.call(message, "identityKey"))
                 $root.KeyPair.encode(message.identityKey, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.verifierKey != null && Object.hasOwnProperty.call(message, "verifierKey"))
+                $root.KeyPair.encode(message.verifierKey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.signedPrekey != null && Object.hasOwnProperty.call(message, "signedPrekey"))
-                $root.KeyPair.encode(message.signedPrekey, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.KeyPair.encode(message.signedPrekey, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.signedPrekeyExpiration != null && Object.hasOwnProperty.call(message, "signedPrekeyExpiration"))
-                writer.uint32(/* id 4, wireType 0 =*/32).uint64(message.signedPrekeyExpiration);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint64(message.signedPrekeyExpiration);
             if (message.oneTimePrekey != null && message.oneTimePrekey.length)
                 for (var i = 0; i < message.oneTimePrekey.length; ++i)
-                    $root.KeyPair.encode(message.oneTimePrekey[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                    $root.KeyPair.encode(message.oneTimePrekey[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
             return writer;
         };
     
@@ -1939,14 +1944,18 @@
                         break;
                     }
                 case 3: {
-                        message.signedPrekey = $root.KeyPair.decode(reader, reader.uint32());
+                        message.verifierKey = $root.KeyPair.decode(reader, reader.uint32());
                         break;
                     }
                 case 4: {
-                        message.signedPrekeyExpiration = reader.uint64();
+                        message.signedPrekey = $root.KeyPair.decode(reader, reader.uint32());
                         break;
                     }
                 case 5: {
+                        message.signedPrekeyExpiration = reader.uint64();
+                        break;
+                    }
+                case 6: {
                         if (!(message.oneTimePrekey && message.oneTimePrekey.length))
                             message.oneTimePrekey = [];
                         message.oneTimePrekey.push($root.KeyPair.decode(reader, reader.uint32()));
@@ -1995,6 +2004,11 @@
                 if (error)
                     return "identityKey." + error;
             }
+            if (message.verifierKey != null && message.hasOwnProperty("verifierKey")) {
+                var error = $root.KeyPair.verify(message.verifierKey);
+                if (error)
+                    return "verifierKey." + error;
+            }
             if (message.signedPrekey != null && message.hasOwnProperty("signedPrekey")) {
                 var error = $root.KeyPair.verify(message.signedPrekey);
                 if (error)
@@ -2033,6 +2047,11 @@
                 if (typeof object.identityKey !== "object")
                     throw TypeError(".Identity.identityKey: object expected");
                 message.identityKey = $root.KeyPair.fromObject(object.identityKey);
+            }
+            if (object.verifierKey != null) {
+                if (typeof object.verifierKey !== "object")
+                    throw TypeError(".Identity.verifierKey: object expected");
+                message.verifierKey = $root.KeyPair.fromObject(object.verifierKey);
             }
             if (object.signedPrekey != null) {
                 if (typeof object.signedPrekey !== "object")
@@ -2079,6 +2098,7 @@
             if (options.defaults) {
                 object.userId = "";
                 object.identityKey = null;
+                object.verifierKey = null;
                 object.signedPrekey = null;
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, true);
@@ -2090,6 +2110,8 @@
                 object.userId = message.userId;
             if (message.identityKey != null && message.hasOwnProperty("identityKey"))
                 object.identityKey = $root.KeyPair.toObject(message.identityKey, options);
+            if (message.verifierKey != null && message.hasOwnProperty("verifierKey"))
+                object.verifierKey = $root.KeyPair.toObject(message.verifierKey, options);
             if (message.signedPrekey != null && message.hasOwnProperty("signedPrekey"))
                 object.signedPrekey = $root.KeyPair.toObject(message.signedPrekey, options);
             if (message.signedPrekeyExpiration != null && message.hasOwnProperty("signedPrekeyExpiration"))

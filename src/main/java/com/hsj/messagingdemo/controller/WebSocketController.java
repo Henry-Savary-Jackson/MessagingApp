@@ -3,7 +3,6 @@ package com.hsj.messagingdemo.controller;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.UUID;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;

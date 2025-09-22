@@ -1,15 +1,7 @@
 package com.hsj.messagingdemo.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.ConcurrentKafkaListenerContainerFactoryConfigurer;
-import org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerEndpoint;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
@@ -18,7 +10,6 @@ import org.springframework.kafka.listener.MessageListenerContainer;
 import org.springframework.kafka.support.TopicPartitionOffset;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.stereotype.Service;
 
 import com.hsj.messagingdemo.dto.Messages.ChatMessage;

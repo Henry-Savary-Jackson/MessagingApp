@@ -1,6 +1,5 @@
 package com.hsj.messagingdemo.dto;
 
-import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 import com.hsj.messagingdemo.model.ProfileImage;
 
 import lombok.AllArgsConstructor;

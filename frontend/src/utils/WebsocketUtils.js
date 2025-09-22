@@ -17,7 +17,7 @@ export function activate(onConnect) {
 
 export function send(chatMessage) {
     client.publish({
-        destination: "/chat", binaryBody: chatMessage.encode().finish() , headers:{"content-type":protobuf_mimetype} })
+        destination: "/chat", binaryBody: ChatMessage.encode(chatMessage).finish() , headers:{"content-type":protobuf_mimetype} })
 }
 
 export function parseMessage(message_bytes){
@@ -39,7 +39,7 @@ export async function disconnect() {
 }
 
 
-export async function handle_X3DH_message(identity,chat_message){
+export async function handle_X3DH_message(identity, chat_message){
     
     let headers = chat_message.message_header
     let sender_id = headers.sender_id

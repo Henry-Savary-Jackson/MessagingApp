@@ -954,7 +954,12 @@ public final class Messages {
     com.hsj.messagingdemo.dto.Messages.MessageType getType();
 
     /**
-     * <code>bytes ratchet_public_key = 2;</code>
+     * <code>optional bytes ratchet_public_key = 2;</code>
+     * @return Whether the ratchetPublicKey field is set.
+     */
+    boolean hasRatchetPublicKey();
+    /**
+     * <code>optional bytes ratchet_public_key = 2;</code>
      * @return The ratchetPublicKey.
      */
     com.google.protobuf.ByteString getRatchetPublicKey();
@@ -972,29 +977,46 @@ public final class Messages {
     int getPrevCount();
 
     /**
-     * <code>uint32 iv = 5;</code>
-     * @return The iv.
+     * <code>bytes message_iv = 5;</code>
+     * @return The messageIv.
      */
-    int getIv();
+    com.google.protobuf.ByteString getMessageIv();
 
     /**
-     * <code>optional bytes ephemeral_key = 6;</code>
+     * <code>optional string sender_id = 6;</code>
+     * @return Whether the senderId field is set.
+     */
+    boolean hasSenderId();
+    /**
+     * <code>optional string sender_id = 6;</code>
+     * @return The senderId.
+     */
+    java.lang.String getSenderId();
+    /**
+     * <code>optional string sender_id = 6;</code>
+     * @return The bytes for senderId.
+     */
+    com.google.protobuf.ByteString
+        getSenderIdBytes();
+
+    /**
+     * <code>optional bytes ephemeral_key = 7;</code>
      * @return Whether the ephemeralKey field is set.
      */
     boolean hasEphemeralKey();
     /**
-     * <code>optional bytes ephemeral_key = 6;</code>
+     * <code>optional bytes ephemeral_key = 7;</code>
      * @return The ephemeralKey.
      */
     com.google.protobuf.ByteString getEphemeralKey();
 
     /**
-     * <code>optional bytes one_time_prekey = 7;</code>
+     * <code>optional bytes one_time_prekey = 8;</code>
      * @return Whether the oneTimePrekey field is set.
      */
     boolean hasOneTimePrekey();
     /**
-     * <code>optional bytes one_time_prekey = 7;</code>
+     * <code>optional bytes one_time_prekey = 8;</code>
      * @return The oneTimePrekey.
      */
     com.google.protobuf.ByteString getOneTimePrekey();
@@ -1023,6 +1045,8 @@ public final class Messages {
     private MessageHeader() {
       type_ = 0;
       ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
+      messageIv_ = com.google.protobuf.ByteString.EMPTY;
+      senderId_ = "";
       ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
       oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
     }
@@ -1062,7 +1086,15 @@ public final class Messages {
     public static final int RATCHET_PUBLIC_KEY_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes ratchet_public_key = 2;</code>
+     * <code>optional bytes ratchet_public_key = 2;</code>
+     * @return Whether the ratchetPublicKey field is set.
+     */
+    @java.lang.Override
+    public boolean hasRatchetPublicKey() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional bytes ratchet_public_key = 2;</code>
      * @return The ratchetPublicKey.
      */
     @java.lang.Override
@@ -1092,29 +1124,76 @@ public final class Messages {
       return prevCount_;
     }
 
-    public static final int IV_FIELD_NUMBER = 5;
-    private int iv_ = 0;
+    public static final int MESSAGE_IV_FIELD_NUMBER = 5;
+    private com.google.protobuf.ByteString messageIv_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>uint32 iv = 5;</code>
-     * @return The iv.
+     * <code>bytes message_iv = 5;</code>
+     * @return The messageIv.
      */
     @java.lang.Override
-    public int getIv() {
-      return iv_;
+    public com.google.protobuf.ByteString getMessageIv() {
+      return messageIv_;
     }
 
-    public static final int EPHEMERAL_KEY_FIELD_NUMBER = 6;
+    public static final int SENDER_ID_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object senderId_ = "";
+    /**
+     * <code>optional string sender_id = 6;</code>
+     * @return Whether the senderId field is set.
+     */
+    @java.lang.Override
+    public boolean hasSenderId() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>optional string sender_id = 6;</code>
+     * @return The senderId.
+     */
+    @java.lang.Override
+    public java.lang.String getSenderId() {
+      java.lang.Object ref = senderId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        senderId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>optional string sender_id = 6;</code>
+     * @return The bytes for senderId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getSenderIdBytes() {
+      java.lang.Object ref = senderId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        senderId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int EPHEMERAL_KEY_FIELD_NUMBER = 7;
     private com.google.protobuf.ByteString ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>optional bytes ephemeral_key = 6;</code>
+     * <code>optional bytes ephemeral_key = 7;</code>
      * @return Whether the ephemeralKey field is set.
      */
     @java.lang.Override
     public boolean hasEphemeralKey() {
-      return ((bitField0_ & 0x00000001) != 0);
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>optional bytes ephemeral_key = 6;</code>
+     * <code>optional bytes ephemeral_key = 7;</code>
      * @return The ephemeralKey.
      */
     @java.lang.Override
@@ -1122,18 +1201,18 @@ public final class Messages {
       return ephemeralKey_;
     }
 
-    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 7;
+    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 8;
     private com.google.protobuf.ByteString oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>optional bytes one_time_prekey = 7;</code>
+     * <code>optional bytes one_time_prekey = 8;</code>
      * @return Whether the oneTimePrekey field is set.
      */
     @java.lang.Override
     public boolean hasOneTimePrekey() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000008) != 0);
     }
     /**
-     * <code>optional bytes one_time_prekey = 7;</code>
+     * <code>optional bytes one_time_prekey = 8;</code>
      * @return The oneTimePrekey.
      */
     @java.lang.Override
@@ -1158,7 +1237,7 @@ public final class Messages {
       if (type_ != com.hsj.messagingdemo.dto.Messages.MessageType.JOINED.getNumber()) {
         output.writeEnum(1, type_);
       }
-      if (!ratchetPublicKey_.isEmpty()) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeBytes(2, ratchetPublicKey_);
       }
       if (messageCount_ != 0) {
@@ -1167,14 +1246,17 @@ public final class Messages {
       if (prevCount_ != 0) {
         output.writeUInt32(4, prevCount_);
       }
-      if (iv_ != 0) {
-        output.writeUInt32(5, iv_);
-      }
-      if (((bitField0_ & 0x00000001) != 0)) {
-        output.writeBytes(6, ephemeralKey_);
+      if (!messageIv_.isEmpty()) {
+        output.writeBytes(5, messageIv_);
       }
       if (((bitField0_ & 0x00000002) != 0)) {
-        output.writeBytes(7, oneTimePrekey_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 6, senderId_);
+      }
+      if (((bitField0_ & 0x00000004) != 0)) {
+        output.writeBytes(7, ephemeralKey_);
+      }
+      if (((bitField0_ & 0x00000008) != 0)) {
+        output.writeBytes(8, oneTimePrekey_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1189,7 +1271,7 @@ public final class Messages {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, type_);
       }
-      if (!ratchetPublicKey_.isEmpty()) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, ratchetPublicKey_);
       }
@@ -1201,17 +1283,20 @@ public final class Messages {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, prevCount_);
       }
-      if (iv_ != 0) {
+      if (!messageIv_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(5, iv_);
-      }
-      if (((bitField0_ & 0x00000001) != 0)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, ephemeralKey_);
+          .computeBytesSize(5, messageIv_);
       }
       if (((bitField0_ & 0x00000002) != 0)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, senderId_);
+      }
+      if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, oneTimePrekey_);
+          .computeBytesSize(7, ephemeralKey_);
+      }
+      if (((bitField0_ & 0x00000008) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, oneTimePrekey_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1229,14 +1314,22 @@ public final class Messages {
       com.hsj.messagingdemo.dto.Messages.MessageHeader other = (com.hsj.messagingdemo.dto.Messages.MessageHeader) obj;
 
       if (type_ != other.type_) return false;
-      if (!getRatchetPublicKey()
-          .equals(other.getRatchetPublicKey())) return false;
+      if (hasRatchetPublicKey() != other.hasRatchetPublicKey()) return false;
+      if (hasRatchetPublicKey()) {
+        if (!getRatchetPublicKey()
+            .equals(other.getRatchetPublicKey())) return false;
+      }
       if (getMessageCount()
           != other.getMessageCount()) return false;
       if (getPrevCount()
           != other.getPrevCount()) return false;
-      if (getIv()
-          != other.getIv()) return false;
+      if (!getMessageIv()
+          .equals(other.getMessageIv())) return false;
+      if (hasSenderId() != other.hasSenderId()) return false;
+      if (hasSenderId()) {
+        if (!getSenderId()
+            .equals(other.getSenderId())) return false;
+      }
       if (hasEphemeralKey() != other.hasEphemeralKey()) return false;
       if (hasEphemeralKey()) {
         if (!getEphemeralKey()
@@ -1260,14 +1353,20 @@ public final class Messages {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + TYPE_FIELD_NUMBER;
       hash = (53 * hash) + type_;
-      hash = (37 * hash) + RATCHET_PUBLIC_KEY_FIELD_NUMBER;
-      hash = (53 * hash) + getRatchetPublicKey().hashCode();
+      if (hasRatchetPublicKey()) {
+        hash = (37 * hash) + RATCHET_PUBLIC_KEY_FIELD_NUMBER;
+        hash = (53 * hash) + getRatchetPublicKey().hashCode();
+      }
       hash = (37 * hash) + MESSAGE_COUNT_FIELD_NUMBER;
       hash = (53 * hash) + getMessageCount();
       hash = (37 * hash) + PREV_COUNT_FIELD_NUMBER;
       hash = (53 * hash) + getPrevCount();
-      hash = (37 * hash) + IV_FIELD_NUMBER;
-      hash = (53 * hash) + getIv();
+      hash = (37 * hash) + MESSAGE_IV_FIELD_NUMBER;
+      hash = (53 * hash) + getMessageIv().hashCode();
+      if (hasSenderId()) {
+        hash = (37 * hash) + SENDER_ID_FIELD_NUMBER;
+        hash = (53 * hash) + getSenderId().hashCode();
+      }
       if (hasEphemeralKey()) {
         hash = (37 * hash) + EPHEMERAL_KEY_FIELD_NUMBER;
         hash = (53 * hash) + getEphemeralKey().hashCode();
@@ -1411,7 +1510,8 @@ public final class Messages {
         ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
         messageCount_ = 0;
         prevCount_ = 0;
-        iv_ = 0;
+        messageIv_ = com.google.protobuf.ByteString.EMPTY;
+        senderId_ = "";
         ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
         oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
         return this;
@@ -1450,8 +1550,10 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.type_ = type_;
         }
+        int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.ratchetPublicKey_ = ratchetPublicKey_;
+          to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
           result.messageCount_ = messageCount_;
@@ -1460,16 +1562,19 @@ public final class Messages {
           result.prevCount_ = prevCount_;
         }
         if (((from_bitField0_ & 0x00000010) != 0)) {
-          result.iv_ = iv_;
+          result.messageIv_ = messageIv_;
         }
-        int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000020) != 0)) {
-          result.ephemeralKey_ = ephemeralKey_;
-          to_bitField0_ |= 0x00000001;
+          result.senderId_ = senderId_;
+          to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.ephemeralKey_ = ephemeralKey_;
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000080) != 0)) {
           result.oneTimePrekey_ = oneTimePrekey_;
-          to_bitField0_ |= 0x00000002;
+          to_bitField0_ |= 0x00000008;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -1489,7 +1594,7 @@ public final class Messages {
         if (other.type_ != 0) {
           setTypeValue(other.getTypeValue());
         }
-        if (!other.getRatchetPublicKey().isEmpty()) {
+        if (other.hasRatchetPublicKey()) {
           setRatchetPublicKey(other.getRatchetPublicKey());
         }
         if (other.getMessageCount() != 0) {
@@ -1498,8 +1603,13 @@ public final class Messages {
         if (other.getPrevCount() != 0) {
           setPrevCount(other.getPrevCount());
         }
-        if (other.getIv() != 0) {
-          setIv(other.getIv());
+        if (!other.getMessageIv().isEmpty()) {
+          setMessageIv(other.getMessageIv());
+        }
+        if (other.hasSenderId()) {
+          senderId_ = other.senderId_;
+          bitField0_ |= 0x00000020;
+          onChanged();
         }
         if (other.hasEphemeralKey()) {
           setEphemeralKey(other.getEphemeralKey());
@@ -1553,21 +1663,26 @@ public final class Messages {
                 bitField0_ |= 0x00000008;
                 break;
               } // case 32
-              case 40: {
-                iv_ = input.readUInt32();
+              case 42: {
+                messageIv_ = input.readBytes();
                 bitField0_ |= 0x00000010;
                 break;
-              } // case 40
+              } // case 42
               case 50: {
-                ephemeralKey_ = input.readBytes();
+                senderId_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000020;
                 break;
               } // case 50
               case 58: {
-                oneTimePrekey_ = input.readBytes();
+                ephemeralKey_ = input.readBytes();
                 bitField0_ |= 0x00000040;
                 break;
               } // case 58
+              case 66: {
+                oneTimePrekey_ = input.readBytes();
+                bitField0_ |= 0x00000080;
+                break;
+              } // case 66
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -1640,7 +1755,15 @@ public final class Messages {
 
       private com.google.protobuf.ByteString ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes ratchet_public_key = 2;</code>
+       * <code>optional bytes ratchet_public_key = 2;</code>
+       * @return Whether the ratchetPublicKey field is set.
+       */
+      @java.lang.Override
+      public boolean hasRatchetPublicKey() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>optional bytes ratchet_public_key = 2;</code>
        * @return The ratchetPublicKey.
        */
       @java.lang.Override
@@ -1648,7 +1771,7 @@ public final class Messages {
         return ratchetPublicKey_;
       }
       /**
-       * <code>bytes ratchet_public_key = 2;</code>
+       * <code>optional bytes ratchet_public_key = 2;</code>
        * @param value The ratchetPublicKey to set.
        * @return This builder for chaining.
        */
@@ -1660,7 +1783,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>bytes ratchet_public_key = 2;</code>
+       * <code>optional bytes ratchet_public_key = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearRatchetPublicKey() {
@@ -1734,49 +1857,128 @@ public final class Messages {
         return this;
       }
 
-      private int iv_ ;
+      private com.google.protobuf.ByteString messageIv_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>uint32 iv = 5;</code>
-       * @return The iv.
+       * <code>bytes message_iv = 5;</code>
+       * @return The messageIv.
        */
       @java.lang.Override
-      public int getIv() {
-        return iv_;
+      public com.google.protobuf.ByteString getMessageIv() {
+        return messageIv_;
       }
       /**
-       * <code>uint32 iv = 5;</code>
-       * @param value The iv to set.
+       * <code>bytes message_iv = 5;</code>
+       * @param value The messageIv to set.
        * @return This builder for chaining.
        */
-      public Builder setIv(int value) {
-
-        iv_ = value;
+      public Builder setMessageIv(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        messageIv_ = value;
         bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 iv = 5;</code>
+       * <code>bytes message_iv = 5;</code>
        * @return This builder for chaining.
        */
-      public Builder clearIv() {
+      public Builder clearMessageIv() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        iv_ = 0;
+        messageIv_ = getDefaultInstance().getMessageIv();
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object senderId_ = "";
+      /**
+       * <code>optional string sender_id = 6;</code>
+       * @return Whether the senderId field is set.
+       */
+      public boolean hasSenderId() {
+        return ((bitField0_ & 0x00000020) != 0);
+      }
+      /**
+       * <code>optional string sender_id = 6;</code>
+       * @return The senderId.
+       */
+      public java.lang.String getSenderId() {
+        java.lang.Object ref = senderId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          senderId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string sender_id = 6;</code>
+       * @return The bytes for senderId.
+       */
+      public com.google.protobuf.ByteString
+          getSenderIdBytes() {
+        java.lang.Object ref = senderId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          senderId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string sender_id = 6;</code>
+       * @param value The senderId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSenderId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        senderId_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sender_id = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSenderId() {
+        senderId_ = getDefaultInstance().getSenderId();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sender_id = 6;</code>
+       * @param value The bytes for senderId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSenderIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        senderId_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
 
       private com.google.protobuf.ByteString ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes ephemeral_key = 6;</code>
+       * <code>optional bytes ephemeral_key = 7;</code>
        * @return Whether the ephemeralKey field is set.
        */
       @java.lang.Override
       public boolean hasEphemeralKey() {
-        return ((bitField0_ & 0x00000020) != 0);
+        return ((bitField0_ & 0x00000040) != 0);
       }
       /**
-       * <code>optional bytes ephemeral_key = 6;</code>
+       * <code>optional bytes ephemeral_key = 7;</code>
        * @return The ephemeralKey.
        */
       @java.lang.Override
@@ -1784,23 +1986,23 @@ public final class Messages {
         return ephemeralKey_;
       }
       /**
-       * <code>optional bytes ephemeral_key = 6;</code>
+       * <code>optional bytes ephemeral_key = 7;</code>
        * @param value The ephemeralKey to set.
        * @return This builder for chaining.
        */
       public Builder setEphemeralKey(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         ephemeralKey_ = value;
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
       /**
-       * <code>optional bytes ephemeral_key = 6;</code>
+       * <code>optional bytes ephemeral_key = 7;</code>
        * @return This builder for chaining.
        */
       public Builder clearEphemeralKey() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         ephemeralKey_ = getDefaultInstance().getEphemeralKey();
         onChanged();
         return this;
@@ -1808,15 +2010,15 @@ public final class Messages {
 
       private com.google.protobuf.ByteString oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes one_time_prekey = 7;</code>
+       * <code>optional bytes one_time_prekey = 8;</code>
        * @return Whether the oneTimePrekey field is set.
        */
       @java.lang.Override
       public boolean hasOneTimePrekey() {
-        return ((bitField0_ & 0x00000040) != 0);
+        return ((bitField0_ & 0x00000080) != 0);
       }
       /**
-       * <code>optional bytes one_time_prekey = 7;</code>
+       * <code>optional bytes one_time_prekey = 8;</code>
        * @return The oneTimePrekey.
        */
       @java.lang.Override
@@ -1824,23 +2026,23 @@ public final class Messages {
         return oneTimePrekey_;
       }
       /**
-       * <code>optional bytes one_time_prekey = 7;</code>
+       * <code>optional bytes one_time_prekey = 8;</code>
        * @param value The oneTimePrekey to set.
        * @return This builder for chaining.
        */
       public Builder setOneTimePrekey(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         oneTimePrekey_ = value;
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
       /**
-       * <code>optional bytes one_time_prekey = 7;</code>
+       * <code>optional bytes one_time_prekey = 8;</code>
        * @return This builder for chaining.
        */
       public Builder clearOneTimePrekey() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         oneTimePrekey_ = getDefaultInstance().getOneTimePrekey();
         onChanged();
         return this;
@@ -1902,73 +2104,54 @@ public final class Messages {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string message_id = 1;</code>
-     * @return The messageId.
-     */
-    java.lang.String getMessageId();
-    /**
-     * <code>string message_id = 1;</code>
-     * @return The bytes for messageId.
-     */
-    com.google.protobuf.ByteString
-        getMessageIdBytes();
-
-    /**
-     * <code>string sender_id = 2;</code>
-     * @return The senderId.
-     */
-    java.lang.String getSenderId();
-    /**
-     * <code>string sender_id = 2;</code>
-     * @return The bytes for senderId.
-     */
-    com.google.protobuf.ByteString
-        getSenderIdBytes();
-
-    /**
-     * <code>string chat_id = 3;</code>
+     * <code>string chat_id = 2;</code>
      * @return The chatId.
      */
     java.lang.String getChatId();
     /**
-     * <code>string chat_id = 3;</code>
+     * <code>string chat_id = 2;</code>
      * @return The bytes for chatId.
      */
     com.google.protobuf.ByteString
         getChatIdBytes();
 
     /**
-     * <code>.MessageHeader message_header = 4;</code>
+     * <code>.MessageHeader message_header = 3;</code>
      * @return Whether the messageHeader field is set.
      */
     boolean hasMessageHeader();
     /**
-     * <code>.MessageHeader message_header = 4;</code>
+     * <code>.MessageHeader message_header = 3;</code>
      * @return The messageHeader.
      */
     com.hsj.messagingdemo.dto.Messages.MessageHeader getMessageHeader();
     /**
-     * <code>.MessageHeader message_header = 4;</code>
+     * <code>.MessageHeader message_header = 3;</code>
      */
     com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder getMessageHeaderOrBuilder();
 
     /**
-     * <code>bytes message_contents_encrypted = 5;</code>
+     * <code>bytes message_contents_encrypted = 4;</code>
      * @return The messageContentsEncrypted.
      */
     com.google.protobuf.ByteString getMessageContentsEncrypted();
 
     /**
-     * <code>bytes public_key = 6;</code>
-     * @return The publicKey.
-     */
-    com.google.protobuf.ByteString getPublicKey();
-
-    /**
-     * <code>uint64 timestamp = 7;</code>
+     * <code>uint64 timestamp = 5;</code>
      * @return The timestamp.
      */
     long getTimestamp();
+
+    /**
+     * <code>optional bytes header_iv = 6;</code>
+     * @return Whether the headerIv field is set.
+     */
+    boolean hasHeaderIv();
+    /**
+     * <code>optional bytes header_iv = 6;</code>
+     * @return The headerIv.
+     */
+    com.google.protobuf.ByteString getHeaderIv();
   }
   /**
    * Protobuf type {@code ChatMessage}
@@ -1992,11 +2175,9 @@ public final class Messages {
       super(builder);
     }
     private ChatMessage() {
-      messageId_ = "";
-      senderId_ = "";
       chatId_ = "";
       messageContentsEncrypted_ = com.google.protobuf.ByteString.EMPTY;
-      publicKey_ = com.google.protobuf.ByteString.EMPTY;
+      headerIv_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
@@ -2013,89 +2194,11 @@ public final class Messages {
     }
 
     private int bitField0_;
-    public static final int MESSAGE_ID_FIELD_NUMBER = 1;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object messageId_ = "";
-    /**
-     * <code>string message_id = 1;</code>
-     * @return The messageId.
-     */
-    @java.lang.Override
-    public java.lang.String getMessageId() {
-      java.lang.Object ref = messageId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        messageId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string message_id = 1;</code>
-     * @return The bytes for messageId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getMessageIdBytes() {
-      java.lang.Object ref = messageId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        messageId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SENDER_ID_FIELD_NUMBER = 2;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object senderId_ = "";
-    /**
-     * <code>string sender_id = 2;</code>
-     * @return The senderId.
-     */
-    @java.lang.Override
-    public java.lang.String getSenderId() {
-      java.lang.Object ref = senderId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        senderId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string sender_id = 2;</code>
-     * @return The bytes for senderId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getSenderIdBytes() {
-      java.lang.Object ref = senderId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        senderId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int CHAT_ID_FIELD_NUMBER = 3;
+    public static final int CHAT_ID_FIELD_NUMBER = 2;
     @SuppressWarnings("serial")
     private volatile java.lang.Object chatId_ = "";
     /**
-     * <code>string chat_id = 3;</code>
+     * <code>string chat_id = 2;</code>
      * @return The chatId.
      */
     @java.lang.Override
@@ -2112,7 +2215,7 @@ public final class Messages {
       }
     }
     /**
-     * <code>string chat_id = 3;</code>
+     * <code>string chat_id = 2;</code>
      * @return The bytes for chatId.
      */
     @java.lang.Override
@@ -2130,10 +2233,10 @@ public final class Messages {
       }
     }
 
-    public static final int MESSAGE_HEADER_FIELD_NUMBER = 4;
+    public static final int MESSAGE_HEADER_FIELD_NUMBER = 3;
     private com.hsj.messagingdemo.dto.Messages.MessageHeader messageHeader_;
     /**
-     * <code>.MessageHeader message_header = 4;</code>
+     * <code>.MessageHeader message_header = 3;</code>
      * @return Whether the messageHeader field is set.
      */
     @java.lang.Override
@@ -2141,7 +2244,7 @@ public final class Messages {
       return ((bitField0_ & 0x00000001) != 0);
     }
     /**
-     * <code>.MessageHeader message_header = 4;</code>
+     * <code>.MessageHeader message_header = 3;</code>
      * @return The messageHeader.
      */
     @java.lang.Override
@@ -2149,17 +2252,17 @@ public final class Messages {
       return messageHeader_ == null ? com.hsj.messagingdemo.dto.Messages.MessageHeader.getDefaultInstance() : messageHeader_;
     }
     /**
-     * <code>.MessageHeader message_header = 4;</code>
+     * <code>.MessageHeader message_header = 3;</code>
      */
     @java.lang.Override
     public com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder getMessageHeaderOrBuilder() {
       return messageHeader_ == null ? com.hsj.messagingdemo.dto.Messages.MessageHeader.getDefaultInstance() : messageHeader_;
     }
 
-    public static final int MESSAGE_CONTENTS_ENCRYPTED_FIELD_NUMBER = 5;
+    public static final int MESSAGE_CONTENTS_ENCRYPTED_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString messageContentsEncrypted_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes message_contents_encrypted = 5;</code>
+     * <code>bytes message_contents_encrypted = 4;</code>
      * @return The messageContentsEncrypted.
      */
     @java.lang.Override
@@ -2167,26 +2270,34 @@ public final class Messages {
       return messageContentsEncrypted_;
     }
 
-    public static final int PUBLIC_KEY_FIELD_NUMBER = 6;
-    private com.google.protobuf.ByteString publicKey_ = com.google.protobuf.ByteString.EMPTY;
-    /**
-     * <code>bytes public_key = 6;</code>
-     * @return The publicKey.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString getPublicKey() {
-      return publicKey_;
-    }
-
-    public static final int TIMESTAMP_FIELD_NUMBER = 7;
+    public static final int TIMESTAMP_FIELD_NUMBER = 5;
     private long timestamp_ = 0L;
     /**
-     * <code>uint64 timestamp = 7;</code>
+     * <code>uint64 timestamp = 5;</code>
      * @return The timestamp.
      */
     @java.lang.Override
     public long getTimestamp() {
       return timestamp_;
+    }
+
+    public static final int HEADER_IV_FIELD_NUMBER = 6;
+    private com.google.protobuf.ByteString headerIv_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>optional bytes header_iv = 6;</code>
+     * @return Whether the headerIv field is set.
+     */
+    @java.lang.Override
+    public boolean hasHeaderIv() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>optional bytes header_iv = 6;</code>
+     * @return The headerIv.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getHeaderIv() {
+      return headerIv_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2203,26 +2314,20 @@ public final class Messages {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(messageId_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 1, messageId_);
-      }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(senderId_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, senderId_);
-      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(chatId_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 3, chatId_);
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, chatId_);
       }
       if (((bitField0_ & 0x00000001) != 0)) {
-        output.writeMessage(4, getMessageHeader());
+        output.writeMessage(3, getMessageHeader());
       }
       if (!messageContentsEncrypted_.isEmpty()) {
-        output.writeBytes(5, messageContentsEncrypted_);
-      }
-      if (!publicKey_.isEmpty()) {
-        output.writeBytes(6, publicKey_);
+        output.writeBytes(4, messageContentsEncrypted_);
       }
       if (timestamp_ != 0L) {
-        output.writeUInt64(7, timestamp_);
+        output.writeUInt64(5, timestamp_);
+      }
+      if (((bitField0_ & 0x00000002) != 0)) {
+        output.writeBytes(6, headerIv_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2233,30 +2338,24 @@ public final class Messages {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(messageId_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, messageId_);
-      }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(senderId_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, senderId_);
-      }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(chatId_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, chatId_);
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, chatId_);
       }
       if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getMessageHeader());
+          .computeMessageSize(3, getMessageHeader());
       }
       if (!messageContentsEncrypted_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, messageContentsEncrypted_);
-      }
-      if (!publicKey_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, publicKey_);
+          .computeBytesSize(4, messageContentsEncrypted_);
       }
       if (timestamp_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(7, timestamp_);
+          .computeUInt64Size(5, timestamp_);
+      }
+      if (((bitField0_ & 0x00000002) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, headerIv_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2273,10 +2372,6 @@ public final class Messages {
       }
       com.hsj.messagingdemo.dto.Messages.ChatMessage other = (com.hsj.messagingdemo.dto.Messages.ChatMessage) obj;
 
-      if (!getMessageId()
-          .equals(other.getMessageId())) return false;
-      if (!getSenderId()
-          .equals(other.getSenderId())) return false;
       if (!getChatId()
           .equals(other.getChatId())) return false;
       if (hasMessageHeader() != other.hasMessageHeader()) return false;
@@ -2286,10 +2381,13 @@ public final class Messages {
       }
       if (!getMessageContentsEncrypted()
           .equals(other.getMessageContentsEncrypted())) return false;
-      if (!getPublicKey()
-          .equals(other.getPublicKey())) return false;
       if (getTimestamp()
           != other.getTimestamp()) return false;
+      if (hasHeaderIv() != other.hasHeaderIv()) return false;
+      if (hasHeaderIv()) {
+        if (!getHeaderIv()
+            .equals(other.getHeaderIv())) return false;
+      }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -2301,10 +2399,6 @@ public final class Messages {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + MESSAGE_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getMessageId().hashCode();
-      hash = (37 * hash) + SENDER_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getSenderId().hashCode();
       hash = (37 * hash) + CHAT_ID_FIELD_NUMBER;
       hash = (53 * hash) + getChatId().hashCode();
       if (hasMessageHeader()) {
@@ -2313,11 +2407,13 @@ public final class Messages {
       }
       hash = (37 * hash) + MESSAGE_CONTENTS_ENCRYPTED_FIELD_NUMBER;
       hash = (53 * hash) + getMessageContentsEncrypted().hashCode();
-      hash = (37 * hash) + PUBLIC_KEY_FIELD_NUMBER;
-      hash = (53 * hash) + getPublicKey().hashCode();
       hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getTimestamp());
+      if (hasHeaderIv()) {
+        hash = (37 * hash) + HEADER_IV_FIELD_NUMBER;
+        hash = (53 * hash) + getHeaderIv().hashCode();
+      }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2455,8 +2551,6 @@ public final class Messages {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        messageId_ = "";
-        senderId_ = "";
         chatId_ = "";
         messageHeader_ = null;
         if (messageHeaderBuilder_ != null) {
@@ -2464,8 +2558,8 @@ public final class Messages {
           messageHeaderBuilder_ = null;
         }
         messageContentsEncrypted_ = com.google.protobuf.ByteString.EMPTY;
-        publicKey_ = com.google.protobuf.ByteString.EMPTY;
         timestamp_ = 0L;
+        headerIv_ = com.google.protobuf.ByteString.EMPTY;
         return this;
       }
 
@@ -2500,29 +2594,24 @@ public final class Messages {
       private void buildPartial0(com.hsj.messagingdemo.dto.Messages.ChatMessage result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.messageId_ = messageId_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.senderId_ = senderId_;
-        }
-        if (((from_bitField0_ & 0x00000004) != 0)) {
           result.chatId_ = chatId_;
         }
         int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000008) != 0)) {
+        if (((from_bitField0_ & 0x00000002) != 0)) {
           result.messageHeader_ = messageHeaderBuilder_ == null
               ? messageHeader_
               : messageHeaderBuilder_.build();
           to_bitField0_ |= 0x00000001;
         }
-        if (((from_bitField0_ & 0x00000010) != 0)) {
+        if (((from_bitField0_ & 0x00000004) != 0)) {
           result.messageContentsEncrypted_ = messageContentsEncrypted_;
         }
-        if (((from_bitField0_ & 0x00000020) != 0)) {
-          result.publicKey_ = publicKey_;
-        }
-        if (((from_bitField0_ & 0x00000040) != 0)) {
+        if (((from_bitField0_ & 0x00000008) != 0)) {
           result.timestamp_ = timestamp_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.headerIv_ = headerIv_;
+          to_bitField0_ |= 0x00000002;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -2539,19 +2628,9 @@ public final class Messages {
 
       public Builder mergeFrom(com.hsj.messagingdemo.dto.Messages.ChatMessage other) {
         if (other == com.hsj.messagingdemo.dto.Messages.ChatMessage.getDefaultInstance()) return this;
-        if (!other.getMessageId().isEmpty()) {
-          messageId_ = other.messageId_;
-          bitField0_ |= 0x00000001;
-          onChanged();
-        }
-        if (!other.getSenderId().isEmpty()) {
-          senderId_ = other.senderId_;
-          bitField0_ |= 0x00000002;
-          onChanged();
-        }
         if (!other.getChatId().isEmpty()) {
           chatId_ = other.chatId_;
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasMessageHeader()) {
@@ -2560,11 +2639,11 @@ public final class Messages {
         if (!other.getMessageContentsEncrypted().isEmpty()) {
           setMessageContentsEncrypted(other.getMessageContentsEncrypted());
         }
-        if (!other.getPublicKey().isEmpty()) {
-          setPublicKey(other.getPublicKey());
-        }
         if (other.getTimestamp() != 0L) {
           setTimestamp(other.getTimestamp());
+        }
+        if (other.hasHeaderIv()) {
+          setHeaderIv(other.getHeaderIv());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -2592,43 +2671,33 @@ public final class Messages {
               case 0:
                 done = true;
                 break;
-              case 10: {
-                messageId_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 10
               case 18: {
-                senderId_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000002;
+                chatId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
                 break;
               } // case 18
               case 26: {
-                chatId_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 26
-              case 34: {
                 input.readMessage(
                     internalGetMessageHeaderFieldBuilder().getBuilder(),
                     extensionRegistry);
-                bitField0_ |= 0x00000008;
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 26
+              case 34: {
+                messageContentsEncrypted_ = input.readBytes();
+                bitField0_ |= 0x00000004;
                 break;
               } // case 34
-              case 42: {
-                messageContentsEncrypted_ = input.readBytes();
+              case 40: {
+                timestamp_ = input.readUInt64();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 40
+              case 50: {
+                headerIv_ = input.readBytes();
                 bitField0_ |= 0x00000010;
                 break;
-              } // case 42
-              case 50: {
-                publicKey_ = input.readBytes();
-                bitField0_ |= 0x00000020;
-                break;
               } // case 50
-              case 56: {
-                timestamp_ = input.readUInt64();
-                bitField0_ |= 0x00000040;
-                break;
-              } // case 56
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -2646,153 +2715,9 @@ public final class Messages {
       }
       private int bitField0_;
 
-      private java.lang.Object messageId_ = "";
-      /**
-       * <code>string message_id = 1;</code>
-       * @return The messageId.
-       */
-      public java.lang.String getMessageId() {
-        java.lang.Object ref = messageId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          messageId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string message_id = 1;</code>
-       * @return The bytes for messageId.
-       */
-      public com.google.protobuf.ByteString
-          getMessageIdBytes() {
-        java.lang.Object ref = messageId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          messageId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string message_id = 1;</code>
-       * @param value The messageId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setMessageId(
-          java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        messageId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string message_id = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearMessageId() {
-        messageId_ = getDefaultInstance().getMessageId();
-        bitField0_ = (bitField0_ & ~0x00000001);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string message_id = 1;</code>
-       * @param value The bytes for messageId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setMessageIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        checkByteStringIsUtf8(value);
-        messageId_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object senderId_ = "";
-      /**
-       * <code>string sender_id = 2;</code>
-       * @return The senderId.
-       */
-      public java.lang.String getSenderId() {
-        java.lang.Object ref = senderId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          senderId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string sender_id = 2;</code>
-       * @return The bytes for senderId.
-       */
-      public com.google.protobuf.ByteString
-          getSenderIdBytes() {
-        java.lang.Object ref = senderId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          senderId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string sender_id = 2;</code>
-       * @param value The senderId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSenderId(
-          java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        senderId_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string sender_id = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearSenderId() {
-        senderId_ = getDefaultInstance().getSenderId();
-        bitField0_ = (bitField0_ & ~0x00000002);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string sender_id = 2;</code>
-       * @param value The bytes for senderId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSenderIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        checkByteStringIsUtf8(value);
-        senderId_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object chatId_ = "";
       /**
-       * <code>string chat_id = 3;</code>
+       * <code>string chat_id = 2;</code>
        * @return The chatId.
        */
       public java.lang.String getChatId() {
@@ -2808,7 +2733,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>string chat_id = 3;</code>
+       * <code>string chat_id = 2;</code>
        * @return The bytes for chatId.
        */
       public com.google.protobuf.ByteString
@@ -2825,7 +2750,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>string chat_id = 3;</code>
+       * <code>string chat_id = 2;</code>
        * @param value The chatId to set.
        * @return This builder for chaining.
        */
@@ -2833,22 +2758,22 @@ public final class Messages {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         chatId_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>string chat_id = 3;</code>
+       * <code>string chat_id = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearChatId() {
         chatId_ = getDefaultInstance().getChatId();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
       /**
-       * <code>string chat_id = 3;</code>
+       * <code>string chat_id = 2;</code>
        * @param value The bytes for chatId to set.
        * @return This builder for chaining.
        */
@@ -2857,7 +2782,7 @@ public final class Messages {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         chatId_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2866,14 +2791,14 @@ public final class Messages {
       private com.google.protobuf.SingleFieldBuilder<
           com.hsj.messagingdemo.dto.Messages.MessageHeader, com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder, com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder> messageHeaderBuilder_;
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        * @return Whether the messageHeader field is set.
        */
       public boolean hasMessageHeader() {
-        return ((bitField0_ & 0x00000008) != 0);
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        * @return The messageHeader.
        */
       public com.hsj.messagingdemo.dto.Messages.MessageHeader getMessageHeader() {
@@ -2884,7 +2809,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        */
       public Builder setMessageHeader(com.hsj.messagingdemo.dto.Messages.MessageHeader value) {
         if (messageHeaderBuilder_ == null) {
@@ -2895,12 +2820,12 @@ public final class Messages {
         } else {
           messageHeaderBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        */
       public Builder setMessageHeader(
           com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder builderForValue) {
@@ -2909,16 +2834,16 @@ public final class Messages {
         } else {
           messageHeaderBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        */
       public Builder mergeMessageHeader(com.hsj.messagingdemo.dto.Messages.MessageHeader value) {
         if (messageHeaderBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) != 0) &&
+          if (((bitField0_ & 0x00000002) != 0) &&
             messageHeader_ != null &&
             messageHeader_ != com.hsj.messagingdemo.dto.Messages.MessageHeader.getDefaultInstance()) {
             getMessageHeaderBuilder().mergeFrom(value);
@@ -2929,16 +2854,16 @@ public final class Messages {
           messageHeaderBuilder_.mergeFrom(value);
         }
         if (messageHeader_ != null) {
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         return this;
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        */
       public Builder clearMessageHeader() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000002);
         messageHeader_ = null;
         if (messageHeaderBuilder_ != null) {
           messageHeaderBuilder_.dispose();
@@ -2948,15 +2873,15 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder getMessageHeaderBuilder() {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000002;
         onChanged();
         return internalGetMessageHeaderFieldBuilder().getBuilder();
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder getMessageHeaderOrBuilder() {
         if (messageHeaderBuilder_ != null) {
@@ -2967,7 +2892,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>.MessageHeader message_header = 4;</code>
+       * <code>.MessageHeader message_header = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.hsj.messagingdemo.dto.Messages.MessageHeader, com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder, com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder> 
@@ -2985,7 +2910,7 @@ public final class Messages {
 
       private com.google.protobuf.ByteString messageContentsEncrypted_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes message_contents_encrypted = 5;</code>
+       * <code>bytes message_contents_encrypted = 4;</code>
        * @return The messageContentsEncrypted.
        */
       @java.lang.Override
@@ -2993,63 +2918,31 @@ public final class Messages {
         return messageContentsEncrypted_;
       }
       /**
-       * <code>bytes message_contents_encrypted = 5;</code>
+       * <code>bytes message_contents_encrypted = 4;</code>
        * @param value The messageContentsEncrypted to set.
        * @return This builder for chaining.
        */
       public Builder setMessageContentsEncrypted(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         messageContentsEncrypted_ = value;
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes message_contents_encrypted = 5;</code>
+       * <code>bytes message_contents_encrypted = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearMessageContentsEncrypted() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000004);
         messageContentsEncrypted_ = getDefaultInstance().getMessageContentsEncrypted();
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.ByteString publicKey_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>bytes public_key = 6;</code>
-       * @return The publicKey.
-       */
-      @java.lang.Override
-      public com.google.protobuf.ByteString getPublicKey() {
-        return publicKey_;
-      }
-      /**
-       * <code>bytes public_key = 6;</code>
-       * @param value The publicKey to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPublicKey(com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        publicKey_ = value;
-        bitField0_ |= 0x00000020;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bytes public_key = 6;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPublicKey() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        publicKey_ = getDefaultInstance().getPublicKey();
         onChanged();
         return this;
       }
 
       private long timestamp_ ;
       /**
-       * <code>uint64 timestamp = 7;</code>
+       * <code>uint64 timestamp = 5;</code>
        * @return The timestamp.
        */
       @java.lang.Override
@@ -3057,24 +2950,64 @@ public final class Messages {
         return timestamp_;
       }
       /**
-       * <code>uint64 timestamp = 7;</code>
+       * <code>uint64 timestamp = 5;</code>
        * @param value The timestamp to set.
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
 
         timestamp_ = value;
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
-       * <code>uint64 timestamp = 7;</code>
+       * <code>uint64 timestamp = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000008);
         timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString headerIv_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes header_iv = 6;</code>
+       * @return Whether the headerIv field is set.
+       */
+      @java.lang.Override
+      public boolean hasHeaderIv() {
+        return ((bitField0_ & 0x00000010) != 0);
+      }
+      /**
+       * <code>optional bytes header_iv = 6;</code>
+       * @return The headerIv.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getHeaderIv() {
+        return headerIv_;
+      }
+      /**
+       * <code>optional bytes header_iv = 6;</code>
+       * @param value The headerIv to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHeaderIv(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        headerIv_ = value;
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes header_iv = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearHeaderIv() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        headerIv_ = getDefaultInstance().getHeaderIv();
         onChanged();
         return this;
       }
@@ -3152,52 +3085,41 @@ public final class Messages {
         getIdBytes();
 
     /**
-     * <code>optional string username = 6;</code>
-     * @return Whether the username field is set.
-     */
-    boolean hasUsername();
-    /**
-     * <code>optional string username = 6;</code>
-     * @return The username.
-     */
-    java.lang.String getUsername();
-    /**
-     * <code>optional string username = 6;</code>
-     * @return The bytes for username.
-     */
-    com.google.protobuf.ByteString
-        getUsernameBytes();
-
-    /**
      * <code>bytes identity_key = 2;</code>
      * @return The identityKey.
      */
     com.google.protobuf.ByteString getIdentityKey();
 
     /**
-     * <code>bytes signed_prekey = 3;</code>
+     * <code>bytes verifier_key = 3;</code>
+     * @return The verifierKey.
+     */
+    com.google.protobuf.ByteString getVerifierKey();
+
+    /**
+     * <code>bytes signed_prekey = 4;</code>
      * @return The signedPrekey.
      */
     com.google.protobuf.ByteString getSignedPrekey();
 
     /**
-     * <code>bytes prekey_signature = 4;</code>
+     * <code>bytes prekey_signature = 5;</code>
      * @return The prekeySignature.
      */
     com.google.protobuf.ByteString getPrekeySignature();
 
     /**
-     * <code>repeated bytes one_time_prekey = 5;</code>
+     * <code>repeated bytes one_time_prekey = 6;</code>
      * @return A list containing the oneTimePrekey.
      */
     java.util.List<com.google.protobuf.ByteString> getOneTimePrekeyList();
     /**
-     * <code>repeated bytes one_time_prekey = 5;</code>
+     * <code>repeated bytes one_time_prekey = 6;</code>
      * @return The count of oneTimePrekey.
      */
     int getOneTimePrekeyCount();
     /**
-     * <code>repeated bytes one_time_prekey = 5;</code>
+     * <code>repeated bytes one_time_prekey = 6;</code>
      * @param index The index of the element to return.
      * @return The oneTimePrekey at the given index.
      */
@@ -3226,8 +3148,8 @@ public final class Messages {
     }
     private PreKeyBundle() {
       id_ = "";
-      username_ = "";
       identityKey_ = com.google.protobuf.ByteString.EMPTY;
+      verifierKey_ = com.google.protobuf.ByteString.EMPTY;
       signedPrekey_ = com.google.protobuf.ByteString.EMPTY;
       prekeySignature_ = com.google.protobuf.ByteString.EMPTY;
       oneTimePrekey_ = emptyList(com.google.protobuf.ByteString.class);
@@ -3294,53 +3216,6 @@ public final class Messages {
       }
     }
 
-    public static final int USERNAME_FIELD_NUMBER = 6;
-    @SuppressWarnings("serial")
-    private volatile java.lang.Object username_ = "";
-    /**
-     * <code>optional string username = 6;</code>
-     * @return Whether the username field is set.
-     */
-    @java.lang.Override
-    public boolean hasUsername() {
-      return ((bitField0_ & 0x00000002) != 0);
-    }
-    /**
-     * <code>optional string username = 6;</code>
-     * @return The username.
-     */
-    @java.lang.Override
-    public java.lang.String getUsername() {
-      java.lang.Object ref = username_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        username_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>optional string username = 6;</code>
-     * @return The bytes for username.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getUsernameBytes() {
-      java.lang.Object ref = username_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        username_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     public static final int IDENTITY_KEY_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString identityKey_ = com.google.protobuf.ByteString.EMPTY;
     /**
@@ -3352,10 +3227,21 @@ public final class Messages {
       return identityKey_;
     }
 
-    public static final int SIGNED_PREKEY_FIELD_NUMBER = 3;
+    public static final int VERIFIER_KEY_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString verifierKey_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>bytes verifier_key = 3;</code>
+     * @return The verifierKey.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getVerifierKey() {
+      return verifierKey_;
+    }
+
+    public static final int SIGNED_PREKEY_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString signedPrekey_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes signed_prekey = 3;</code>
+     * <code>bytes signed_prekey = 4;</code>
      * @return The signedPrekey.
      */
     @java.lang.Override
@@ -3363,10 +3249,10 @@ public final class Messages {
       return signedPrekey_;
     }
 
-    public static final int PREKEY_SIGNATURE_FIELD_NUMBER = 4;
+    public static final int PREKEY_SIGNATURE_FIELD_NUMBER = 5;
     private com.google.protobuf.ByteString prekeySignature_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes prekey_signature = 4;</code>
+     * <code>bytes prekey_signature = 5;</code>
      * @return The prekeySignature.
      */
     @java.lang.Override
@@ -3374,12 +3260,12 @@ public final class Messages {
       return prekeySignature_;
     }
 
-    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 5;
+    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 6;
     @SuppressWarnings("serial")
     private com.google.protobuf.Internal.ProtobufList<com.google.protobuf.ByteString> oneTimePrekey_ =
         emptyList(com.google.protobuf.ByteString.class);
     /**
-     * <code>repeated bytes one_time_prekey = 5;</code>
+     * <code>repeated bytes one_time_prekey = 6;</code>
      * @return A list containing the oneTimePrekey.
      */
     @java.lang.Override
@@ -3388,14 +3274,14 @@ public final class Messages {
       return oneTimePrekey_;
     }
     /**
-     * <code>repeated bytes one_time_prekey = 5;</code>
+     * <code>repeated bytes one_time_prekey = 6;</code>
      * @return The count of oneTimePrekey.
      */
     public int getOneTimePrekeyCount() {
       return oneTimePrekey_.size();
     }
     /**
-     * <code>repeated bytes one_time_prekey = 5;</code>
+     * <code>repeated bytes one_time_prekey = 6;</code>
      * @param index The index of the element to return.
      * @return The oneTimePrekey at the given index.
      */
@@ -3423,17 +3309,17 @@ public final class Messages {
       if (!identityKey_.isEmpty()) {
         output.writeBytes(2, identityKey_);
       }
+      if (!verifierKey_.isEmpty()) {
+        output.writeBytes(3, verifierKey_);
+      }
       if (!signedPrekey_.isEmpty()) {
-        output.writeBytes(3, signedPrekey_);
+        output.writeBytes(4, signedPrekey_);
       }
       if (!prekeySignature_.isEmpty()) {
-        output.writeBytes(4, prekeySignature_);
+        output.writeBytes(5, prekeySignature_);
       }
       for (int i = 0; i < oneTimePrekey_.size(); i++) {
-        output.writeBytes(5, oneTimePrekey_.get(i));
-      }
-      if (((bitField0_ & 0x00000002) != 0)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 6, username_);
+        output.writeBytes(6, oneTimePrekey_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -3451,13 +3337,17 @@ public final class Messages {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, identityKey_);
       }
+      if (!verifierKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, verifierKey_);
+      }
       if (!signedPrekey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, signedPrekey_);
+          .computeBytesSize(4, signedPrekey_);
       }
       if (!prekeySignature_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, prekeySignature_);
+          .computeBytesSize(5, prekeySignature_);
       }
       {
         int dataSize = 0;
@@ -3467,9 +3357,6 @@ public final class Messages {
         }
         size += dataSize;
         size += 1 * getOneTimePrekeyList().size();
-      }
-      if (((bitField0_ & 0x00000002) != 0)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(6, username_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -3491,13 +3378,10 @@ public final class Messages {
         if (!getId()
             .equals(other.getId())) return false;
       }
-      if (hasUsername() != other.hasUsername()) return false;
-      if (hasUsername()) {
-        if (!getUsername()
-            .equals(other.getUsername())) return false;
-      }
       if (!getIdentityKey()
           .equals(other.getIdentityKey())) return false;
+      if (!getVerifierKey()
+          .equals(other.getVerifierKey())) return false;
       if (!getSignedPrekey()
           .equals(other.getSignedPrekey())) return false;
       if (!getPrekeySignature()
@@ -3519,12 +3403,10 @@ public final class Messages {
         hash = (37 * hash) + ID_FIELD_NUMBER;
         hash = (53 * hash) + getId().hashCode();
       }
-      if (hasUsername()) {
-        hash = (37 * hash) + USERNAME_FIELD_NUMBER;
-        hash = (53 * hash) + getUsername().hashCode();
-      }
       hash = (37 * hash) + IDENTITY_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getIdentityKey().hashCode();
+      hash = (37 * hash) + VERIFIER_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getVerifierKey().hashCode();
       hash = (37 * hash) + SIGNED_PREKEY_FIELD_NUMBER;
       hash = (53 * hash) + getSignedPrekey().hashCode();
       hash = (37 * hash) + PREKEY_SIGNATURE_FIELD_NUMBER;
@@ -3665,8 +3547,8 @@ public final class Messages {
         super.clear();
         bitField0_ = 0;
         id_ = "";
-        username_ = "";
         identityKey_ = com.google.protobuf.ByteString.EMPTY;
+        verifierKey_ = com.google.protobuf.ByteString.EMPTY;
         signedPrekey_ = com.google.protobuf.ByteString.EMPTY;
         prekeySignature_ = com.google.protobuf.ByteString.EMPTY;
         oneTimePrekey_ = emptyList(com.google.protobuf.ByteString.class);
@@ -3709,11 +3591,10 @@ public final class Messages {
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.username_ = username_;
-          to_bitField0_ |= 0x00000002;
+          result.identityKey_ = identityKey_;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.identityKey_ = identityKey_;
+          result.verifierKey_ = verifierKey_;
         }
         if (((from_bitField0_ & 0x00000008) != 0)) {
           result.signedPrekey_ = signedPrekey_;
@@ -3745,13 +3626,11 @@ public final class Messages {
           bitField0_ |= 0x00000001;
           onChanged();
         }
-        if (other.hasUsername()) {
-          username_ = other.username_;
-          bitField0_ |= 0x00000002;
-          onChanged();
-        }
         if (!other.getIdentityKey().isEmpty()) {
           setIdentityKey(other.getIdentityKey());
+        }
+        if (!other.getVerifierKey().isEmpty()) {
+          setVerifierKey(other.getVerifierKey());
         }
         if (!other.getSignedPrekey().isEmpty()) {
           setSignedPrekey(other.getSignedPrekey());
@@ -3803,28 +3682,28 @@ public final class Messages {
               } // case 10
               case 18: {
                 identityKey_ = input.readBytes();
-                bitField0_ |= 0x00000004;
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
-                signedPrekey_ = input.readBytes();
-                bitField0_ |= 0x00000008;
+                verifierKey_ = input.readBytes();
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               case 34: {
-                prekeySignature_ = input.readBytes();
-                bitField0_ |= 0x00000010;
+                signedPrekey_ = input.readBytes();
+                bitField0_ |= 0x00000008;
                 break;
               } // case 34
               case 42: {
-                com.google.protobuf.ByteString v = input.readBytes();
-                ensureOneTimePrekeyIsMutable();
-                oneTimePrekey_.add(v);
+                prekeySignature_ = input.readBytes();
+                bitField0_ |= 0x00000010;
                 break;
               } // case 42
               case 50: {
-                username_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000002;
+                com.google.protobuf.ByteString v = input.readBytes();
+                ensureOneTimePrekeyIsMutable();
+                oneTimePrekey_.add(v);
                 break;
               } // case 50
               default: {
@@ -3923,85 +3802,6 @@ public final class Messages {
         return this;
       }
 
-      private java.lang.Object username_ = "";
-      /**
-       * <code>optional string username = 6;</code>
-       * @return Whether the username field is set.
-       */
-      public boolean hasUsername() {
-        return ((bitField0_ & 0x00000002) != 0);
-      }
-      /**
-       * <code>optional string username = 6;</code>
-       * @return The username.
-       */
-      public java.lang.String getUsername() {
-        java.lang.Object ref = username_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          username_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string username = 6;</code>
-       * @return The bytes for username.
-       */
-      public com.google.protobuf.ByteString
-          getUsernameBytes() {
-        java.lang.Object ref = username_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          username_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string username = 6;</code>
-       * @param value The username to set.
-       * @return This builder for chaining.
-       */
-      public Builder setUsername(
-          java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        username_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string username = 6;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearUsername() {
-        username_ = getDefaultInstance().getUsername();
-        bitField0_ = (bitField0_ & ~0x00000002);
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string username = 6;</code>
-       * @param value The bytes for username to set.
-       * @return This builder for chaining.
-       */
-      public Builder setUsernameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) { throw new NullPointerException(); }
-        checkByteStringIsUtf8(value);
-        username_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-
       private com.google.protobuf.ByteString identityKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
        * <code>bytes identity_key = 2;</code>
@@ -4019,7 +3819,7 @@ public final class Messages {
       public Builder setIdentityKey(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         identityKey_ = value;
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4028,15 +3828,47 @@ public final class Messages {
        * @return This builder for chaining.
        */
       public Builder clearIdentityKey() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         identityKey_ = getDefaultInstance().getIdentityKey();
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString verifierKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes verifier_key = 3;</code>
+       * @return The verifierKey.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getVerifierKey() {
+        return verifierKey_;
+      }
+      /**
+       * <code>bytes verifier_key = 3;</code>
+       * @param value The verifierKey to set.
+       * @return This builder for chaining.
+       */
+      public Builder setVerifierKey(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        verifierKey_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes verifier_key = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearVerifierKey() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        verifierKey_ = getDefaultInstance().getVerifierKey();
         onChanged();
         return this;
       }
 
       private com.google.protobuf.ByteString signedPrekey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes signed_prekey = 3;</code>
+       * <code>bytes signed_prekey = 4;</code>
        * @return The signedPrekey.
        */
       @java.lang.Override
@@ -4044,7 +3876,7 @@ public final class Messages {
         return signedPrekey_;
       }
       /**
-       * <code>bytes signed_prekey = 3;</code>
+       * <code>bytes signed_prekey = 4;</code>
        * @param value The signedPrekey to set.
        * @return This builder for chaining.
        */
@@ -4056,7 +3888,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>bytes signed_prekey = 3;</code>
+       * <code>bytes signed_prekey = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearSignedPrekey() {
@@ -4068,7 +3900,7 @@ public final class Messages {
 
       private com.google.protobuf.ByteString prekeySignature_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes prekey_signature = 4;</code>
+       * <code>bytes prekey_signature = 5;</code>
        * @return The prekeySignature.
        */
       @java.lang.Override
@@ -4076,7 +3908,7 @@ public final class Messages {
         return prekeySignature_;
       }
       /**
-       * <code>bytes prekey_signature = 4;</code>
+       * <code>bytes prekey_signature = 5;</code>
        * @param value The prekeySignature to set.
        * @return This builder for chaining.
        */
@@ -4088,7 +3920,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>bytes prekey_signature = 4;</code>
+       * <code>bytes prekey_signature = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearPrekeySignature() {
@@ -4106,7 +3938,7 @@ public final class Messages {
         bitField0_ |= 0x00000020;
       }
       /**
-       * <code>repeated bytes one_time_prekey = 5;</code>
+       * <code>repeated bytes one_time_prekey = 6;</code>
        * @return A list containing the oneTimePrekey.
        */
       public java.util.List<com.google.protobuf.ByteString>
@@ -4115,14 +3947,14 @@ public final class Messages {
         return oneTimePrekey_;
       }
       /**
-       * <code>repeated bytes one_time_prekey = 5;</code>
+       * <code>repeated bytes one_time_prekey = 6;</code>
        * @return The count of oneTimePrekey.
        */
       public int getOneTimePrekeyCount() {
         return oneTimePrekey_.size();
       }
       /**
-       * <code>repeated bytes one_time_prekey = 5;</code>
+       * <code>repeated bytes one_time_prekey = 6;</code>
        * @param index The index of the element to return.
        * @return The oneTimePrekey at the given index.
        */
@@ -4130,7 +3962,7 @@ public final class Messages {
         return oneTimePrekey_.get(index);
       }
       /**
-       * <code>repeated bytes one_time_prekey = 5;</code>
+       * <code>repeated bytes one_time_prekey = 6;</code>
        * @param index The index to set the value at.
        * @param value The oneTimePrekey to set.
        * @return This builder for chaining.
@@ -4145,7 +3977,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated bytes one_time_prekey = 5;</code>
+       * <code>repeated bytes one_time_prekey = 6;</code>
        * @param value The oneTimePrekey to add.
        * @return This builder for chaining.
        */
@@ -4158,7 +3990,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated bytes one_time_prekey = 5;</code>
+       * <code>repeated bytes one_time_prekey = 6;</code>
        * @param values The oneTimePrekey to add.
        * @return This builder for chaining.
        */
@@ -4172,7 +4004,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated bytes one_time_prekey = 5;</code>
+       * <code>repeated bytes one_time_prekey = 6;</code>
        * @return This builder for chaining.
        */
       public Builder clearOneTimePrekey() {
@@ -4773,46 +4605,61 @@ public final class Messages {
     com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getIdentityKeyOrBuilder();
 
     /**
-     * <code>.KeyPair signed_prekey = 3;</code>
+     * <code>.KeyPair verifier_key = 3;</code>
+     * @return Whether the verifierKey field is set.
+     */
+    boolean hasVerifierKey();
+    /**
+     * <code>.KeyPair verifier_key = 3;</code>
+     * @return The verifierKey.
+     */
+    com.hsj.messagingdemo.dto.Messages.KeyPair getVerifierKey();
+    /**
+     * <code>.KeyPair verifier_key = 3;</code>
+     */
+    com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getVerifierKeyOrBuilder();
+
+    /**
+     * <code>.KeyPair signed_prekey = 4;</code>
      * @return Whether the signedPrekey field is set.
      */
     boolean hasSignedPrekey();
     /**
-     * <code>.KeyPair signed_prekey = 3;</code>
+     * <code>.KeyPair signed_prekey = 4;</code>
      * @return The signedPrekey.
      */
     com.hsj.messagingdemo.dto.Messages.KeyPair getSignedPrekey();
     /**
-     * <code>.KeyPair signed_prekey = 3;</code>
+     * <code>.KeyPair signed_prekey = 4;</code>
      */
     com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getSignedPrekeyOrBuilder();
 
     /**
-     * <code>uint64 signed_prekey_expiration = 4;</code>
+     * <code>uint64 signed_prekey_expiration = 5;</code>
      * @return The signedPrekeyExpiration.
      */
     long getSignedPrekeyExpiration();
 
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     java.util.List<com.hsj.messagingdemo.dto.Messages.KeyPair> 
         getOneTimePrekeyList();
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     com.hsj.messagingdemo.dto.Messages.KeyPair getOneTimePrekey(int index);
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     int getOneTimePrekeyCount();
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     java.util.List<? extends com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> 
         getOneTimePrekeyOrBuilderList();
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getOneTimePrekeyOrBuilder(
         int index);
@@ -4922,18 +4769,44 @@ public final class Messages {
       return identityKey_ == null ? com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance() : identityKey_;
     }
 
-    public static final int SIGNED_PREKEY_FIELD_NUMBER = 3;
+    public static final int VERIFIER_KEY_FIELD_NUMBER = 3;
+    private com.hsj.messagingdemo.dto.Messages.KeyPair verifierKey_;
+    /**
+     * <code>.KeyPair verifier_key = 3;</code>
+     * @return Whether the verifierKey field is set.
+     */
+    @java.lang.Override
+    public boolean hasVerifierKey() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>.KeyPair verifier_key = 3;</code>
+     * @return The verifierKey.
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.KeyPair getVerifierKey() {
+      return verifierKey_ == null ? com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance() : verifierKey_;
+    }
+    /**
+     * <code>.KeyPair verifier_key = 3;</code>
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getVerifierKeyOrBuilder() {
+      return verifierKey_ == null ? com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance() : verifierKey_;
+    }
+
+    public static final int SIGNED_PREKEY_FIELD_NUMBER = 4;
     private com.hsj.messagingdemo.dto.Messages.KeyPair signedPrekey_;
     /**
-     * <code>.KeyPair signed_prekey = 3;</code>
+     * <code>.KeyPair signed_prekey = 4;</code>
      * @return Whether the signedPrekey field is set.
      */
     @java.lang.Override
     public boolean hasSignedPrekey() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>.KeyPair signed_prekey = 3;</code>
+     * <code>.KeyPair signed_prekey = 4;</code>
      * @return The signedPrekey.
      */
     @java.lang.Override
@@ -4941,17 +4814,17 @@ public final class Messages {
       return signedPrekey_ == null ? com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance() : signedPrekey_;
     }
     /**
-     * <code>.KeyPair signed_prekey = 3;</code>
+     * <code>.KeyPair signed_prekey = 4;</code>
      */
     @java.lang.Override
     public com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getSignedPrekeyOrBuilder() {
       return signedPrekey_ == null ? com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance() : signedPrekey_;
     }
 
-    public static final int SIGNED_PREKEY_EXPIRATION_FIELD_NUMBER = 4;
+    public static final int SIGNED_PREKEY_EXPIRATION_FIELD_NUMBER = 5;
     private long signedPrekeyExpiration_ = 0L;
     /**
-     * <code>uint64 signed_prekey_expiration = 4;</code>
+     * <code>uint64 signed_prekey_expiration = 5;</code>
      * @return The signedPrekeyExpiration.
      */
     @java.lang.Override
@@ -4959,18 +4832,18 @@ public final class Messages {
       return signedPrekeyExpiration_;
     }
 
-    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 5;
+    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 6;
     @SuppressWarnings("serial")
     private java.util.List<com.hsj.messagingdemo.dto.Messages.KeyPair> oneTimePrekey_;
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     @java.lang.Override
     public java.util.List<com.hsj.messagingdemo.dto.Messages.KeyPair> getOneTimePrekeyList() {
       return oneTimePrekey_;
     }
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     @java.lang.Override
     public java.util.List<? extends com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> 
@@ -4978,21 +4851,21 @@ public final class Messages {
       return oneTimePrekey_;
     }
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     @java.lang.Override
     public int getOneTimePrekeyCount() {
       return oneTimePrekey_.size();
     }
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     @java.lang.Override
     public com.hsj.messagingdemo.dto.Messages.KeyPair getOneTimePrekey(int index) {
       return oneTimePrekey_.get(index);
     }
     /**
-     * <code>repeated .KeyPair one_time_prekey = 5;</code>
+     * <code>repeated .KeyPair one_time_prekey = 6;</code>
      */
     @java.lang.Override
     public com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getOneTimePrekeyOrBuilder(
@@ -5021,13 +4894,16 @@ public final class Messages {
         output.writeMessage(2, getIdentityKey());
       }
       if (((bitField0_ & 0x00000002) != 0)) {
-        output.writeMessage(3, getSignedPrekey());
+        output.writeMessage(3, getVerifierKey());
+      }
+      if (((bitField0_ & 0x00000004) != 0)) {
+        output.writeMessage(4, getSignedPrekey());
       }
       if (signedPrekeyExpiration_ != 0L) {
-        output.writeUInt64(4, signedPrekeyExpiration_);
+        output.writeUInt64(5, signedPrekeyExpiration_);
       }
       for (int i = 0; i < oneTimePrekey_.size(); i++) {
-        output.writeMessage(5, oneTimePrekey_.get(i));
+        output.writeMessage(6, oneTimePrekey_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -5047,15 +4923,19 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getSignedPrekey());
+          .computeMessageSize(3, getVerifierKey());
+      }
+      if (((bitField0_ & 0x00000004) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, getSignedPrekey());
       }
       if (signedPrekeyExpiration_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(4, signedPrekeyExpiration_);
+          .computeUInt64Size(5, signedPrekeyExpiration_);
       }
       for (int i = 0; i < oneTimePrekey_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, oneTimePrekey_.get(i));
+          .computeMessageSize(6, oneTimePrekey_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -5078,6 +4958,11 @@ public final class Messages {
       if (hasIdentityKey()) {
         if (!getIdentityKey()
             .equals(other.getIdentityKey())) return false;
+      }
+      if (hasVerifierKey() != other.hasVerifierKey()) return false;
+      if (hasVerifierKey()) {
+        if (!getVerifierKey()
+            .equals(other.getVerifierKey())) return false;
       }
       if (hasSignedPrekey() != other.hasSignedPrekey()) return false;
       if (hasSignedPrekey()) {
@@ -5104,6 +4989,10 @@ public final class Messages {
       if (hasIdentityKey()) {
         hash = (37 * hash) + IDENTITY_KEY_FIELD_NUMBER;
         hash = (53 * hash) + getIdentityKey().hashCode();
+      }
+      if (hasVerifierKey()) {
+        hash = (37 * hash) + VERIFIER_KEY_FIELD_NUMBER;
+        hash = (53 * hash) + getVerifierKey().hashCode();
       }
       if (hasSignedPrekey()) {
         hash = (37 * hash) + SIGNED_PREKEY_FIELD_NUMBER;
@@ -5247,6 +5136,7 @@ public final class Messages {
         if (com.google.protobuf.GeneratedMessage
                 .alwaysUseFieldBuilders) {
           internalGetIdentityKeyFieldBuilder();
+          internalGetVerifierKeyFieldBuilder();
           internalGetSignedPrekeyFieldBuilder();
           internalGetOneTimePrekeyFieldBuilder();
         }
@@ -5261,6 +5151,11 @@ public final class Messages {
           identityKeyBuilder_.dispose();
           identityKeyBuilder_ = null;
         }
+        verifierKey_ = null;
+        if (verifierKeyBuilder_ != null) {
+          verifierKeyBuilder_.dispose();
+          verifierKeyBuilder_ = null;
+        }
         signedPrekey_ = null;
         if (signedPrekeyBuilder_ != null) {
           signedPrekeyBuilder_.dispose();
@@ -5273,7 +5168,7 @@ public final class Messages {
           oneTimePrekey_ = null;
           oneTimePrekeyBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -5308,9 +5203,9 @@ public final class Messages {
 
       private void buildPartialRepeatedFields(com.hsj.messagingdemo.dto.Messages.Identity result) {
         if (oneTimePrekeyBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) != 0)) {
+          if (((bitField0_ & 0x00000020) != 0)) {
             oneTimePrekey_ = java.util.Collections.unmodifiableList(oneTimePrekey_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.oneTimePrekey_ = oneTimePrekey_;
         } else {
@@ -5331,12 +5226,18 @@ public final class Messages {
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.signedPrekey_ = signedPrekeyBuilder_ == null
-              ? signedPrekey_
-              : signedPrekeyBuilder_.build();
+          result.verifierKey_ = verifierKeyBuilder_ == null
+              ? verifierKey_
+              : verifierKeyBuilder_.build();
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.signedPrekey_ = signedPrekeyBuilder_ == null
+              ? signedPrekey_
+              : signedPrekeyBuilder_.build();
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
           result.signedPrekeyExpiration_ = signedPrekeyExpiration_;
         }
         result.bitField0_ |= to_bitField0_;
@@ -5362,6 +5263,9 @@ public final class Messages {
         if (other.hasIdentityKey()) {
           mergeIdentityKey(other.getIdentityKey());
         }
+        if (other.hasVerifierKey()) {
+          mergeVerifierKey(other.getVerifierKey());
+        }
         if (other.hasSignedPrekey()) {
           mergeSignedPrekey(other.getSignedPrekey());
         }
@@ -5372,7 +5276,7 @@ public final class Messages {
           if (!other.oneTimePrekey_.isEmpty()) {
             if (oneTimePrekey_.isEmpty()) {
               oneTimePrekey_ = other.oneTimePrekey_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000020);
             } else {
               ensureOneTimePrekeyIsMutable();
               oneTimePrekey_.addAll(other.oneTimePrekey_);
@@ -5385,7 +5289,7 @@ public final class Messages {
               oneTimePrekeyBuilder_.dispose();
               oneTimePrekeyBuilder_ = null;
               oneTimePrekey_ = other.oneTimePrekey_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000020);
               oneTimePrekeyBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    internalGetOneTimePrekeyFieldBuilder() : null;
@@ -5434,17 +5338,24 @@ public final class Messages {
               } // case 18
               case 26: {
                 input.readMessage(
-                    internalGetSignedPrekeyFieldBuilder().getBuilder(),
+                    internalGetVerifierKeyFieldBuilder().getBuilder(),
                     extensionRegistry);
                 bitField0_ |= 0x00000004;
                 break;
               } // case 26
-              case 32: {
-                signedPrekeyExpiration_ = input.readUInt64();
+              case 34: {
+                input.readMessage(
+                    internalGetSignedPrekeyFieldBuilder().getBuilder(),
+                    extensionRegistry);
                 bitField0_ |= 0x00000008;
                 break;
-              } // case 32
-              case 42: {
+              } // case 34
+              case 40: {
+                signedPrekeyExpiration_ = input.readUInt64();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 40
+              case 50: {
                 com.hsj.messagingdemo.dto.Messages.KeyPair m =
                     input.readMessage(
                         com.hsj.messagingdemo.dto.Messages.KeyPair.parser(),
@@ -5456,7 +5367,7 @@ public final class Messages {
                   oneTimePrekeyBuilder_.addMessage(m);
                 }
                 break;
-              } // case 42
+              } // case 50
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5667,18 +5578,139 @@ public final class Messages {
         return identityKeyBuilder_;
       }
 
+      private com.hsj.messagingdemo.dto.Messages.KeyPair verifierKey_;
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.KeyPair, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder, com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> verifierKeyBuilder_;
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       * @return Whether the verifierKey field is set.
+       */
+      public boolean hasVerifierKey() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       * @return The verifierKey.
+       */
+      public com.hsj.messagingdemo.dto.Messages.KeyPair getVerifierKey() {
+        if (verifierKeyBuilder_ == null) {
+          return verifierKey_ == null ? com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance() : verifierKey_;
+        } else {
+          return verifierKeyBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       */
+      public Builder setVerifierKey(com.hsj.messagingdemo.dto.Messages.KeyPair value) {
+        if (verifierKeyBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          verifierKey_ = value;
+        } else {
+          verifierKeyBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       */
+      public Builder setVerifierKey(
+          com.hsj.messagingdemo.dto.Messages.KeyPair.Builder builderForValue) {
+        if (verifierKeyBuilder_ == null) {
+          verifierKey_ = builderForValue.build();
+        } else {
+          verifierKeyBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       */
+      public Builder mergeVerifierKey(com.hsj.messagingdemo.dto.Messages.KeyPair value) {
+        if (verifierKeyBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) != 0) &&
+            verifierKey_ != null &&
+            verifierKey_ != com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance()) {
+            getVerifierKeyBuilder().mergeFrom(value);
+          } else {
+            verifierKey_ = value;
+          }
+        } else {
+          verifierKeyBuilder_.mergeFrom(value);
+        }
+        if (verifierKey_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       */
+      public Builder clearVerifierKey() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        verifierKey_ = null;
+        if (verifierKeyBuilder_ != null) {
+          verifierKeyBuilder_.dispose();
+          verifierKeyBuilder_ = null;
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.KeyPair.Builder getVerifierKeyBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return internalGetVerifierKeyFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getVerifierKeyOrBuilder() {
+        if (verifierKeyBuilder_ != null) {
+          return verifierKeyBuilder_.getMessageOrBuilder();
+        } else {
+          return verifierKey_ == null ?
+              com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance() : verifierKey_;
+        }
+      }
+      /**
+       * <code>.KeyPair verifier_key = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.KeyPair, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder, com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> 
+          internalGetVerifierKeyFieldBuilder() {
+        if (verifierKeyBuilder_ == null) {
+          verifierKeyBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.hsj.messagingdemo.dto.Messages.KeyPair, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder, com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder>(
+                  getVerifierKey(),
+                  getParentForChildren(),
+                  isClean());
+          verifierKey_ = null;
+        }
+        return verifierKeyBuilder_;
+      }
+
       private com.hsj.messagingdemo.dto.Messages.KeyPair signedPrekey_;
       private com.google.protobuf.SingleFieldBuilder<
           com.hsj.messagingdemo.dto.Messages.KeyPair, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder, com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> signedPrekeyBuilder_;
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        * @return Whether the signedPrekey field is set.
        */
       public boolean hasSignedPrekey() {
-        return ((bitField0_ & 0x00000004) != 0);
+        return ((bitField0_ & 0x00000008) != 0);
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        * @return The signedPrekey.
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPair getSignedPrekey() {
@@ -5689,7 +5721,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        */
       public Builder setSignedPrekey(com.hsj.messagingdemo.dto.Messages.KeyPair value) {
         if (signedPrekeyBuilder_ == null) {
@@ -5700,12 +5732,12 @@ public final class Messages {
         } else {
           signedPrekeyBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        */
       public Builder setSignedPrekey(
           com.hsj.messagingdemo.dto.Messages.KeyPair.Builder builderForValue) {
@@ -5714,16 +5746,16 @@ public final class Messages {
         } else {
           signedPrekeyBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        */
       public Builder mergeSignedPrekey(com.hsj.messagingdemo.dto.Messages.KeyPair value) {
         if (signedPrekeyBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0) &&
+          if (((bitField0_ & 0x00000008) != 0) &&
             signedPrekey_ != null &&
             signedPrekey_ != com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance()) {
             getSignedPrekeyBuilder().mergeFrom(value);
@@ -5734,16 +5766,16 @@ public final class Messages {
           signedPrekeyBuilder_.mergeFrom(value);
         }
         if (signedPrekey_ != null) {
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         return this;
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        */
       public Builder clearSignedPrekey() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         signedPrekey_ = null;
         if (signedPrekeyBuilder_ != null) {
           signedPrekeyBuilder_.dispose();
@@ -5753,15 +5785,15 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPair.Builder getSignedPrekeyBuilder() {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return internalGetSignedPrekeyFieldBuilder().getBuilder();
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getSignedPrekeyOrBuilder() {
         if (signedPrekeyBuilder_ != null) {
@@ -5772,7 +5804,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>.KeyPair signed_prekey = 3;</code>
+       * <code>.KeyPair signed_prekey = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.hsj.messagingdemo.dto.Messages.KeyPair, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder, com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> 
@@ -5790,7 +5822,7 @@ public final class Messages {
 
       private long signedPrekeyExpiration_ ;
       /**
-       * <code>uint64 signed_prekey_expiration = 4;</code>
+       * <code>uint64 signed_prekey_expiration = 5;</code>
        * @return The signedPrekeyExpiration.
        */
       @java.lang.Override
@@ -5798,23 +5830,23 @@ public final class Messages {
         return signedPrekeyExpiration_;
       }
       /**
-       * <code>uint64 signed_prekey_expiration = 4;</code>
+       * <code>uint64 signed_prekey_expiration = 5;</code>
        * @param value The signedPrekeyExpiration to set.
        * @return This builder for chaining.
        */
       public Builder setSignedPrekeyExpiration(long value) {
 
         signedPrekeyExpiration_ = value;
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
       /**
-       * <code>uint64 signed_prekey_expiration = 4;</code>
+       * <code>uint64 signed_prekey_expiration = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearSignedPrekeyExpiration() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         signedPrekeyExpiration_ = 0L;
         onChanged();
         return this;
@@ -5823,9 +5855,9 @@ public final class Messages {
       private java.util.List<com.hsj.messagingdemo.dto.Messages.KeyPair> oneTimePrekey_ =
         java.util.Collections.emptyList();
       private void ensureOneTimePrekeyIsMutable() {
-        if (!((bitField0_ & 0x00000010) != 0)) {
+        if (!((bitField0_ & 0x00000020) != 0)) {
           oneTimePrekey_ = new java.util.ArrayList<com.hsj.messagingdemo.dto.Messages.KeyPair>(oneTimePrekey_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
          }
       }
 
@@ -5833,7 +5865,7 @@ public final class Messages {
           com.hsj.messagingdemo.dto.Messages.KeyPair, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder, com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> oneTimePrekeyBuilder_;
 
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public java.util.List<com.hsj.messagingdemo.dto.Messages.KeyPair> getOneTimePrekeyList() {
         if (oneTimePrekeyBuilder_ == null) {
@@ -5843,7 +5875,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public int getOneTimePrekeyCount() {
         if (oneTimePrekeyBuilder_ == null) {
@@ -5853,7 +5885,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPair getOneTimePrekey(int index) {
         if (oneTimePrekeyBuilder_ == null) {
@@ -5863,7 +5895,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder setOneTimePrekey(
           int index, com.hsj.messagingdemo.dto.Messages.KeyPair value) {
@@ -5880,7 +5912,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder setOneTimePrekey(
           int index, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder builderForValue) {
@@ -5894,7 +5926,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder addOneTimePrekey(com.hsj.messagingdemo.dto.Messages.KeyPair value) {
         if (oneTimePrekeyBuilder_ == null) {
@@ -5910,7 +5942,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder addOneTimePrekey(
           int index, com.hsj.messagingdemo.dto.Messages.KeyPair value) {
@@ -5927,7 +5959,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder addOneTimePrekey(
           com.hsj.messagingdemo.dto.Messages.KeyPair.Builder builderForValue) {
@@ -5941,7 +5973,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder addOneTimePrekey(
           int index, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder builderForValue) {
@@ -5955,7 +5987,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder addAllOneTimePrekey(
           java.lang.Iterable<? extends com.hsj.messagingdemo.dto.Messages.KeyPair> values) {
@@ -5970,12 +6002,12 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder clearOneTimePrekey() {
         if (oneTimePrekeyBuilder_ == null) {
           oneTimePrekey_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
           onChanged();
         } else {
           oneTimePrekeyBuilder_.clear();
@@ -5983,7 +6015,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public Builder removeOneTimePrekey(int index) {
         if (oneTimePrekeyBuilder_ == null) {
@@ -5996,14 +6028,14 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPair.Builder getOneTimePrekeyBuilder(
           int index) {
         return internalGetOneTimePrekeyFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder getOneTimePrekeyOrBuilder(
           int index) {
@@ -6013,7 +6045,7 @@ public final class Messages {
         }
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public java.util.List<? extends com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder> 
            getOneTimePrekeyOrBuilderList() {
@@ -6024,14 +6056,14 @@ public final class Messages {
         }
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPair.Builder addOneTimePrekeyBuilder() {
         return internalGetOneTimePrekeyFieldBuilder().addBuilder(
             com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance());
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.KeyPair.Builder addOneTimePrekeyBuilder(
           int index) {
@@ -6039,7 +6071,7 @@ public final class Messages {
             index, com.hsj.messagingdemo.dto.Messages.KeyPair.getDefaultInstance());
       }
       /**
-       * <code>repeated .KeyPair one_time_prekey = 5;</code>
+       * <code>repeated .KeyPair one_time_prekey = 6;</code>
        */
       public java.util.List<com.hsj.messagingdemo.dto.Messages.KeyPair.Builder> 
            getOneTimePrekeyBuilderList() {
@@ -6052,7 +6084,7 @@ public final class Messages {
           oneTimePrekeyBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               com.hsj.messagingdemo.dto.Messages.KeyPair, com.hsj.messagingdemo.dto.Messages.KeyPair.Builder, com.hsj.messagingdemo.dto.Messages.KeyPairOrBuilder>(
                   oneTimePrekey_,
-                  ((bitField0_ & 0x00000010) != 0),
+                  ((bitField0_ & 0x00000020) != 0),
                   getParentForChildren(),
                   isClean());
           oneTimePrekey_ = null;
@@ -6152,30 +6184,31 @@ public final class Messages {
     java.lang.String[] descriptorData = {
       "\n\016messages.proto\"c\n\017MessageContents\022\014\n\004t" +
       "ext\030\001 \001(\t\022\024\n\007file_id\030\002 \001(\tH\000\210\001\001\022\024\n\007file_" +
-      "iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_iv\"\336\001" +
+      "iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_iv\"\250\002" +
       "\n\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.MessageT" +
-      "ype\022\032\n\022ratchet_public_key\030\002 \001(\014\022\025\n\rmessa" +
-      "ge_count\030\003 \001(\r\022\022\n\nprev_count\030\004 \001(\r\022\n\n\002iv" +
-      "\030\005 \001(\r\022\032\n\rephemeral_key\030\006 \001(\014H\000\210\001\001\022\034\n\017on" +
-      "e_time_prekey\030\007 \001(\014H\001\210\001\001B\020\n\016_ephemeral_k" +
-      "eyB\022\n\020_one_time_prekey\"\270\001\n\013ChatMessage\022\022" +
-      "\n\nmessage_id\030\001 \001(\t\022\021\n\tsender_id\030\002 \001(\t\022\017\n" +
-      "\007chat_id\030\003 \001(\t\022&\n\016message_header\030\004 \001(\0132\016" +
-      ".MessageHeader\022\"\n\032message_contents_encry" +
-      "pted\030\005 \001(\014\022\022\n\npublic_key\030\006 \001(\014\022\021\n\ttimest" +
-      "amp\030\007 \001(\004\"\252\001\n\014PreKeyBundle\022\017\n\002id\030\001 \001(\tH\000" +
-      "\210\001\001\022\025\n\010username\030\006 \001(\tH\001\210\001\001\022\024\n\014identity_k" +
-      "ey\030\002 \001(\014\022\025\n\rsigned_prekey\030\003 \001(\014\022\030\n\020preke" +
-      "y_signature\030\004 \001(\014\022\027\n\017one_time_prekey\030\005 \003" +
-      "(\014B\005\n\003_idB\013\n\t_username\"2\n\007KeyPair\022\022\n\npub" +
-      "lic_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\241\001\n\010I" +
-      "dentity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_key" +
-      "\030\002 \001(\0132\010.KeyPair\022\037\n\rsigned_prekey\030\003 \001(\0132" +
-      "\010.KeyPair\022 \n\030signed_prekey_expiration\030\004 " +
-      "\001(\004\022!\n\017one_time_prekey\030\005 \003(\0132\010.KeyPair*-" +
-      "\n\013MessageType\022\n\n\006JOINED\020\000\022\010\n\004CHAT\020\001\022\010\n\004L" +
-      "EFT\020\002B\033\n\031com.hsj.messagingdemo.dtob\006prot" +
-      "o3"
+      "ype\022\037\n\022ratchet_public_key\030\002 \001(\014H\000\210\001\001\022\025\n\r" +
+      "message_count\030\003 \001(\r\022\022\n\nprev_count\030\004 \001(\r\022" +
+      "\022\n\nmessage_iv\030\005 \001(\014\022\026\n\tsender_id\030\006 \001(\tH\001" +
+      "\210\001\001\022\032\n\rephemeral_key\030\007 \001(\014H\002\210\001\001\022\034\n\017one_t" +
+      "ime_prekey\030\010 \001(\014H\003\210\001\001B\025\n\023_ratchet_public" +
+      "_keyB\014\n\n_sender_idB\020\n\016_ephemeral_keyB\022\n\020" +
+      "_one_time_prekey\"\243\001\n\013ChatMessage\022\017\n\007chat" +
+      "_id\030\002 \001(\t\022&\n\016message_header\030\003 \001(\0132\016.Mess" +
+      "ageHeader\022\"\n\032message_contents_encrypted\030" +
+      "\004 \001(\014\022\021\n\ttimestamp\030\005 \001(\004\022\026\n\theader_iv\030\006 " +
+      "\001(\014H\000\210\001\001B\014\n\n_header_iv\"\234\001\n\014PreKeyBundle\022" +
+      "\017\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014identity_key\030\002 \001(\014\022\024" +
+      "\n\014verifier_key\030\003 \001(\014\022\025\n\rsigned_prekey\030\004 " +
+      "\001(\014\022\030\n\020prekey_signature\030\005 \001(\014\022\027\n\017one_tim" +
+      "e_prekey\030\006 \003(\014B\005\n\003_id\"2\n\007KeyPair\022\022\n\npubl" +
+      "ic_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\301\001\n\010Id" +
+      "entity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_key\030" +
+      "\002 \001(\0132\010.KeyPair\022\036\n\014verifier_key\030\003 \001(\0132\010." +
+      "KeyPair\022\037\n\rsigned_prekey\030\004 \001(\0132\010.KeyPair" +
+      "\022 \n\030signed_prekey_expiration\030\005 \001(\004\022!\n\017on" +
+      "e_time_prekey\030\006 \003(\0132\010.KeyPair*-\n\013Message" +
+      "Type\022\n\n\006JOINED\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002B\033\n\031" +
+      "com.hsj.messagingdemo.dtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -6192,19 +6225,19 @@ public final class Messages {
     internal_static_MessageHeader_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageHeader_descriptor,
-        new java.lang.String[] { "Type", "RatchetPublicKey", "MessageCount", "PrevCount", "Iv", "EphemeralKey", "OneTimePrekey", });
+        new java.lang.String[] { "Type", "RatchetPublicKey", "MessageCount", "PrevCount", "MessageIv", "SenderId", "EphemeralKey", "OneTimePrekey", });
     internal_static_ChatMessage_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_ChatMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ChatMessage_descriptor,
-        new java.lang.String[] { "MessageId", "SenderId", "ChatId", "MessageHeader", "MessageContentsEncrypted", "PublicKey", "Timestamp", });
+        new java.lang.String[] { "ChatId", "MessageHeader", "MessageContentsEncrypted", "Timestamp", "HeaderIv", });
     internal_static_PreKeyBundle_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_PreKeyBundle_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_PreKeyBundle_descriptor,
-        new java.lang.String[] { "Id", "Username", "IdentityKey", "SignedPrekey", "PrekeySignature", "OneTimePrekey", });
+        new java.lang.String[] { "Id", "IdentityKey", "VerifierKey", "SignedPrekey", "PrekeySignature", "OneTimePrekey", });
     internal_static_KeyPair_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_KeyPair_fieldAccessorTable = new
@@ -6216,7 +6249,7 @@ public final class Messages {
     internal_static_Identity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Identity_descriptor,
-        new java.lang.String[] { "UserId", "IdentityKey", "SignedPrekey", "SignedPrekeyExpiration", "OneTimePrekey", });
+        new java.lang.String[] { "UserId", "IdentityKey", "VerifierKey", "SignedPrekey", "SignedPrekeyExpiration", "OneTimePrekey", });
     descriptor.resolveAllFeaturesImmutable();
   }
 

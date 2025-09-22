@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
+import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.utils.CryptoUtils;
 
@@ -41,7 +42,9 @@ public class DigitalSignatureAuthenticationProvider implements AuthenticationPro
 
             AuthenticationRequest request = token.getCredentials();
             User user = (User) userDetailsService.loadUserByUsername(request.getUsername());
-            if (!CryptoUtils.verifySignature(user.getPreKeyBundle().getIdentityKey().toByteArray(), request.getChallenge(),
+             byte [] preKeyBundleBytes = user.getPreKeyBundle();
+            PreKeyBundle preKeyBundle = PreKeyBundle.parseFrom(preKeyBundleBytes);
+            if (!CryptoUtils.verifySignature(preKeyBundle.getVerifierKey().toByteArray(), request.getChallenge(),
                     request.getChallengeSignature())) {
 
                 throw new SignatureException("Digital signature did not match.");

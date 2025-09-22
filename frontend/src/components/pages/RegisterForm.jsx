@@ -32,7 +32,6 @@ function RegisterForm({ setUserCallback }) {
     useEffect(() => {
         (async ()=>{
         if (identity_data) {
-            let ms = messages
             let identity_protobuf =await convert_js_identity_to_protobuf_identity(identity_data)
             let identity_bytes = Identity.encode(identity_protobuf).finish()
             set_identity_file_url(URL.createObjectURL(new Blob([identity_bytes], { type: "application/octet-stream" })))
@@ -69,7 +68,7 @@ function RegisterForm({ setUserCallback }) {
             let reader = new FileReader();
             reader.onloadend = async (ev) => {
                 
-                profileImageData = { "datab64": reader.result.slice(reader.result.indexOf("base64," + 7)), "mimeType": profileImageBlob.type }
+                profileImageData = { "datab64": reader.result.slice(reader.result.indexOf("base64," )+7), "mimeType": profileImageBlob.type }
                 await submit()
             }
             reader.readAsDataURL(profileImageBlob)

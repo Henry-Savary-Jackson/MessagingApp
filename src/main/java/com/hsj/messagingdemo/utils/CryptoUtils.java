@@ -12,7 +12,12 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
+import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
+import org.bouncycastle.crypto.signers.Ed25519Signer;
+import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
+
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
@@ -24,14 +29,11 @@ public class CryptoUtils {
     public static boolean verifySignature(byte[] publicKeyBytes, String challenge, String challengeSignature)
             throws SignatureException, NoSuchAlgorithmException,  InvalidKeyException,
             IOException, CertificateException {
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(publicKeyBytes));
-        PublicKey publicKey = cert.getPublicKey(); 
+        Ed25519Signer signer = new Ed25519Signer();
         byte[] challengeBytes = decoderb64.decode(challenge);
-        Signature signer = Signature.getInstance("Ed25199");
-        signer.initVerify(publicKey);
-        signer.update(challengeBytes);
-        return signer.verify(decoderb64.decode(challengeSignature));
+        signer.init(false, new Ed25519PublicKeyParameters(publicKeyBytes));
+        signer.update(challengeBytes, 0, challengeBytes.length);
+        return signer.verifySignature(decoderb64.decode(challengeSignature));
     }
 
     public static void createPubKeyFrombase64(String base64PubKey)
