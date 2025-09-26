@@ -14,7 +14,7 @@ message MessageContents{
 
 message MessageHeader{
   MessageType type = 1;
-  optional bytes ratchet_public_key = 2;
+  optional bytes dh_public_key = 2;
   uint32 message_count = 3;
   uint32 prev_count = 4;
   bytes message_iv = 5;

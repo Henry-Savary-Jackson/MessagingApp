@@ -28,7 +28,7 @@ public class KafkaListenerCreator {
 
     private KafkaListenerEndpoint createKafkaListenerEndpoint( String userId, String username, String sessionId,
             int offset) {
-        MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = createDefaultMethodKafkaListenerEndpoint(
+        MethodKafkaListenerEndpoint<String, byte[]> kafkaListenerEndpoint = createDefaultMethodKafkaListenerEndpoint(
                  userId, sessionId, offset);
         kafkaListenerEndpoint.setBean(new KafkaEventListener(username, sessionId, template));
 
@@ -40,17 +40,15 @@ public class KafkaListenerCreator {
         return kafkaListenerEndpoint;
     }
 
-    private MethodKafkaListenerEndpoint<String, ChatMessage> createDefaultMethodKafkaListenerEndpoint(
+    private MethodKafkaListenerEndpoint<String, byte[]> createDefaultMethodKafkaListenerEndpoint(
             String userId,String sessionId, int offset) {
 
-        MethodKafkaListenerEndpoint<String, ChatMessage> kafkaListenerEndpoint = new MethodKafkaListenerEndpoint<>();
+        MethodKafkaListenerEndpoint<String, byte[]> kafkaListenerEndpoint = new MethodKafkaListenerEndpoint<>();
         String listenerId = generateListenerId( userId, sessionId);
         kafkaListenerEndpoint.setId(listenerId);
         kafkaListenerEndpoint.setGroupId(listenerId);
         kafkaListenerEndpoint.setAutoStartup(true);
-        // ONLY WORKS IF ONE PARTITION PER TOPIC, THINK CAREFULLY ABOUT THIS
-        TopicPartitionOffset partionOffset = new TopicPartitionOffset(userId, 0);
-        partionOffset.setOffset((long) offset);
+        TopicPartitionOffset partionOffset = new TopicPartitionOffset(userId, 0, TopicPartitionOffset.SeekPosition.BEGINNING);
         kafkaListenerEndpoint.setTopicPartitions(partionOffset);
 
         kafkaListenerEndpoint.setMessageHandlerMethodFactory(new DefaultMessageHandlerMethodFactory());

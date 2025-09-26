@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.hsj.messagingdemo.dto.Messages.ChatMessage;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
@@ -28,7 +29,7 @@ import com.hsj.messagingdemo.service.MessageService;
 public class WebSocketController {
 
     @Autowired
-    private KafkaTemplate<String, ChatMessage> kafkaTemplate;
+    private KafkaTemplate<String, byte[]> kafkaTemplate;
 
     @Autowired
     MessageService messageService;
@@ -37,17 +38,23 @@ public class WebSocketController {
     KafkaListenerCreator kafkaListenerCreator;
 
     @MessageMapping("/send/{user_id}")
-    public void sendMessageMap(@DestinationVariable String user_id,@Payload ChatMessage message, Principal principal) throws Exception {
+    public void sendMessageMap(@DestinationVariable String user_id, @Payload byte[] message, Principal principal)
+            throws Exception {
         User user = (User) ((Authentication) principal).getPrincipal();
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
-        ChatMessage newMessage = message.toBuilder().setTimestamp((long) LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)).build();
-        kafkaTemplate.send(new ProducerRecord<String, ChatMessage>(user_id, newMessage));
+        try {
+            ChatMessage newMessage = ChatMessage.parseFrom(message).toBuilder()
+                    .setTimestamp((long) LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)).build();
+            kafkaTemplate.send(new ProducerRecord<String, byte[]>(user_id, newMessage.toByteArray()));
+        } catch (InvalidProtocolBufferException ie) {
+            throw ie;
+        }
     }
 
-    @SubscribeMapping("/sub")
-    private void onSubscribe(SimpMessageHeaderAccessor headerAccessor,  Principal principal, @Header("offset") int offset)
+    @SubscribeMapping("/user/messages")
+    private void onSubscribe(SimpMessageHeaderAccessor headerAccessor, Principal principal)
             throws Exception {
         User user = (User) ((Authentication) principal).getPrincipal();
         if (user == null) {
@@ -55,7 +62,7 @@ public class WebSocketController {
         }
 
         KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(
-                user.getId(), user.getUsername(),headerAccessor.getSessionId(), offset);
+                user.getId(), user.getUsername(), headerAccessor.getSessionId(), 0);
 
         messageService.linkUserToKafkaEventListener(user.getId(), endpoint.getId());
 

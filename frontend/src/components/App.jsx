@@ -4,11 +4,11 @@ import RegisterForm from './pages/RegisterForm.jsx';
 import ChatPage from './pages/ChatPage.jsx';
 import PrivateRoute from './PrivateRoute';
 import { setAxiosCSRF, getCSRF } from '../utils/RequestUtils.js';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie'
-import { userContext, userIdContext } from '../globals.js'
+import { userContext, userIdContext, csrf_context } from '../globals.js'
 import { broker_url } from '../utils/WebsocketUtils.js';
-import { useStompClient, withStompClient, useSubscription, StompSessionProvider } from 'react-stomp-hooks'
+import { StompSessionProvider } from 'react-stomp-hooks'
 import ProfilePage from './pages/ProfilePage.jsx';
 
 function App() {
@@ -27,7 +27,6 @@ function App() {
     setUser(username)
     setUserId(user_id)
     setCookies("user", username)
-    
     setCookies("user_id", user_id)
   }
   let logoutCallback = () => {
@@ -39,24 +38,28 @@ function App() {
 
   return < userContext.Provider value={[user, setUser]}>
     <userIdContext.Provider value={[user_id, setUserId]}>
-      <MemoryRouter>
-        <Routes>
-          <Route element={<PrivateRoute auth={user} />} >
-            <Route element={
-              <ChatPage logoutCallback={logoutCallback} />
-            } path='/' />
-          </Route>
-          <Route element={<PrivateRoute auth={user} />} >
-            <Route element={
-              <ProfilePage />
-            } path='/profile' />
-          </Route>
-          <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />
-          <Route element={<RegisterForm setUserCallback={setUserCallback} />} path='/register' />
-        </Routes>
-      </MemoryRouter>
+      <csrf_context.Provider value={[csrf, setCSRF]}>
+        <MemoryRouter>
+          <Routes>
+            <Route element={<PrivateRoute auth={user} />} >
+              <Route element={
+                csrf && <StompSessionProvider connectHeaders={{ "X-CSRF-TOKEN": csrf }} url={broker_url}>
+                  <ChatPage logoutCallback={logoutCallback} />
+                </StompSessionProvider>
+              } path='/' />
+            </Route>
+            <Route element={<PrivateRoute auth={user} />} >
+              <Route element={
+                <ProfilePage />
+              } path='/profile' />
+            </Route>
+            <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />
+            <Route element={<RegisterForm setUserCallback={setUserCallback} />} path='/register' />
+          </Routes>
+        </MemoryRouter>
+      </csrf_context.Provider>
     </userIdContext.Provider>
-  </userContext.Provider>;
+  </userContext.Provider >;
 
 }
 

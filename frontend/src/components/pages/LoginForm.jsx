@@ -3,7 +3,7 @@ import { Button, Form, FormControl, FormGroup, FormLabel } from "react-bootstrap
 import { removeHeaderFooterToKey, signChallenge } from "../../utils/CryptoUtils";
 import { getCSRF, login , setAxiosCSRF} from "../../utils/RequestUtils";
 import { Link, useLocation } from "react-router";
-import { userContext  } from "../../globals";
+import { userContext , csrf_context } from "../../globals";
 import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
 import { performActionWithAlert } from "../../utils/UIUtils";
 import {convertProtoBufIdentityToObject, import_identity, storeUserData, useIndexedDB} from "../../utils/StorageUtils"
@@ -12,6 +12,7 @@ function LoginForm({setUserCallback}) {
 
     let location = useLocation()
     let {db,loading} = useIndexedDB()
+    let [csrf, setCSRF]  = useContext(csrf_context)
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
 
@@ -40,7 +41,7 @@ function LoginForm({setUserCallback}) {
                     throw new Error("No db initialized") 
                 }
                 // Great, store user_id into idb
-                setAxiosCSRF(await getCSRF())
+                setCSRF(setAxiosCSRF(await getCSRF()))
                 setUserCallback(username, user_id)
                 location.pathname = "/"
             })

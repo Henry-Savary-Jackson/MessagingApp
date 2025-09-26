@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,7 +73,8 @@ public class UserController {
     @GetMapping(value="/prekeybundle/{username}",produces="application/octet-stream")
     public byte[] fetchPrekeyBundle(@PathVariable String username) throws InvalidProtocolBufferException {
         User user = userService.getUserByUsername(username).orElseThrow();
-        return user.getPreKeyBundle(); 
+        PreKeyBundle pk = PreKeyBundle.parseFrom(user.getPreKeyBundle());
+        return pk.toBuilder().setId(user.getId()).build().toByteArray(); 
     }
     
 

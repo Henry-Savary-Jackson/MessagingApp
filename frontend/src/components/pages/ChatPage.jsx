@@ -9,8 +9,9 @@ import ChatListBar from "./../chat/ChatListBar"
 import {  activate, broker_url, disconnect, handle_X3DH_message, listenForMessages, send, subscribe, unSubscribe } from '../../utils/WebsocketUtils'
 import {ChatMessage, MessageType,MessageHeader, MessageContents} from '../../utils/protocol/messages' 
 import { exportX25519PublicKey, X3DH_send } from '../../utils/CryptoUtils'
-import { useIdentityInformation, useIndexedDB } from '../../utils/StorageUtils'
+import { getOneTimePrekeyWithPubKey, useIdentityInformation, useIndexedDB } from '../../utils/StorageUtils'
 import {v4} from 'uuid'
+import { StompConfig, useStompClient, useSubscription } from 'react-stomp-hooks'
 
 
 function ChatPage({ logoutCallback }) {
@@ -61,21 +62,20 @@ function ChatPage({ logoutCallback }) {
     let delChatUI = (chat_id) => { chatsReducer({ "action": "del", "chatId": chat_id }) }
 
     let [user_id, set_user_id ] = useContext(userIdContext)
+
     let {db, loading} = useIndexedDB() 
 
 
-    useEffect(()=>{
-        activate(()=>{listenForMessages(onMessage)})
-    },[])
 
-    let {identity, verifier_key, signed_prekey, expiration, otps } = useIdentityInformation(db,user_id)
+    let {identity, verifier_key, signed_prekey, expiration } = useIdentityInformation(db,user_id)
 
     let onMessage = async (message) => {
         console.log(message)
         let chat_message = ChatMessage.decode(message.binaryBody)
-        if (chat_message.message_header.type == MessageType.JOINED){
+        if (chat_message.messageHeader.type == MessageType.JOINED){
             // X3DH message
-            let SK = handle_X3DH_message(identity, verifier_key, chat_message)
+            let otp = !chat_message.messageHeader.oneTimePrekey || await getOneTimePrekeyWithPubKey(db,chat_message.messageHeader.oneTimePrekey)
+            let SK = await handle_X3DH_message(identity, signed_prekey, chat_message, otp)
             console.log(SK)
         }
 
@@ -85,9 +85,11 @@ function ChatPage({ logoutCallback }) {
         // addMessageToChatCount(message_body.chatId, message_body.timestamp)
 
     } // PUT notification symbol on chat
+    useSubscription("/user/messages", onMessage)
+    const client = useStompClient()
 
     // let connect_chat = (chat_id) => { subscribeToChat(chat_id, 0) }
-    let disconnect_chat = (chat_id) => { unSubscribe() }
+    // let disconnect_chat = (chat_id) => { unSubscribe() }
 
 
     let sendMessage = async (contents, file_id=undefined) => {
@@ -102,13 +104,19 @@ function ChatPage({ logoutCallback }) {
         } 
         let name = prompt("Enter Username:"); 
         let prekey_bundle =await getPrekeyBundle(name)
-        let {SK, AD,AD_encrypted, AD_IV, ephemeralKeyPair, one_time_prekey} = await X3DH_send({identityKey:identity,verifierKey:verifier_key, signedPrekey:signed_prekey}, prekey_bundle)
+        let other_id = prekey_bundle.id
+        let {SK, AD,AD_encrypted, AD_IV, ephemeralKeyPair, onetime_prekey} = await X3DH_send({identityKey:identity,verifierKey:verifier_key, signedPrekey:signed_prekey}, prekey_bundle)
         let ephemeral_key_bytes = await exportX25519PublicKey(ephemeralKeyPair.publicKey)
-        let messageHeader = MessageHeader.fromObject({type:"JOINED", messageIv:AD_IV, messageCount:0, prev_count:0, ephemeralKey:ephemeral_key_bytes, oneTimePrekey:one_time_prekey })
+        let messageHeader = MessageHeader.fromObject({type:"JOINED", messageIv:AD_IV, messageCount:0, prev_count:0, ephemeralKey:ephemeral_key_bytes, oneTimePrekey:await exportX25519PublicKey(onetime_prekey), senderId:user_id })
         let chat_id = v4() // generate chat_id
         let chat_message = ChatMessage.fromObject({chatId:chat_id, messageHeader:messageHeader, messageContentsEncrypted:AD_encrypted, timestamp:new Date().getTime() })
 
-        send(chat_message)
+        if (client){
+        send(client,other_id,chat_message)
+
+        }else{
+            console.error("No stomp connection")
+        }
         console.log("shared root key")
         console.log(SK)
         console.log(`AD:${AD}`)
