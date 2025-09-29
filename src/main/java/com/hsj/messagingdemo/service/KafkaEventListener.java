@@ -5,8 +5,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.hsj.messagingdemo.dto.Messages.ChatMessage;
 
 public class KafkaEventListener {
 

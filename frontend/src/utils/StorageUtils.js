@@ -2,7 +2,6 @@ import { openDB } from "idb"
 import { useEffect, useState } from "react"
 import { generate25519KeyExchangePair, DH, extractC25519KeyExchangePair, exportX25519KeyPair, extractC25519KeySignaturePair, KDF_chain_key, KDF_root_key, extractC25519ExchangePublicKey, exportX25519PublicKey } from "./CryptoUtils"
 import { Identity } from "./protocol/messages"
-import { send } from "./WebsocketUtils"
 
 
 const db_string = "messaging_clone"
@@ -111,11 +110,19 @@ export async function delete_one_time_prekey(indexed_db, public_key_bytes) {
 }
 
 export async function store_message(indexed_db, message) {
+    let chat_id = message.chatId
+    let chat_info = await get_chat_info(indexed_db, chat_id) 
+    let messages = chat_info.messages
+    messages.push(message) // TODO: add in sorted fashing
+    await store_chat(indexed_db,chat_info) 
+}
 
+export async function store_chat(indexed_db, chat){
+    await indexed_db.put(chat_store_name, chat)
 }
 
 export async function get_chat_info(indexed_db, chat_id) {
-
+    return await indexed_db.get(chat_store_name, chat_id)
 }
 
 export async function get_messages(indexed_db, chat_id) {
@@ -151,113 +158,132 @@ export async function convertProtoBufIdentityToObject(identity_protobuf) {
 export async function getIdentityDataFromDB(indexed_db, user_id) {
     // get from identity store
     return await get_user_data(indexed_db, user_id)
-    // return await convertProtoBufIdentityToObject(user_data)
 }
 
-export async function store_previous_message_key(other_dh, message_key){
+export async function store_previous_receiving_chain(indexed_db, other_dh, receiving_chain){
+   let message_keys_dh = {dh_bytes_sender:other_dh, receiving_chain:receiving_chain}
+    await indexed_db.put(dh_keystore_name,message_keys_dh)
+}
 
+export async function ratchet_turn_until_match(message_keys, index){
+    if (message_keys.length <= index){
+        for (let i = message_keys.length; i < index+1 ; i++) {
+            let new_message_key = await KDF_chain_key( message_keys[i-1])
+            message_keys.push(new_message_key)
+        }
+    }
+    return message_keys[index]
+
+}
+
+export async function get_previous_message_key(indexed_db, other_dh, index){
+    let previous_receiving_chain = await get_previous_messages_keys(indexed_db, other_dh)
+    let message_keys = previous_receiving_chain.receiving_chain.message_keys
+    let length_orig = message_keys.length
+    let key = await ratchet_turn_until_match(message_keys,index )
+    let new_length = message_keys.length
+    if (new_length != length_orig)
+        await indexed_db.put(dh_keystore_name, previous_receiving_chain)
+    return key
+}
+
+export async function get_previous_messages_keys(indexed_db,other_dh_public){
+    return await indexed_db.get(dh_keystore_name, other_dh_public)
 }
 
 export async function ratchet_turn_send(chat_object, turn_root = true) {
     if (turn_root) {
         chat_object.dh_keypair_private = await generate25519KeyExchangePair()
-        chat_object.dh_input = await DH(chat_object.dh_keypair_private, chat_object.other_dh_public)
-        await turn_ratchet_root_send(chat_object)
+        let public_cryptokey_other = await extractC25519ExchangePublicKey(chat_object.other_dh_public)
+        chat_object.dh_input = await DH(chat_object.dh_keypair_private.privateKey, public_cryptokey_other)
+        await turn_ratchet_root_sender(chat_object)
+    }else{
+        let message_keys = chat_object.sending_chain.message_keys
+        if (message_keys.length == 0){
+            throw new Error("Error, no message in sending chain")
+        }
+        let last_message_key =  message_keys[message_keys.length-1]
+        let [new_chain_key, new_message_key] = await KDF_chain_key(last_message_key)
+        message_keys.push({chain_key:new_chain_key, message_key:new_message_key})
     }
-
 }
 
-export async function turn_ratchet_root_send(chat_object) {
+export async function turn_ratchet_root_sender(chat_object) {
 
-    let [root_key, new_sending_key, iv] = await KDF_root_key(chat_object.root_key, chat_object.dh_input)
-    let [new_root_key, new_recieving_key, i] = await KDF_root_key(root_key, chat_object.dh_input)
+    let [root_key, new_sending_key] = await KDF_root_key(chat_object.root_key, chat_object.dh_input)
+    let [new_root_key, new_recieving_key] = await KDF_root_key(root_key, chat_object.dh_input)
     chat_object.root_key = new_root_key
-    chat_object.sending_chain.chain_key = new_sending_key
-    chat_object.recieving_chain.chain_key = new_recieving_key
-    reset_send_recv_chains(chat_object)
+    chat_object.sending_chain.message_keys = [new_sending_key]
+    chat_object.receiving_chain.message_keys = [new_recieving_key]
 }
 export async function turn_ratchet_root_recieve(chat_object) {
-    let [root_key, new_recieving_key, iv] = await KDF_root_key(chat_object.root_key, chat_object.dh_input)
-    let [new_root_key, new_sending_key, i] = await KDF_root_key(root_key, chat_object.dh_input)
+    let [root_key, new_recieving_key] = await KDF_root_key(chat_object.root_key, chat_object.dh_input)
+    let [new_root_key, new_sending_key] = await KDF_root_key(root_key, chat_object.dh_input)
     chat_object.root_key = new_root_key
-    chat_object.sending_chain.chain_key = new_sending_key
-    chat_object.recieving_chain.chain_key = new_recieving_key
+    chat_object.sending_chain.message_keys = [new_sending_key]
+    chat_object.receiving_chain.message_keys = [new_recieving_key]
     // store previous dh key and message keys in db for later use for out of order messages
-    reset_send_recv_chains(chat_object)
 }
 
-export function reset_send_recv_chains(chat_object,) {
-    chat_object.recieving_chain.length = 0
-    chat_object.sending_chain.length = 0
 
+async function get_all_chats(indexed_db) {
+    return await indexed_db.getAll(chat_store_name)
 }
 
-export function Uint8ArrayEquals(arr_1, arr_2) {
-    if (arr_1.length != arr_2.length)
-        return false
-    return arr_1.every((val, index) => arr_2.at(index) === val)
+
+export async function root_ratchet_turn_recieve(chat_object, other_dh) {
+    let other_dh_public_cryptokey = await extractC25519ExchangePublicKey(other_dh)
+    chat_object.other_dh_public = other_dh
+    chat_object.dh_input = await DH(chat_object.dh_keypair_private.privateKey, other_dh_public_cryptokey)
+    await turn_ratchet_root_recieve(chat_object)
 }
 
-export async function ratchet_turn_recieve(chat_object, other_dh) {
-    let other_dh_public_bytes = await exportX25519PublicKey(chat_object.other_dh_public)
+export async function create_chat_object_sender(chat_id, other_id, name,sender_dh_ratchet_key,other_identity_key, shared_key) {
 
-    if (!chat_object.other_dh_public || !Uint8ArrayEquals(other_dh, other_dh_public_bytes)) {
-        chat_object.other_dh_public = await extractC25519ExchangePublicKey(other_dh)
-        chat_object.dh_input = await DH(chat_object.dh_keypair_private, chat_object.other_dh_public)
-        await turn_ratchet_root_recieve(chat_object)
-    }
-}
-
-export async function create_chat_object_sender(chat_id, other_id, other_identity_key, shared_key) {
-
-    let sender_ratchet_key = await generate25519KeyExchangePair()
     let other_identity_key_public = await extractC25519ExchangePublicKey(other_identity_key)
-    let dh_input = await DH(sender_ratchet_key, other_identity_key_public)
+    let dh_input = await DH(sender_dh_ratchet_key, other_identity_key_public)
 
     return {
         chat_id: chat_id,
         timestamp: new Date().getTime(),
         user_id: other_id,
+        name:name,
         root_key: shared_key,
-        dh_keypair_private: sender_ratchet_key,
+        dh_keypair_private: sender_dh_ratchet_key,
         other_dh_public: other_identity_key,
         dh_input: dh_input,
         sending_chain: {
-            chain_key: null,
-            length: 0
-
+            message_keys:[]
         },
-        recieving_chain: {
-            chain_key: null,
-            length: 0,
+        receiving_chain: {
+            message_keys:[]
         },
+        messages :[]
     }
 }
 
 
-export async function create_chat_object_recipient(identityKey,chat_id, other_id, other_public_key_bytes, shared_key) {
+export async function create_chat_object_recipient(identityKey,chat_id, other_id,name, other_public_key_bytes, shared_key) {
 
     let other_ratchet_key_public = await extractC25519ExchangePublicKey(other_public_key_bytes)
-    let dh_input = await DH(sender_ratchet_key, other_identity_key_public)
-
+    let dh_input = await DH(identityKey, other_ratchet_key_public)
 
     return {
         chat_id: chat_id,
         timestamp: new Date().getTime(),
         user_id: other_id,
+        name:name,
         root_key: shared_key,
         dh_keypair_private: identityKey,
-        other_dh_public: other_ratchet_key_public,
+        other_dh_public: other_public_key_bytes,
         dh_input: dh_input,
         sending_chain: {
-            chain_key: null,
-            length: 0
-
+            message_keys:[]
         },
-        recieving_chain: {
-            chain_key: null,
-            length: 0,
+        receiving_chain: {
+            message_keys:[]
         },
+        messages :[]
     }
 }
 

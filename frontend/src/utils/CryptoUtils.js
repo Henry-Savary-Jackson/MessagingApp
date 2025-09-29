@@ -1,5 +1,5 @@
 import { convertArrayBufferToBase64 } from "./EncodingUtils";
-import {Identity} from "../utils/protocol/messages"
+import {Identity, MessageContents} from "../utils/protocol/messages"
 
 export function generateChallengeBuffer() {
     return crypto.getRandomValues(new Uint8Array(new ArrayBuffer(200))).buffer
@@ -87,7 +87,7 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
         throw new Error("The AD byte sequence does not match the one given")
     }
 
-    return SK // only need to give secret key
+    return KM // only need to give secret key
 
 }
 
@@ -155,7 +155,7 @@ export async function X3DH_send(identity, prekey_bundle){
     let AD_IV = crypto.getRandomValues(new Uint8Array(12)) 
     let AD_encrypted = new Uint8Array(await crypto.subtle.encrypt({"name":"AES-GCM", iv:AD_IV}, SK, AD))
 
-    return { SK, AD, AD_encrypted,AD_IV, ephemeralKeyPair, onetime_prekey }
+    return { KM, AD, AD_encrypted,AD_IV, ephemeralKeyPair, onetime_prekey }
 }
 
 
@@ -163,7 +163,7 @@ export async function create_shared_key(KM){
     let salt = new Uint8Array(32); 
     let info = new Uint8Array(8);
     let KM_key = await crypto.subtle.importKey("raw", KM, {"name":"HKDF"}, false,["deriveBits", "deriveKey"])
-    let SK = await crypto.subtle.deriveKey({"name":"HKDF", "hash":"SHA-512", "info":info, "salt":salt},KM_key, {"name":"AES-GCM", length:256} , true, ["encrypt", "decrypt"]) 
+    let SK = await crypto.subtle.deriveKey({"name":"HKDF", "hash":"SHA-256", "info":info, "salt":salt},KM_key, {"name":"AES-GCM", length:256} , true, ["encrypt", "decrypt"]) 
     return SK
 }
 
@@ -178,32 +178,38 @@ export function concatenateUIntArray(...arr){
     return output 
 }
 
+async function export_secret_key(secret_key) {
+    
+    return new Uint8Array(await crypto.subtle.exportKey("raw", secret_key) )
+}
+
 
 export async function KDF_root_key(root_key_inp, dh_output){
     let info = new Uint8Array(8);
-    let dh_key = await crypto.subtle.importKey("raw", dh_output, {"name":"AES-GCM"}, true, ["deriveBits", "deriveKey"])
-    let resultBits = new Uint8Array( await crypto.subtle.deriveBits({"name":"HKDF", "hash":"SHA-512", "info":info, "salt":root_key_inp},dh_output, {"name":"AES-GCM", length:640} , true, ["encrypt", "decrypt", "deriveKey", "deriveBits"]) )
+    let dh_key = await crypto.subtle.importKey("raw", dh_output, {"name":"HKDF"}, true, ["deriveKey", "deriveBits"])
+    let resultBits = new Uint8Array( await crypto.subtle.deriveBits({"name":"HKDF", "hash":"SHA-512", "info":info, "salt":root_key_inp},dh_key , 512) )
 
     let root_bits = resultBits.slice(0,32)
-    let root_key = await crypto.subtle.importKey("raw", root_bits, {"name":"HMAC"}, true, ["deriveKey", "deriveBits"])
+    // let root_key = await crypto.subtle.importKey("raw", root_bits, {"name":"HKDF"}, true, ["deriveKey", "deriveBits"])
     let chain_key_bits = resultBits.slice(32,64)
-    let chain_key = await crypto.subtle.importKey("raw", chain_key_bits, {"name":"HMAC"}, ["deriveKey", "deriveBits", "encrypt", "decrypt"])
-    let iv_bits = resultBits.slice(64,80)
 
-    return root_key, chain_key, iv_bits
+    return [root_bits, chain_key_bits]
 }
 
-export async function KDF_chain_key( chain_key){
-    return await crypto.subtle.deriveKey({"name":"HMAC", "hash":"SHA-512"},chain_key, {"name":"AES-GCM", length:256} , true, ["encrypt", "decrypt", "deriveKey", "deriveBits"]) 
+export async function KDF_chain_key( chain_key_bits){
+
+    let info = new Uint8Array(8);
+    let salt = new Uint8Array(32);
+    let chain_key = await crypto.subtle.importKey("raw", chain_key_bits, {"name":"HKDF"},true, ["deriveBits"] )
+    let resultBits = new Uint8Array( await crypto.subtle.deriveBits({"name":"HKDF", "hash":"SHA-512", "info":info, "salt":salt},chain_key , 256) )
+    return resultBits 
 }
 
 
-export async function ratchet_turn(chain_key,input_key){
-    let input_key_bytes = input_key
-
+export async function ratchet_turn(chain_key){
     let salt = new Uint8Array(32); 
     let info = new Uint8Array(8);
-     await crypto.subtle.deriveKey({"name":"HKDF", "hash":"SHA-512", "info":info, "salt":salt},chain_key, {"name":"AES-GCM", length:256} , true, ["encrypt", "decrypt"]) 
+     await crypto.subtle.deriveKey({"name":"HKDF", "hash":"SHA-256", "info":info, "salt":salt},chain_key, {"name":"AES-GCM", length:256} , true, ["encrypt", "decrypt"]) 
      }
 
 export function createHKDFRootInput(KM_bytes){
@@ -301,4 +307,23 @@ export async function convert_js_identity_to_protobuf_identity(js_identity){
 
 
     return Identity.fromObject({identityKey,verifierKey, signedPrekey, signedPrekeyExpiration, oneTimePrekey})
+}
+
+
+export async function decrypt_message_contents(message_key_bits,message_contents_bytes, message_iv) {
+    try {
+
+    let message_key = await crypto.subtle.importKey("raw", message_key_bits, {name:"AES-GCM"}, true, ["decrypt"])
+    let decrypted_bytes_buffer = new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM", iv:message_iv}, message_key, message_contents_bytes) )
+    return MessageContents.decode(decrypted_bytes_buffer) 
+    }catch(err){
+        console.log(`Failed to decrypt:${err}`)
+    }
+}
+export async function encrypt_message_contents(message_key_bits, message_contents){
+    let iv = crypto.getRandomValues(new Uint8Array(32));
+    let message_key = await crypto.subtle.importKey("raw", message_key_bits, {name:"AES-GCM"}, true, ["encrypt"])
+    let message_contents_bytes = MessageContents.encode(message_contents).finish() 
+    let encrypted_bytes_buffer = new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM", iv:iv}, message_key, message_contents_bytes) )
+    return [encrypted_bytes_buffer, iv]
 }

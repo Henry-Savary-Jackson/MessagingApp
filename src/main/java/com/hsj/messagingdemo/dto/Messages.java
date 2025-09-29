@@ -954,27 +954,16 @@ public final class Messages {
     com.hsj.messagingdemo.dto.Messages.MessageType getType();
 
     /**
-     * <code>optional bytes ratchet_public_key = 2;</code>
-     * @return Whether the ratchetPublicKey field is set.
+     * <code>bytes dh_public_key = 2;</code>
+     * @return The dhPublicKey.
      */
-    boolean hasRatchetPublicKey();
-    /**
-     * <code>optional bytes ratchet_public_key = 2;</code>
-     * @return The ratchetPublicKey.
-     */
-    com.google.protobuf.ByteString getRatchetPublicKey();
+    com.google.protobuf.ByteString getDhPublicKey();
 
     /**
-     * <code>uint32 message_count = 3;</code>
-     * @return The messageCount.
+     * <code>uint32 chain_length = 3;</code>
+     * @return The chainLength.
      */
-    int getMessageCount();
-
-    /**
-     * <code>uint32 prev_count = 4;</code>
-     * @return The prevCount.
-     */
-    int getPrevCount();
+    int getChainLength();
 
     /**
      * <code>bytes message_iv = 5;</code>
@@ -1044,7 +1033,7 @@ public final class Messages {
     }
     private MessageHeader() {
       type_ = 0;
-      ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
+      dhPublicKey_ = com.google.protobuf.ByteString.EMPTY;
       messageIv_ = com.google.protobuf.ByteString.EMPTY;
       senderId_ = "";
       ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
@@ -1083,45 +1072,26 @@ public final class Messages {
       return result == null ? com.hsj.messagingdemo.dto.Messages.MessageType.UNRECOGNIZED : result;
     }
 
-    public static final int RATCHET_PUBLIC_KEY_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
+    public static final int DH_PUBLIC_KEY_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString dhPublicKey_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>optional bytes ratchet_public_key = 2;</code>
-     * @return Whether the ratchetPublicKey field is set.
+     * <code>bytes dh_public_key = 2;</code>
+     * @return The dhPublicKey.
      */
     @java.lang.Override
-    public boolean hasRatchetPublicKey() {
-      return ((bitField0_ & 0x00000001) != 0);
-    }
-    /**
-     * <code>optional bytes ratchet_public_key = 2;</code>
-     * @return The ratchetPublicKey.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString getRatchetPublicKey() {
-      return ratchetPublicKey_;
+    public com.google.protobuf.ByteString getDhPublicKey() {
+      return dhPublicKey_;
     }
 
-    public static final int MESSAGE_COUNT_FIELD_NUMBER = 3;
-    private int messageCount_ = 0;
+    public static final int CHAIN_LENGTH_FIELD_NUMBER = 3;
+    private int chainLength_ = 0;
     /**
-     * <code>uint32 message_count = 3;</code>
-     * @return The messageCount.
+     * <code>uint32 chain_length = 3;</code>
+     * @return The chainLength.
      */
     @java.lang.Override
-    public int getMessageCount() {
-      return messageCount_;
-    }
-
-    public static final int PREV_COUNT_FIELD_NUMBER = 4;
-    private int prevCount_ = 0;
-    /**
-     * <code>uint32 prev_count = 4;</code>
-     * @return The prevCount.
-     */
-    @java.lang.Override
-    public int getPrevCount() {
-      return prevCount_;
+    public int getChainLength() {
+      return chainLength_;
     }
 
     public static final int MESSAGE_IV_FIELD_NUMBER = 5;
@@ -1144,7 +1114,7 @@ public final class Messages {
      */
     @java.lang.Override
     public boolean hasSenderId() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>optional string sender_id = 6;</code>
@@ -1190,7 +1160,7 @@ public final class Messages {
      */
     @java.lang.Override
     public boolean hasEphemeralKey() {
-      return ((bitField0_ & 0x00000004) != 0);
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <code>optional bytes ephemeral_key = 7;</code>
@@ -1209,7 +1179,7 @@ public final class Messages {
      */
     @java.lang.Override
     public boolean hasOneTimePrekey() {
-      return ((bitField0_ & 0x00000008) != 0);
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
      * <code>optional bytes one_time_prekey = 8;</code>
@@ -1237,25 +1207,22 @@ public final class Messages {
       if (type_ != com.hsj.messagingdemo.dto.Messages.MessageType.JOINED.getNumber()) {
         output.writeEnum(1, type_);
       }
-      if (((bitField0_ & 0x00000001) != 0)) {
-        output.writeBytes(2, ratchetPublicKey_);
+      if (!dhPublicKey_.isEmpty()) {
+        output.writeBytes(2, dhPublicKey_);
       }
-      if (messageCount_ != 0) {
-        output.writeUInt32(3, messageCount_);
-      }
-      if (prevCount_ != 0) {
-        output.writeUInt32(4, prevCount_);
+      if (chainLength_ != 0) {
+        output.writeUInt32(3, chainLength_);
       }
       if (!messageIv_.isEmpty()) {
         output.writeBytes(5, messageIv_);
       }
-      if (((bitField0_ & 0x00000002) != 0)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 6, senderId_);
       }
-      if (((bitField0_ & 0x00000004) != 0)) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeBytes(7, ephemeralKey_);
       }
-      if (((bitField0_ & 0x00000008) != 0)) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         output.writeBytes(8, oneTimePrekey_);
       }
       getUnknownFields().writeTo(output);
@@ -1271,30 +1238,26 @@ public final class Messages {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, type_);
       }
-      if (((bitField0_ & 0x00000001) != 0)) {
+      if (!dhPublicKey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, ratchetPublicKey_);
+          .computeBytesSize(2, dhPublicKey_);
       }
-      if (messageCount_ != 0) {
+      if (chainLength_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(3, messageCount_);
-      }
-      if (prevCount_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(4, prevCount_);
+          .computeUInt32Size(3, chainLength_);
       }
       if (!messageIv_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(5, messageIv_);
       }
-      if (((bitField0_ & 0x00000002) != 0)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(6, senderId_);
       }
-      if (((bitField0_ & 0x00000004) != 0)) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(7, ephemeralKey_);
       }
-      if (((bitField0_ & 0x00000008) != 0)) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(8, oneTimePrekey_);
       }
@@ -1314,15 +1277,10 @@ public final class Messages {
       com.hsj.messagingdemo.dto.Messages.MessageHeader other = (com.hsj.messagingdemo.dto.Messages.MessageHeader) obj;
 
       if (type_ != other.type_) return false;
-      if (hasRatchetPublicKey() != other.hasRatchetPublicKey()) return false;
-      if (hasRatchetPublicKey()) {
-        if (!getRatchetPublicKey()
-            .equals(other.getRatchetPublicKey())) return false;
-      }
-      if (getMessageCount()
-          != other.getMessageCount()) return false;
-      if (getPrevCount()
-          != other.getPrevCount()) return false;
+      if (!getDhPublicKey()
+          .equals(other.getDhPublicKey())) return false;
+      if (getChainLength()
+          != other.getChainLength()) return false;
       if (!getMessageIv()
           .equals(other.getMessageIv())) return false;
       if (hasSenderId() != other.hasSenderId()) return false;
@@ -1353,14 +1311,10 @@ public final class Messages {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + TYPE_FIELD_NUMBER;
       hash = (53 * hash) + type_;
-      if (hasRatchetPublicKey()) {
-        hash = (37 * hash) + RATCHET_PUBLIC_KEY_FIELD_NUMBER;
-        hash = (53 * hash) + getRatchetPublicKey().hashCode();
-      }
-      hash = (37 * hash) + MESSAGE_COUNT_FIELD_NUMBER;
-      hash = (53 * hash) + getMessageCount();
-      hash = (37 * hash) + PREV_COUNT_FIELD_NUMBER;
-      hash = (53 * hash) + getPrevCount();
+      hash = (37 * hash) + DH_PUBLIC_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getDhPublicKey().hashCode();
+      hash = (37 * hash) + CHAIN_LENGTH_FIELD_NUMBER;
+      hash = (53 * hash) + getChainLength();
       hash = (37 * hash) + MESSAGE_IV_FIELD_NUMBER;
       hash = (53 * hash) + getMessageIv().hashCode();
       if (hasSenderId()) {
@@ -1507,9 +1461,8 @@ public final class Messages {
         super.clear();
         bitField0_ = 0;
         type_ = 0;
-        ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
-        messageCount_ = 0;
-        prevCount_ = 0;
+        dhPublicKey_ = com.google.protobuf.ByteString.EMPTY;
+        chainLength_ = 0;
         messageIv_ = com.google.protobuf.ByteString.EMPTY;
         senderId_ = "";
         ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
@@ -1550,31 +1503,27 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.type_ = type_;
         }
-        int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.ratchetPublicKey_ = ratchetPublicKey_;
-          to_bitField0_ |= 0x00000001;
+          result.dhPublicKey_ = dhPublicKey_;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.messageCount_ = messageCount_;
+          result.chainLength_ = chainLength_;
         }
         if (((from_bitField0_ & 0x00000008) != 0)) {
-          result.prevCount_ = prevCount_;
-        }
-        if (((from_bitField0_ & 0x00000010) != 0)) {
           result.messageIv_ = messageIv_;
         }
-        if (((from_bitField0_ & 0x00000020) != 0)) {
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000010) != 0)) {
           result.senderId_ = senderId_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.ephemeralKey_ = ephemeralKey_;
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000040) != 0)) {
-          result.ephemeralKey_ = ephemeralKey_;
-          to_bitField0_ |= 0x00000004;
-        }
-        if (((from_bitField0_ & 0x00000080) != 0)) {
           result.oneTimePrekey_ = oneTimePrekey_;
-          to_bitField0_ |= 0x00000008;
+          to_bitField0_ |= 0x00000004;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -1594,21 +1543,18 @@ public final class Messages {
         if (other.type_ != 0) {
           setTypeValue(other.getTypeValue());
         }
-        if (other.hasRatchetPublicKey()) {
-          setRatchetPublicKey(other.getRatchetPublicKey());
+        if (!other.getDhPublicKey().isEmpty()) {
+          setDhPublicKey(other.getDhPublicKey());
         }
-        if (other.getMessageCount() != 0) {
-          setMessageCount(other.getMessageCount());
-        }
-        if (other.getPrevCount() != 0) {
-          setPrevCount(other.getPrevCount());
+        if (other.getChainLength() != 0) {
+          setChainLength(other.getChainLength());
         }
         if (!other.getMessageIv().isEmpty()) {
           setMessageIv(other.getMessageIv());
         }
         if (other.hasSenderId()) {
           senderId_ = other.senderId_;
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000010;
           onChanged();
         }
         if (other.hasEphemeralKey()) {
@@ -1649,38 +1595,33 @@ public final class Messages {
                 break;
               } // case 8
               case 18: {
-                ratchetPublicKey_ = input.readBytes();
+                dhPublicKey_ = input.readBytes();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 24: {
-                messageCount_ = input.readUInt32();
+                chainLength_ = input.readUInt32();
                 bitField0_ |= 0x00000004;
                 break;
               } // case 24
-              case 32: {
-                prevCount_ = input.readUInt32();
-                bitField0_ |= 0x00000008;
-                break;
-              } // case 32
               case 42: {
                 messageIv_ = input.readBytes();
-                bitField0_ |= 0x00000010;
+                bitField0_ |= 0x00000008;
                 break;
               } // case 42
               case 50: {
                 senderId_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000020;
+                bitField0_ |= 0x00000010;
                 break;
               } // case 50
               case 58: {
                 ephemeralKey_ = input.readBytes();
-                bitField0_ |= 0x00000040;
+                bitField0_ |= 0x00000020;
                 break;
               } // case 58
               case 66: {
                 oneTimePrekey_ = input.readBytes();
-                bitField0_ |= 0x00000080;
+                bitField0_ |= 0x00000040;
                 break;
               } // case 66
               default: {
@@ -1753,106 +1694,66 @@ public final class Messages {
         return this;
       }
 
-      private com.google.protobuf.ByteString ratchetPublicKey_ = com.google.protobuf.ByteString.EMPTY;
+      private com.google.protobuf.ByteString dhPublicKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes ratchet_public_key = 2;</code>
-       * @return Whether the ratchetPublicKey field is set.
+       * <code>bytes dh_public_key = 2;</code>
+       * @return The dhPublicKey.
        */
       @java.lang.Override
-      public boolean hasRatchetPublicKey() {
-        return ((bitField0_ & 0x00000002) != 0);
+      public com.google.protobuf.ByteString getDhPublicKey() {
+        return dhPublicKey_;
       }
       /**
-       * <code>optional bytes ratchet_public_key = 2;</code>
-       * @return The ratchetPublicKey.
-       */
-      @java.lang.Override
-      public com.google.protobuf.ByteString getRatchetPublicKey() {
-        return ratchetPublicKey_;
-      }
-      /**
-       * <code>optional bytes ratchet_public_key = 2;</code>
-       * @param value The ratchetPublicKey to set.
+       * <code>bytes dh_public_key = 2;</code>
+       * @param value The dhPublicKey to set.
        * @return This builder for chaining.
        */
-      public Builder setRatchetPublicKey(com.google.protobuf.ByteString value) {
+      public Builder setDhPublicKey(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
-        ratchetPublicKey_ = value;
+        dhPublicKey_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>optional bytes ratchet_public_key = 2;</code>
+       * <code>bytes dh_public_key = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder clearRatchetPublicKey() {
+      public Builder clearDhPublicKey() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        ratchetPublicKey_ = getDefaultInstance().getRatchetPublicKey();
+        dhPublicKey_ = getDefaultInstance().getDhPublicKey();
         onChanged();
         return this;
       }
 
-      private int messageCount_ ;
+      private int chainLength_ ;
       /**
-       * <code>uint32 message_count = 3;</code>
-       * @return The messageCount.
+       * <code>uint32 chain_length = 3;</code>
+       * @return The chainLength.
        */
       @java.lang.Override
-      public int getMessageCount() {
-        return messageCount_;
+      public int getChainLength() {
+        return chainLength_;
       }
       /**
-       * <code>uint32 message_count = 3;</code>
-       * @param value The messageCount to set.
+       * <code>uint32 chain_length = 3;</code>
+       * @param value The chainLength to set.
        * @return This builder for chaining.
        */
-      public Builder setMessageCount(int value) {
+      public Builder setChainLength(int value) {
 
-        messageCount_ = value;
+        chainLength_ = value;
         bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 message_count = 3;</code>
+       * <code>uint32 chain_length = 3;</code>
        * @return This builder for chaining.
        */
-      public Builder clearMessageCount() {
+      public Builder clearChainLength() {
         bitField0_ = (bitField0_ & ~0x00000004);
-        messageCount_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private int prevCount_ ;
-      /**
-       * <code>uint32 prev_count = 4;</code>
-       * @return The prevCount.
-       */
-      @java.lang.Override
-      public int getPrevCount() {
-        return prevCount_;
-      }
-      /**
-       * <code>uint32 prev_count = 4;</code>
-       * @param value The prevCount to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPrevCount(int value) {
-
-        prevCount_ = value;
-        bitField0_ |= 0x00000008;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>uint32 prev_count = 4;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPrevCount() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        prevCount_ = 0;
+        chainLength_ = 0;
         onChanged();
         return this;
       }
@@ -1874,7 +1775,7 @@ public final class Messages {
       public Builder setMessageIv(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         messageIv_ = value;
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1883,7 +1784,7 @@ public final class Messages {
        * @return This builder for chaining.
        */
       public Builder clearMessageIv() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000008);
         messageIv_ = getDefaultInstance().getMessageIv();
         onChanged();
         return this;
@@ -1895,7 +1796,7 @@ public final class Messages {
        * @return Whether the senderId field is set.
        */
       public boolean hasSenderId() {
-        return ((bitField0_ & 0x00000020) != 0);
+        return ((bitField0_ & 0x00000010) != 0);
       }
       /**
        * <code>optional string sender_id = 6;</code>
@@ -1939,7 +1840,7 @@ public final class Messages {
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         senderId_ = value;
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -1949,7 +1850,7 @@ public final class Messages {
        */
       public Builder clearSenderId() {
         senderId_ = getDefaultInstance().getSenderId();
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
         return this;
       }
@@ -1963,7 +1864,7 @@ public final class Messages {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
         senderId_ = value;
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -1975,7 +1876,7 @@ public final class Messages {
        */
       @java.lang.Override
       public boolean hasEphemeralKey() {
-        return ((bitField0_ & 0x00000040) != 0);
+        return ((bitField0_ & 0x00000020) != 0);
       }
       /**
        * <code>optional bytes ephemeral_key = 7;</code>
@@ -1993,7 +1894,7 @@ public final class Messages {
       public Builder setEphemeralKey(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         ephemeralKey_ = value;
-        bitField0_ |= 0x00000040;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2002,7 +1903,7 @@ public final class Messages {
        * @return This builder for chaining.
        */
       public Builder clearEphemeralKey() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000020);
         ephemeralKey_ = getDefaultInstance().getEphemeralKey();
         onChanged();
         return this;
@@ -2015,7 +1916,7 @@ public final class Messages {
        */
       @java.lang.Override
       public boolean hasOneTimePrekey() {
-        return ((bitField0_ & 0x00000080) != 0);
+        return ((bitField0_ & 0x00000040) != 0);
       }
       /**
        * <code>optional bytes one_time_prekey = 8;</code>
@@ -2033,7 +1934,7 @@ public final class Messages {
       public Builder setOneTimePrekey(com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         oneTimePrekey_ = value;
-        bitField0_ |= 0x00000080;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2042,7 +1943,7 @@ public final class Messages {
        * @return This builder for chaining.
        */
       public Builder clearOneTimePrekey() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        bitField0_ = (bitField0_ & ~0x00000040);
         oneTimePrekey_ = getDefaultInstance().getOneTimePrekey();
         onChanged();
         return this;
@@ -6184,31 +6085,30 @@ public final class Messages {
     java.lang.String[] descriptorData = {
       "\n\016messages.proto\"c\n\017MessageContents\022\014\n\004t" +
       "ext\030\001 \001(\t\022\024\n\007file_id\030\002 \001(\tH\000\210\001\001\022\024\n\007file_" +
-      "iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_iv\"\250\002" +
+      "iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_iv\"\362\001" +
       "\n\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.MessageT" +
-      "ype\022\037\n\022ratchet_public_key\030\002 \001(\014H\000\210\001\001\022\025\n\r" +
-      "message_count\030\003 \001(\r\022\022\n\nprev_count\030\004 \001(\r\022" +
-      "\022\n\nmessage_iv\030\005 \001(\014\022\026\n\tsender_id\030\006 \001(\tH\001" +
-      "\210\001\001\022\032\n\rephemeral_key\030\007 \001(\014H\002\210\001\001\022\034\n\017one_t" +
-      "ime_prekey\030\010 \001(\014H\003\210\001\001B\025\n\023_ratchet_public" +
-      "_keyB\014\n\n_sender_idB\020\n\016_ephemeral_keyB\022\n\020" +
-      "_one_time_prekey\"\243\001\n\013ChatMessage\022\017\n\007chat" +
-      "_id\030\002 \001(\t\022&\n\016message_header\030\003 \001(\0132\016.Mess" +
-      "ageHeader\022\"\n\032message_contents_encrypted\030" +
-      "\004 \001(\014\022\021\n\ttimestamp\030\005 \001(\004\022\026\n\theader_iv\030\006 " +
-      "\001(\014H\000\210\001\001B\014\n\n_header_iv\"\234\001\n\014PreKeyBundle\022" +
-      "\017\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014identity_key\030\002 \001(\014\022\024" +
-      "\n\014verifier_key\030\003 \001(\014\022\025\n\rsigned_prekey\030\004 " +
-      "\001(\014\022\030\n\020prekey_signature\030\005 \001(\014\022\027\n\017one_tim" +
-      "e_prekey\030\006 \003(\014B\005\n\003_id\"2\n\007KeyPair\022\022\n\npubl" +
-      "ic_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\301\001\n\010Id" +
-      "entity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_key\030" +
-      "\002 \001(\0132\010.KeyPair\022\036\n\014verifier_key\030\003 \001(\0132\010." +
-      "KeyPair\022\037\n\rsigned_prekey\030\004 \001(\0132\010.KeyPair" +
-      "\022 \n\030signed_prekey_expiration\030\005 \001(\004\022!\n\017on" +
-      "e_time_prekey\030\006 \003(\0132\010.KeyPair*-\n\013Message" +
-      "Type\022\n\n\006JOINED\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002B\033\n\031" +
-      "com.hsj.messagingdemo.dtob\006proto3"
+      "ype\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n\014chain_leng" +
+      "th\030\003 \001(\r\022\022\n\nmessage_iv\030\005 \001(\014\022\026\n\tsender_i" +
+      "d\030\006 \001(\tH\000\210\001\001\022\032\n\rephemeral_key\030\007 \001(\014H\001\210\001\001" +
+      "\022\034\n\017one_time_prekey\030\010 \001(\014H\002\210\001\001B\014\n\n_sende" +
+      "r_idB\020\n\016_ephemeral_keyB\022\n\020_one_time_prek" +
+      "ey\"\243\001\n\013ChatMessage\022\017\n\007chat_id\030\002 \001(\t\022&\n\016m" +
+      "essage_header\030\003 \001(\0132\016.MessageHeader\022\"\n\032m" +
+      "essage_contents_encrypted\030\004 \001(\014\022\021\n\ttimes" +
+      "tamp\030\005 \001(\004\022\026\n\theader_iv\030\006 \001(\014H\000\210\001\001B\014\n\n_h" +
+      "eader_iv\"\234\001\n\014PreKeyBundle\022\017\n\002id\030\001 \001(\tH\000\210" +
+      "\001\001\022\024\n\014identity_key\030\002 \001(\014\022\024\n\014verifier_key" +
+      "\030\003 \001(\014\022\025\n\rsigned_prekey\030\004 \001(\014\022\030\n\020prekey_" +
+      "signature\030\005 \001(\014\022\027\n\017one_time_prekey\030\006 \003(\014" +
+      "B\005\n\003_id\"2\n\007KeyPair\022\022\n\npublic_key\030\001 \001(\014\022\023" +
+      "\n\013private_key\030\002 \001(\014\"\301\001\n\010Identity\022\017\n\007user" +
+      "_id\030\001 \001(\t\022\036\n\014identity_key\030\002 \001(\0132\010.KeyPai" +
+      "r\022\036\n\014verifier_key\030\003 \001(\0132\010.KeyPair\022\037\n\rsig" +
+      "ned_prekey\030\004 \001(\0132\010.KeyPair\022 \n\030signed_pre" +
+      "key_expiration\030\005 \001(\004\022!\n\017one_time_prekey\030" +
+      "\006 \003(\0132\010.KeyPair*-\n\013MessageType\022\n\n\006JOINED" +
+      "\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002B\033\n\031com.hsj.messag" +
+      "ingdemo.dtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -6225,7 +6125,7 @@ public final class Messages {
     internal_static_MessageHeader_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageHeader_descriptor,
-        new java.lang.String[] { "Type", "RatchetPublicKey", "MessageCount", "PrevCount", "MessageIv", "SenderId", "EphemeralKey", "OneTimePrekey", });
+        new java.lang.String[] { "Type", "DhPublicKey", "ChainLength", "MessageIv", "SenderId", "EphemeralKey", "OneTimePrekey", });
     internal_static_ChatMessage_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_ChatMessage_fieldAccessorTable = new

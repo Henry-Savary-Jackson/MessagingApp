@@ -327,9 +327,8 @@
          * @exports IMessageHeader
          * @interface IMessageHeader
          * @property {MessageType|null} [type] MessageHeader type
-         * @property {Uint8Array|null} [ratchetPublicKey] MessageHeader ratchetPublicKey
-         * @property {number|null} [messageCount] MessageHeader messageCount
-         * @property {number|null} [prevCount] MessageHeader prevCount
+         * @property {Uint8Array|null} [dhPublicKey] MessageHeader dhPublicKey
+         * @property {number|null} [chainLength] MessageHeader chainLength
          * @property {Uint8Array|null} [messageIv] MessageHeader messageIv
          * @property {string|null} [senderId] MessageHeader senderId
          * @property {Uint8Array|null} [ephemeralKey] MessageHeader ephemeralKey
@@ -360,28 +359,20 @@
         MessageHeader.prototype.type = 0;
     
         /**
-         * MessageHeader ratchetPublicKey.
-         * @member {Uint8Array|null|undefined} ratchetPublicKey
+         * MessageHeader dhPublicKey.
+         * @member {Uint8Array} dhPublicKey
          * @memberof MessageHeader
          * @instance
          */
-        MessageHeader.prototype.ratchetPublicKey = null;
+        MessageHeader.prototype.dhPublicKey = $util.newBuffer([]);
     
         /**
-         * MessageHeader messageCount.
-         * @member {number} messageCount
+         * MessageHeader chainLength.
+         * @member {number} chainLength
          * @memberof MessageHeader
          * @instance
          */
-        MessageHeader.prototype.messageCount = 0;
-    
-        /**
-         * MessageHeader prevCount.
-         * @member {number} prevCount
-         * @memberof MessageHeader
-         * @instance
-         */
-        MessageHeader.prototype.prevCount = 0;
+        MessageHeader.prototype.chainLength = 0;
     
         /**
          * MessageHeader messageIv.
@@ -417,17 +408,6 @@
     
         // OneOf field names bound to virtual getters and setters
         var $oneOfFields;
-    
-        /**
-         * MessageHeader _ratchetPublicKey.
-         * @member {"ratchetPublicKey"|undefined} _ratchetPublicKey
-         * @memberof MessageHeader
-         * @instance
-         */
-        Object.defineProperty(MessageHeader.prototype, "_ratchetPublicKey", {
-            get: $util.oneOfGetter($oneOfFields = ["ratchetPublicKey"]),
-            set: $util.oneOfSetter($oneOfFields)
-        });
     
         /**
          * MessageHeader _senderId.
@@ -488,12 +468,10 @@
                 writer = $Writer.create();
             if (message.type != null && Object.hasOwnProperty.call(message, "type"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
-            if (message.ratchetPublicKey != null && Object.hasOwnProperty.call(message, "ratchetPublicKey"))
-                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.ratchetPublicKey);
-            if (message.messageCount != null && Object.hasOwnProperty.call(message, "messageCount"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.messageCount);
-            if (message.prevCount != null && Object.hasOwnProperty.call(message, "prevCount"))
-                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.prevCount);
+            if (message.dhPublicKey != null && Object.hasOwnProperty.call(message, "dhPublicKey"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.dhPublicKey);
+            if (message.chainLength != null && Object.hasOwnProperty.call(message, "chainLength"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.chainLength);
             if (message.messageIv != null && Object.hasOwnProperty.call(message, "messageIv"))
                 writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.messageIv);
             if (message.senderId != null && Object.hasOwnProperty.call(message, "senderId"))
@@ -543,15 +521,11 @@
                         break;
                     }
                 case 2: {
-                        message.ratchetPublicKey = reader.bytes();
+                        message.dhPublicKey = reader.bytes();
                         break;
                     }
                 case 3: {
-                        message.messageCount = reader.uint32();
-                        break;
-                    }
-                case 4: {
-                        message.prevCount = reader.uint32();
+                        message.chainLength = reader.uint32();
                         break;
                     }
                 case 5: {
@@ -615,17 +589,12 @@
                 case 2:
                     break;
                 }
-            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey")) {
-                properties._ratchetPublicKey = 1;
-                if (!(message.ratchetPublicKey && typeof message.ratchetPublicKey.length === "number" || $util.isString(message.ratchetPublicKey)))
-                    return "ratchetPublicKey: buffer expected";
-            }
-            if (message.messageCount != null && message.hasOwnProperty("messageCount"))
-                if (!$util.isInteger(message.messageCount))
-                    return "messageCount: integer expected";
-            if (message.prevCount != null && message.hasOwnProperty("prevCount"))
-                if (!$util.isInteger(message.prevCount))
-                    return "prevCount: integer expected";
+            if (message.dhPublicKey != null && message.hasOwnProperty("dhPublicKey"))
+                if (!(message.dhPublicKey && typeof message.dhPublicKey.length === "number" || $util.isString(message.dhPublicKey)))
+                    return "dhPublicKey: buffer expected";
+            if (message.chainLength != null && message.hasOwnProperty("chainLength"))
+                if (!$util.isInteger(message.chainLength))
+                    return "chainLength: integer expected";
             if (message.messageIv != null && message.hasOwnProperty("messageIv"))
                 if (!(message.messageIv && typeof message.messageIv.length === "number" || $util.isString(message.messageIv)))
                     return "messageIv: buffer expected";
@@ -679,15 +648,13 @@
                 message.type = 2;
                 break;
             }
-            if (object.ratchetPublicKey != null)
-                if (typeof object.ratchetPublicKey === "string")
-                    $util.base64.decode(object.ratchetPublicKey, message.ratchetPublicKey = $util.newBuffer($util.base64.length(object.ratchetPublicKey)), 0);
-                else if (object.ratchetPublicKey.length >= 0)
-                    message.ratchetPublicKey = object.ratchetPublicKey;
-            if (object.messageCount != null)
-                message.messageCount = object.messageCount >>> 0;
-            if (object.prevCount != null)
-                message.prevCount = object.prevCount >>> 0;
+            if (object.dhPublicKey != null)
+                if (typeof object.dhPublicKey === "string")
+                    $util.base64.decode(object.dhPublicKey, message.dhPublicKey = $util.newBuffer($util.base64.length(object.dhPublicKey)), 0);
+                else if (object.dhPublicKey.length >= 0)
+                    message.dhPublicKey = object.dhPublicKey;
+            if (object.chainLength != null)
+                message.chainLength = object.chainLength >>> 0;
             if (object.messageIv != null)
                 if (typeof object.messageIv === "string")
                     $util.base64.decode(object.messageIv, message.messageIv = $util.newBuffer($util.base64.length(object.messageIv)), 0);
@@ -723,8 +690,14 @@
             var object = {};
             if (options.defaults) {
                 object.type = options.enums === String ? "JOINED" : 0;
-                object.messageCount = 0;
-                object.prevCount = 0;
+                if (options.bytes === String)
+                    object.dhPublicKey = "";
+                else {
+                    object.dhPublicKey = [];
+                    if (options.bytes !== Array)
+                        object.dhPublicKey = $util.newBuffer(object.dhPublicKey);
+                }
+                object.chainLength = 0;
                 if (options.bytes === String)
                     object.messageIv = "";
                 else {
@@ -735,15 +708,10 @@
             }
             if (message.type != null && message.hasOwnProperty("type"))
                 object.type = options.enums === String ? $root.MessageType[message.type] === undefined ? message.type : $root.MessageType[message.type] : message.type;
-            if (message.ratchetPublicKey != null && message.hasOwnProperty("ratchetPublicKey")) {
-                object.ratchetPublicKey = options.bytes === String ? $util.base64.encode(message.ratchetPublicKey, 0, message.ratchetPublicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.ratchetPublicKey) : message.ratchetPublicKey;
-                if (options.oneofs)
-                    object._ratchetPublicKey = "ratchetPublicKey";
-            }
-            if (message.messageCount != null && message.hasOwnProperty("messageCount"))
-                object.messageCount = message.messageCount;
-            if (message.prevCount != null && message.hasOwnProperty("prevCount"))
-                object.prevCount = message.prevCount;
+            if (message.dhPublicKey != null && message.hasOwnProperty("dhPublicKey"))
+                object.dhPublicKey = options.bytes === String ? $util.base64.encode(message.dhPublicKey, 0, message.dhPublicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.dhPublicKey) : message.dhPublicKey;
+            if (message.chainLength != null && message.hasOwnProperty("chainLength"))
+                object.chainLength = message.chainLength;
             if (message.messageIv != null && message.hasOwnProperty("messageIv"))
                 object.messageIv = options.bytes === String ? $util.base64.encode(message.messageIv, 0, message.messageIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.messageIv) : message.messageIv;
             if (message.senderId != null && message.hasOwnProperty("senderId")) {

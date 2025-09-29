@@ -6,7 +6,7 @@ import { send } from "../../utils/WebsocketUtils";
 import { convertBase64StringToArrayBuffer } from "../../utils/EncodingUtils";
 
 
-function ChatMessage({ contents, sender }) {
+function ChatMessage({ message_key,contents, sender }) {
 
     let [user_id, setUserId] = useContext(userIdContext);
     let [file, setFile] = useState(undefined)
@@ -14,13 +14,18 @@ function ChatMessage({ contents, sender }) {
 
     useEffect(() => {
         if (file) {
-            setFileBlobURL(URL.createObjectURL(new Blob([convertBase64StringToArrayBuffer(file.datab64)]), { type: file.mimeType }))
+            setFileBlobURL(URL.createObjectURL(new Blob([file.data]), { type: file.mimeType }))
         }
     }, [file])
 
     useEffect(() => {
         if (contents.fileId) {
-            (async () => { setFile(await getFile(contents.fileId)) })()
+            (async () => { 
+                let file_bytes=  await getFile(contents.fileId)
+                let file_protobuf_obj = File.decode(file_bytes)
+                setFile(file_protobuf_obj) 
+            
+            })()
         }
     }, [])
 

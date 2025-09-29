@@ -2,31 +2,28 @@ import { useState } from "react"
 import { Container, Form, Button, FormControl, Stack } from "react-bootstrap"
 import { uploadFile } from "../../utils/RequestUtils"
 
-function ChatKeyboard({ onMessageSend }) {
+function ChatKeyboard({chat_id, onMessageSend }) {
 
     let [message, setMessage] = useState("")
     let [file, setFile] = useState(undefined)
-
+    let [file_js_obj ,set_file_js_obj] = useState(undefined)
 
     return <Form className={"position-sticky start-0 w-100 bottom-0"} onSubmit={async (e) => {
         e.preventDefault();
         if (message) {
-            let file_data = undefined;
-            let file_id = undefined
+
             async function submitMessage() {
-                onMessageSend(message, file_id)
+                onMessageSend(chat_id,message, file_js_obj)
                 setMessage("")
+                setFile(undefined)
             }
             if (file) {
                 let reader = new FileReader();
                 reader.onloadend = async (e) => {
-                    file_data = { datab64: reader.result.slice(reader.result.indexOf("base64,") + 7), mimeType: file.type }
-                    console.log("uploading file")
-                    file_id = await uploadFile(file_data)
-                    console.log("uploaded file")
+                    set_file_js_obj( { data: new Uint8Array(reader.result), mimeType: file.type })
                     await submitMessage()
                 }
-                reader.readAsDataURL(file)
+                reader.readAsArrayBuffer(file)
 
 
             } else {

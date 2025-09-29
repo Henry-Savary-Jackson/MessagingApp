@@ -6,6 +6,12 @@ enum MessageType {
   LEFT = 2;
 }
 
+message File{
+  string file_id = 1
+  bytes data = 2;
+  string mimetype = 3;
+}
+
 message MessageContents{
   string text =1;
   optional string file_id =2;
@@ -14,9 +20,8 @@ message MessageContents{
 
 message MessageHeader{
   MessageType type = 1;
-  optional bytes dh_public_key = 2;
-  uint32 message_count = 3;
-  uint32 prev_count = 4;
+  bytes dh_public_key = 2;
+  uint32 chain_length = 3;
   bytes message_iv = 5;
   optional string sender_id = 6;
   optional bytes ephemeral_key = 7;

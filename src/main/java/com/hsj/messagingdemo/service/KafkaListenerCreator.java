@@ -48,7 +48,7 @@ public class KafkaListenerCreator {
         kafkaListenerEndpoint.setId(listenerId);
         kafkaListenerEndpoint.setGroupId(listenerId);
         kafkaListenerEndpoint.setAutoStartup(true);
-        TopicPartitionOffset partionOffset = new TopicPartitionOffset(userId, 0, TopicPartitionOffset.SeekPosition.BEGINNING);
+        TopicPartitionOffset partionOffset = new TopicPartitionOffset(userId, 0, TopicPartitionOffset.SeekPosition.END);
         kafkaListenerEndpoint.setTopicPartitions(partionOffset);
 
         kafkaListenerEndpoint.setMessageHandlerMethodFactory(new DefaultMessageHandlerMethodFactory());
