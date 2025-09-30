@@ -1,12 +1,45 @@
-import { Button, Container, Stack } from "react-bootstrap"
+import { useEffect,useState } from "react"
+import { Button, Image,Container, Stack } from "react-bootstrap"
+import { convertBase64StringToArrayBuffer } from "../../utils/EncodingUtils"
+import { getUserProfile } from "../../utils/RequestUtils"
+import { useIndexedDB } from "../../utils/StorageUtils"
 
-function ChatItem({ onChatDelete, chat, onChatClick, onChatLeave}) {
-    return <Stack direction="horizontal" gap={1} key={chat.chatId} >
+function ChatItem({ chat, onChatClick, onChatLeave }) {
+
+    let {db,loading} = useIndexedDB()
+
+    let [profileImage, setProfileImage] = useState(undefined)
+
+    let [profileBlobURL, setProfileBlobURL] = useState("")
+
+    let unsetBlobURL = () => {
+        if (profileBlobURL)
+            URL.revokeObjectURL(profileBlobURL)
+    }
+    let updateBlobURL = (profileImage) => {
+        setProfileBlobURL(URL.createObjectURL(new Blob([convertBase64StringToArrayBuffer(profileImage.datab64)]), { type: profileImage.mimeType }))
+    }
+    useEffect(
+        () => {
+            if (profileImage) {
+                updateBlobURL(profileImage)
+            }
+            return unsetBlobURL
+        }
+        , [profileImage])
+
+    useEffect(() => {
+        (async () => {
+            if (db)
+                setProfileImage(await getUserProfile(db,chat.user_id) || undefined)
+        })()
+    }, [db])
+
+    return <Stack className="border" direction="horizontal" gap={1} key={chat.chat_id} >
+        <Image className="w-25" alt={chat.name} src={profileBlobURL|| undefined} roundedCircle />
         <span onClick={(e) => { onChatClick(chat) }}> {chat.name || "No name to chat"} : {chat.new_message} new messages
         </span>
-        <Button onClick={(e) => { onChatLeave(chat.chatId) }} variant="danger">Leave</Button>
-        <Button onClick={(e) => { navigator.clipboard.writeText(chat.chatId) }} variant="success">Share</Button>
-        <Button onClick={(e) => { onChatDelete(chat.chatId) }} variant="danger">Remove</Button>
+        <Button onClick={(e) => { onChatLeave(chat.chat_id) }} variant="danger">Leave</Button>
     </Stack>
 }
 

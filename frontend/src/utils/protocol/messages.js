@@ -32,6 +32,290 @@
         return values;
     })();
     
+    $root.MessageFile = (function() {
+    
+        /**
+         * Properties of a MessageFile.
+         * @exports IMessageFile
+         * @interface IMessageFile
+         * @property {string|null} [fileId] MessageFile fileId
+         * @property {Uint8Array|null} [data] MessageFile data
+         * @property {string|null} [mimetype] MessageFile mimetype
+         * @property {string|null} [fileName] MessageFile fileName
+         */
+    
+        /**
+         * Constructs a new MessageFile.
+         * @exports MessageFile
+         * @classdesc Represents a MessageFile.
+         * @implements IMessageFile
+         * @constructor
+         * @param {IMessageFile=} [properties] Properties to set
+         */
+        function MessageFile(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * MessageFile fileId.
+         * @member {string} fileId
+         * @memberof MessageFile
+         * @instance
+         */
+        MessageFile.prototype.fileId = "";
+    
+        /**
+         * MessageFile data.
+         * @member {Uint8Array} data
+         * @memberof MessageFile
+         * @instance
+         */
+        MessageFile.prototype.data = $util.newBuffer([]);
+    
+        /**
+         * MessageFile mimetype.
+         * @member {string} mimetype
+         * @memberof MessageFile
+         * @instance
+         */
+        MessageFile.prototype.mimetype = "";
+    
+        /**
+         * MessageFile fileName.
+         * @member {string} fileName
+         * @memberof MessageFile
+         * @instance
+         */
+        MessageFile.prototype.fileName = "";
+    
+        /**
+         * Creates a new MessageFile instance using the specified properties.
+         * @function create
+         * @memberof MessageFile
+         * @static
+         * @param {IMessageFile=} [properties] Properties to set
+         * @returns {MessageFile} MessageFile instance
+         */
+        MessageFile.create = function create(properties) {
+            return new MessageFile(properties);
+        };
+    
+        /**
+         * Encodes the specified MessageFile message. Does not implicitly {@link MessageFile.verify|verify} messages.
+         * @function encode
+         * @memberof MessageFile
+         * @static
+         * @param {IMessageFile} message MessageFile message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        MessageFile.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.fileId != null && Object.hasOwnProperty.call(message, "fileId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.fileId);
+            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.data);
+            if (message.mimetype != null && Object.hasOwnProperty.call(message, "mimetype"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.mimetype);
+            if (message.fileName != null && Object.hasOwnProperty.call(message, "fileName"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.fileName);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified MessageFile message, length delimited. Does not implicitly {@link MessageFile.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof MessageFile
+         * @static
+         * @param {IMessageFile} message MessageFile message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        MessageFile.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes a MessageFile message from the specified reader or buffer.
+         * @function decode
+         * @memberof MessageFile
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {MessageFile} MessageFile
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        MessageFile.decode = function decode(reader, length, error) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.MessageFile();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                if (tag === error)
+                    break;
+                switch (tag >>> 3) {
+                case 1: {
+                        message.fileId = reader.string();
+                        break;
+                    }
+                case 2: {
+                        message.data = reader.bytes();
+                        break;
+                    }
+                case 3: {
+                        message.mimetype = reader.string();
+                        break;
+                    }
+                case 4: {
+                        message.fileName = reader.string();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes a MessageFile message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof MessageFile
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {MessageFile} MessageFile
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        MessageFile.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies a MessageFile message.
+         * @function verify
+         * @memberof MessageFile
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        MessageFile.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.fileId != null && message.hasOwnProperty("fileId"))
+                if (!$util.isString(message.fileId))
+                    return "fileId: string expected";
+            if (message.data != null && message.hasOwnProperty("data"))
+                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                    return "data: buffer expected";
+            if (message.mimetype != null && message.hasOwnProperty("mimetype"))
+                if (!$util.isString(message.mimetype))
+                    return "mimetype: string expected";
+            if (message.fileName != null && message.hasOwnProperty("fileName"))
+                if (!$util.isString(message.fileName))
+                    return "fileName: string expected";
+            return null;
+        };
+    
+        /**
+         * Creates a MessageFile message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof MessageFile
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {MessageFile} MessageFile
+         */
+        MessageFile.fromObject = function fromObject(object) {
+            if (object instanceof $root.MessageFile)
+                return object;
+            var message = new $root.MessageFile();
+            if (object.fileId != null)
+                message.fileId = String(object.fileId);
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length >= 0)
+                    message.data = object.data;
+            if (object.mimetype != null)
+                message.mimetype = String(object.mimetype);
+            if (object.fileName != null)
+                message.fileName = String(object.fileName);
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from a MessageFile message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof MessageFile
+         * @static
+         * @param {MessageFile} message MessageFile
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        MessageFile.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.fileId = "";
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
+                object.mimetype = "";
+                object.fileName = "";
+            }
+            if (message.fileId != null && message.hasOwnProperty("fileId"))
+                object.fileId = message.fileId;
+            if (message.data != null && message.hasOwnProperty("data"))
+                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
+            if (message.mimetype != null && message.hasOwnProperty("mimetype"))
+                object.mimetype = message.mimetype;
+            if (message.fileName != null && message.hasOwnProperty("fileName"))
+                object.fileName = message.fileName;
+            return object;
+        };
+    
+        /**
+         * Converts this MessageFile to JSON.
+         * @function toJSON
+         * @memberof MessageFile
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        MessageFile.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        /**
+         * Gets the default type url for MessageFile
+         * @function getTypeUrl
+         * @memberof MessageFile
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        MessageFile.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/MessageFile";
+        };
+    
+        return MessageFile;
+    })();
+    
     $root.MessageContents = (function() {
     
         /**

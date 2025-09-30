@@ -1,6 +1,6 @@
 import { openDB } from "idb"
 import { useEffect, useState } from "react"
-import { generate25519KeyExchangePair, DH, extractC25519KeyExchangePair, exportX25519KeyPair, extractC25519KeySignaturePair, KDF_chain_key, KDF_root_key, extractC25519ExchangePublicKey, exportX25519PublicKey } from "./CryptoUtils"
+import { generate25519KeyExchangePair, DH, extractC25519KeyExchangePair, exportX25519KeyPair, extractC25519KeySignaturePair, extractC25519ExchangePublicKey } from "./CryptoUtils"
 import { Identity } from "./protocol/messages"
 
 
@@ -9,6 +9,8 @@ const identity_store_name = "identity"
 const chat_store_name = "chats"
 const otp_store_name = "one_time_prekeys"
 const dh_keystore_name = "dh_keys_prev"
+const file_store_name = "message_files"
+const user_info_store_name = "user_cache"
 const max_otp = 100;
 
 
@@ -28,6 +30,8 @@ export function useIndexedDB() {
                     const chat_store = db_obj.createObjectStore(chat_store_name, { keyPath: "chat_id" });
                     const otp_store = db_obj.createObjectStore(otp_store_name);
                     const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "dh_bytes_sender" })
+                    const file_store = db_obj.createObjectStore(file_store_name)
+                    const user_info_cache = db_obj.createObjectStore(user_info_store_name, { keyPath: "user_id" })
                 }
             })
             setLoading(false);
@@ -35,7 +39,7 @@ export function useIndexedDB() {
         }
         open()
         return () => {
-            db_obj.close()
+            db_obj && db_obj.close()
         }
     }, [])
 
@@ -97,6 +101,10 @@ export async function refill_otp(indexed_db) {
     }
 }
 
+export async function delete_chat(indexed_db, chat_id) {
+    await indexed_db.delete(chat_store_name,chat_id)
+}
+
 export async function getLengthOtp(indexed_db) {
     return await indexed_db.count(otp_store_name)
 
@@ -110,7 +118,7 @@ export async function delete_one_time_prekey(indexed_db, public_key_bytes) {
 }
 
 export async function store_message(indexed_db, message) {
-    let chat_id = message.chatId
+    let chat_id = message.chat_id
     let chat_info = await get_chat_info(indexed_db, chat_id) 
     let messages = chat_info.messages
     messages.push(message) // TODO: add in sorted fashing
@@ -126,7 +134,26 @@ export async function get_chat_info(indexed_db, chat_id) {
 }
 
 export async function get_messages(indexed_db, chat_id) {
+    return (await get_chat_info(indexed_db, chat_id)).messages || []
 
+}
+
+export async function get_file_local(indexed_db, file_id){
+   return await indexed_db.get(file_store_name,file_id)
+}
+
+export async function store_file_local(indexed_db, file_object, uuid){
+    await indexed_db.put(file_store_name, file_object, uuid)
+}
+
+
+
+export async function get_user_info(indexed_db, user_id){
+   return await indexed_db.get(user_info_store_name, user_id)
+}
+
+export async function store_user_info(indexed_db, user_object){
+    await indexed_db.put(user_info_store_name, user_object)
 }
 
 export async function import_identity(identityBytes) {
@@ -165,83 +192,15 @@ export async function store_previous_receiving_chain(indexed_db, other_dh, recei
     await indexed_db.put(dh_keystore_name,message_keys_dh)
 }
 
-export async function ratchet_turn_until_match(message_keys, index){
-    if (message_keys.length <= index){
-        for (let i = message_keys.length; i < index+1 ; i++) {
-            let new_message_key = await KDF_chain_key( message_keys[i-1])
-            message_keys.push(new_message_key)
-        }
-    }
-    return message_keys[index]
-
-}
-
-export async function get_previous_message_key(indexed_db, other_dh, index){
-    let previous_receiving_chain = await get_previous_messages_keys(indexed_db, other_dh)
-    let message_keys = previous_receiving_chain.receiving_chain.message_keys
-    let length_orig = message_keys.length
-    let key = await ratchet_turn_until_match(message_keys,index )
-    let new_length = message_keys.length
-    if (new_length != length_orig)
-        await indexed_db.put(dh_keystore_name, previous_receiving_chain)
-    return key
-}
-
-export async function get_previous_messages_keys(indexed_db,other_dh_public){
-    return await indexed_db.get(dh_keystore_name, other_dh_public)
-}
-
-export async function ratchet_turn_send(chat_object, turn_root = true) {
-    if (turn_root) {
-        chat_object.dh_keypair_private = await generate25519KeyExchangePair()
-        let public_cryptokey_other = await extractC25519ExchangePublicKey(chat_object.other_dh_public)
-        chat_object.dh_input = await DH(chat_object.dh_keypair_private.privateKey, public_cryptokey_other)
-        await turn_ratchet_root_sender(chat_object)
-    }else{
-        let message_keys = chat_object.sending_chain.message_keys
-        if (message_keys.length == 0){
-            throw new Error("Error, no message in sending chain")
-        }
-        let last_message_key =  message_keys[message_keys.length-1]
-        let [new_chain_key, new_message_key] = await KDF_chain_key(last_message_key)
-        message_keys.push({chain_key:new_chain_key, message_key:new_message_key})
-    }
-}
-
-export async function turn_ratchet_root_sender(chat_object) {
-
-    let [root_key, new_sending_key] = await KDF_root_key(chat_object.root_key, chat_object.dh_input)
-    let [new_root_key, new_recieving_key] = await KDF_root_key(root_key, chat_object.dh_input)
-    chat_object.root_key = new_root_key
-    chat_object.sending_chain.message_keys = [new_sending_key]
-    chat_object.receiving_chain.message_keys = [new_recieving_key]
-}
-export async function turn_ratchet_root_recieve(chat_object) {
-    let [root_key, new_recieving_key] = await KDF_root_key(chat_object.root_key, chat_object.dh_input)
-    let [new_root_key, new_sending_key] = await KDF_root_key(root_key, chat_object.dh_input)
-    chat_object.root_key = new_root_key
-    chat_object.sending_chain.message_keys = [new_sending_key]
-    chat_object.receiving_chain.message_keys = [new_recieving_key]
-    // store previous dh key and message keys in db for later use for out of order messages
-}
-
-
-async function get_all_chats(indexed_db) {
+export async function get_all_chats(indexed_db) {
     return await indexed_db.getAll(chat_store_name)
 }
 
 
-export async function root_ratchet_turn_recieve(chat_object, other_dh) {
-    let other_dh_public_cryptokey = await extractC25519ExchangePublicKey(other_dh)
-    chat_object.other_dh_public = other_dh
-    chat_object.dh_input = await DH(chat_object.dh_keypair_private.privateKey, other_dh_public_cryptokey)
-    await turn_ratchet_root_recieve(chat_object)
-}
-
 export async function create_chat_object_sender(chat_id, other_id, name,sender_dh_ratchet_key,other_identity_key, shared_key) {
 
     let other_identity_key_public = await extractC25519ExchangePublicKey(other_identity_key)
-    let dh_input = await DH(sender_dh_ratchet_key, other_identity_key_public)
+    let dh_input = await DH(sender_dh_ratchet_key.privateKey, other_identity_key_public)
 
     return {
         chat_id: chat_id,
@@ -253,7 +212,8 @@ export async function create_chat_object_sender(chat_id, other_id, name,sender_d
         other_dh_public: other_identity_key,
         dh_input: dh_input,
         sending_chain: {
-            message_keys:[]
+            message_keys:[],
+            n_sent:0
         },
         receiving_chain: {
             message_keys:[]
@@ -261,12 +221,14 @@ export async function create_chat_object_sender(chat_id, other_id, name,sender_d
         messages :[]
     }
 }
-
+export async function get_previous_messages_keys(indexed_db,other_dh_public){
+    return await indexed_db.get(dh_keystore_name, other_dh_public)
+}
 
 export async function create_chat_object_recipient(identityKey,chat_id, other_id,name, other_public_key_bytes, shared_key) {
 
     let other_ratchet_key_public = await extractC25519ExchangePublicKey(other_public_key_bytes)
-    let dh_input = await DH(identityKey, other_ratchet_key_public)
+    let dh_input = await DH(identityKey.privateKey, other_ratchet_key_public)
 
     return {
         chat_id: chat_id,
@@ -278,7 +240,8 @@ export async function create_chat_object_recipient(identityKey,chat_id, other_id
         other_dh_public: other_public_key_bytes,
         dh_input: dh_input,
         sending_chain: {
-            message_keys:[]
+            message_keys:[],
+            n_sent:0
         },
         receiving_chain: {
             message_keys:[]

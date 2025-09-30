@@ -1,16 +1,12 @@
 import { Button, Container, Navbar, NavbarCollapse, NavItem, Stack } from "react-bootstrap";
 import ChatItem from "./ChatItem";
-import { useContext } from "react";
-import { userIdContext } from "../../globals";
 
 
-function ChatListBar({ chats, onChatClick, onChatCreate, onChatJoin,onChatDelete, onChatLeave  }) {
-    let [user_id, setUserId] = useContext(userIdContext)
-
+function ChatListBar({ chats, onChatClick, onChatCreate, onChatJoin, onChatLeave  }) {
     return <Stack className="border vh-100 " gap={3}>
         <Button onClick={(e) => { onChatCreate() }} >Create your chat</Button>
         <Stack className="overflow-y-scroll mh-100"  gap={2}>
-            {chats.map((chat) => <ChatItem key={chat.chatId} chat={chat} onChatClick={onChatClick} onChatLeave={onChatLeave} onChatDelete={onChatDelete}/> )}
+            {chats.map((chat) => <ChatItem key={chat.chat_id} chat={chat} onChatClick={onChatClick} onChatLeave={onChatLeave} /> )}
         </Stack>
     </Stack>
 }

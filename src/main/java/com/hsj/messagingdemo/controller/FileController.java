@@ -3,7 +3,8 @@ package com.hsj.messagingdemo.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hsj.messagingdemo.model.MessageFile;
+import com.hsj.messagingdemo.dto.Messages.MessageFile;
+import com.hsj.messagingdemo.model.DBFile;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.FileService;
 
@@ -26,25 +27,22 @@ public class FileController {
     FileService fileService;
 
     @PostMapping("/upload")
-    public UUID uploadFile(@RequestBody MessageFile entity) {
+    public UUID uploadFile(@RequestBody byte[] entity) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return fileService.uploadFile(user,entity).getFileId();
     }
 
     @GetMapping("/{id}")
-    public MessageFile getFile(@PathVariable UUID id) {
-        return fileService.getFileByUUID(id);
+    public byte[] getFile(@PathVariable UUID id) {
+        return fileService.getFileByUUID(id).getData();
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteFile(@PathVariable UUID id) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        MessageFile file = fileService.getFileByUUID(id);
-        if (!user.getId().equals(file.getOwnerId())){
-            throw new AuthenticationServiceException("Logged-in user is not the owner of the file.");
-        }
-        fileService.deleteFile(file);
-        return "Success";
-    }
+    // @DeleteMapping("/{id}")
+    // public String deleteFile(@PathVariable UUID id) {
+    //     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    //     MessageFile file = fileService.getFileByUUID(id);
+    //     fileService.deleteFile(file);
+    //     return "Success";
+    // }
 
 }

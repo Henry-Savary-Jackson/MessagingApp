@@ -18,15 +18,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Document
-public class MessageFile {
+public class DBFile {
 
     @Id
     UUID fileId;
-
-    String mimeType;
-
-    String datab64;
-
-    String ownerId;
+    byte[] data;
     
 }

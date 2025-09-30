@@ -56,7 +56,7 @@ public class UserController {
         if (currentUser == null){
             throw new AuthenticationServiceException("User is not logged in.");
         }
-        userService.modifyUser(currentUser, userChangeDTO);
+       userService.modifyUser(currentUser, userChangeDTO);
         return "Success";
     }
 

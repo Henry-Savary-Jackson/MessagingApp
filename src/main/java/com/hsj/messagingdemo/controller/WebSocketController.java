@@ -14,6 +14,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.security.access.method.P;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
@@ -21,6 +22,7 @@ import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.hsj.messagingdemo.dto.Messages.ChatMessage;
+import com.hsj.messagingdemo.dto.Messages.MessageType;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
 import com.hsj.messagingdemo.service.MessageService;
@@ -45,8 +47,9 @@ public class WebSocketController {
             throw new NullPointerException("User not found!");
         }
         try {
-            ChatMessage newMessage = ChatMessage.parseFrom(message).toBuilder()
-                    .setTimestamp((long) LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)).build();
+            ChatMessage newMessage = ChatMessage.parseFrom(message);
+            ChatMessage.Builder builder = newMessage.toBuilder();
+            newMessage = builder.setTimestamp((long) LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(2))).build();
             kafkaTemplate.send(new ProducerRecord<String, byte[]>(user_id, newMessage.toByteArray()));
         } catch (InvalidProtocolBufferException ie) {
             throw ie;

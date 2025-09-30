@@ -1,5 +1,5 @@
 import { convertArrayBufferToBase64 } from "./EncodingUtils";
-import {Identity, MessageContents} from "../utils/protocol/messages"
+import {Identity,MessageFile, MessageContents} from "../utils/protocol/messages"
 
 export function generateChallengeBuffer() {
     return crypto.getRandomValues(new Uint8Array(new ArrayBuffer(200))).buffer
@@ -178,12 +178,6 @@ export function concatenateUIntArray(...arr){
     return output 
 }
 
-async function export_secret_key(secret_key) {
-    
-    return new Uint8Array(await crypto.subtle.exportKey("raw", secret_key) )
-}
-
-
 export async function KDF_root_key(root_key_inp, dh_output){
     let info = new Uint8Array(8);
     let dh_key = await crypto.subtle.importKey("raw", dh_output, {"name":"HKDF"}, true, ["deriveKey", "deriveBits"])
@@ -205,12 +199,6 @@ export async function KDF_chain_key( chain_key_bits){
     return resultBits 
 }
 
-
-export async function ratchet_turn(chain_key){
-    let salt = new Uint8Array(32); 
-    let info = new Uint8Array(8);
-     await crypto.subtle.deriveKey({"name":"HKDF", "hash":"SHA-256", "info":info, "salt":salt},chain_key, {"name":"AES-GCM", length:256} , true, ["encrypt", "decrypt"]) 
-     }
 
 export function createHKDFRootInput(KM_bytes){
     let output= new Uint8Array(32+KM_bytes.byteLength)
@@ -317,13 +305,36 @@ export async function decrypt_message_contents(message_key_bits,message_contents
     let decrypted_bytes_buffer = new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM", iv:message_iv}, message_key, message_contents_bytes) )
     return MessageContents.decode(decrypted_bytes_buffer) 
     }catch(err){
-        console.log(`Failed to decrypt:${err}`)
+        console.log(`Failed to here decrypt:${err}`)
+        throw err
     }
 }
-export async function encrypt_message_contents(message_key_bits, message_contents){
+export async function decrypt_file_contents(message_key_bits,file_contents_bytes, file_iv) {
+    try {
+
+    let message_key = await crypto.subtle.importKey("raw", message_key_bits, {name:"AES-GCM"}, true, ["decrypt"])
+    let decrypted_bytes_buffer = new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM", iv:file_iv}, message_key, file_contents_bytes) )
+    return MessageFile.decode(decrypted_bytes_buffer) 
+    }catch(err){
+        console.log(`Failed to decrypt:${err}`)
+        throw err
+    }
+}
+
+async function encrypt_uint8array(message_key_bits, data){
+
     let iv = crypto.getRandomValues(new Uint8Array(32));
     let message_key = await crypto.subtle.importKey("raw", message_key_bits, {name:"AES-GCM"}, true, ["encrypt"])
-    let message_contents_bytes = MessageContents.encode(message_contents).finish() 
-    let encrypted_bytes_buffer = new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM", iv:iv}, message_key, message_contents_bytes) )
+    let encrypted_bytes_buffer = new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM", iv:iv}, message_key, data) )
     return [encrypted_bytes_buffer, iv]
+}
+
+export async function encrypt_message_contents(message_key_bits, message_contents){
+    let message_contents_bytes = MessageContents.encode(message_contents).finish() 
+    return encrypt_uint8array(message_key_bits,message_contents_bytes)
+}
+
+export async function encrypt_file_contents(message_key_bits, file_contents) {
+    let file_contents_bytes = MessageFile.encode(file_contents).finish() 
+    return encrypt_uint8array(message_key_bits,file_contents_bytes)
 }

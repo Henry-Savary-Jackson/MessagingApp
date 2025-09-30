@@ -151,6 +151,885 @@ public final class Messages {
     // @@protoc_insertion_point(enum_scope:MessageType)
   }
 
+  public interface MessageFileOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:MessageFile)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string file_id = 1;</code>
+     * @return The fileId.
+     */
+    java.lang.String getFileId();
+    /**
+     * <code>string file_id = 1;</code>
+     * @return The bytes for fileId.
+     */
+    com.google.protobuf.ByteString
+        getFileIdBytes();
+
+    /**
+     * <code>bytes data = 2;</code>
+     * @return The data.
+     */
+    com.google.protobuf.ByteString getData();
+
+    /**
+     * <code>string mimetype = 3;</code>
+     * @return The mimetype.
+     */
+    java.lang.String getMimetype();
+    /**
+     * <code>string mimetype = 3;</code>
+     * @return The bytes for mimetype.
+     */
+    com.google.protobuf.ByteString
+        getMimetypeBytes();
+
+    /**
+     * <code>string file_name = 4;</code>
+     * @return The fileName.
+     */
+    java.lang.String getFileName();
+    /**
+     * <code>string file_name = 4;</code>
+     * @return The bytes for fileName.
+     */
+    com.google.protobuf.ByteString
+        getFileNameBytes();
+  }
+  /**
+   * Protobuf type {@code MessageFile}
+   */
+  public static final class MessageFile extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:MessageFile)
+      MessageFileOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 30,
+        /* patch= */ 1,
+        /* suffix= */ "",
+        MessageFile.class.getName());
+    }
+    // Use MessageFile.newBuilder() to construct.
+    private MessageFile(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private MessageFile() {
+      fileId_ = "";
+      data_ = com.google.protobuf.ByteString.EMPTY;
+      mimetype_ = "";
+      fileName_ = "";
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.hsj.messagingdemo.dto.Messages.internal_static_MessageFile_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.hsj.messagingdemo.dto.Messages.internal_static_MessageFile_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.hsj.messagingdemo.dto.Messages.MessageFile.class, com.hsj.messagingdemo.dto.Messages.MessageFile.Builder.class);
+    }
+
+    public static final int FILE_ID_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object fileId_ = "";
+    /**
+     * <code>string file_id = 1;</code>
+     * @return The fileId.
+     */
+    @java.lang.Override
+    public java.lang.String getFileId() {
+      java.lang.Object ref = fileId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        fileId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string file_id = 1;</code>
+     * @return The bytes for fileId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getFileIdBytes() {
+      java.lang.Object ref = fileId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        fileId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int DATA_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>bytes data = 2;</code>
+     * @return The data.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
+
+    public static final int MIMETYPE_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object mimetype_ = "";
+    /**
+     * <code>string mimetype = 3;</code>
+     * @return The mimetype.
+     */
+    @java.lang.Override
+    public java.lang.String getMimetype() {
+      java.lang.Object ref = mimetype_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        mimetype_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string mimetype = 3;</code>
+     * @return The bytes for mimetype.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getMimetypeBytes() {
+      java.lang.Object ref = mimetype_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        mimetype_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int FILE_NAME_FIELD_NUMBER = 4;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object fileName_ = "";
+    /**
+     * <code>string file_name = 4;</code>
+     * @return The fileName.
+     */
+    @java.lang.Override
+    public java.lang.String getFileName() {
+      java.lang.Object ref = fileName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        fileName_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string file_name = 4;</code>
+     * @return The bytes for fileName.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getFileNameBytes() {
+      java.lang.Object ref = fileName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        fileName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(fileId_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, fileId_);
+      }
+      if (!data_.isEmpty()) {
+        output.writeBytes(2, data_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mimetype_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, mimetype_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(fileName_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 4, fileName_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(fileId_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, fileId_);
+      }
+      if (!data_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, data_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mimetype_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, mimetype_);
+      }
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(fileName_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(4, fileName_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.hsj.messagingdemo.dto.Messages.MessageFile)) {
+        return super.equals(obj);
+      }
+      com.hsj.messagingdemo.dto.Messages.MessageFile other = (com.hsj.messagingdemo.dto.Messages.MessageFile) obj;
+
+      if (!getFileId()
+          .equals(other.getFileId())) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!getMimetype()
+          .equals(other.getMimetype())) return false;
+      if (!getFileName()
+          .equals(other.getFileName())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + FILE_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getFileId().hashCode();
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      hash = (37 * hash) + MIMETYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getMimetype().hashCode();
+      hash = (37 * hash) + FILE_NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getFileName().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.hsj.messagingdemo.dto.Messages.MessageFile prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code MessageFile}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:MessageFile)
+        com.hsj.messagingdemo.dto.Messages.MessageFileOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_MessageFile_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_MessageFile_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.hsj.messagingdemo.dto.Messages.MessageFile.class, com.hsj.messagingdemo.dto.Messages.MessageFile.Builder.class);
+      }
+
+      // Construct using com.hsj.messagingdemo.dto.Messages.MessageFile.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        fileId_ = "";
+        data_ = com.google.protobuf.ByteString.EMPTY;
+        mimetype_ = "";
+        fileName_ = "";
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_MessageFile_descriptor;
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.MessageFile getDefaultInstanceForType() {
+        return com.hsj.messagingdemo.dto.Messages.MessageFile.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.MessageFile build() {
+        com.hsj.messagingdemo.dto.Messages.MessageFile result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.MessageFile buildPartial() {
+        com.hsj.messagingdemo.dto.Messages.MessageFile result = new com.hsj.messagingdemo.dto.Messages.MessageFile(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.hsj.messagingdemo.dto.Messages.MessageFile result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.fileId_ = fileId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.data_ = data_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.mimetype_ = mimetype_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.fileName_ = fileName_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.hsj.messagingdemo.dto.Messages.MessageFile) {
+          return mergeFrom((com.hsj.messagingdemo.dto.Messages.MessageFile)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.hsj.messagingdemo.dto.Messages.MessageFile other) {
+        if (other == com.hsj.messagingdemo.dto.Messages.MessageFile.getDefaultInstance()) return this;
+        if (!other.getFileId().isEmpty()) {
+          fileId_ = other.fileId_;
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
+        if (!other.getData().isEmpty()) {
+          setData(other.getData());
+        }
+        if (!other.getMimetype().isEmpty()) {
+          mimetype_ = other.mimetype_;
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
+        if (!other.getFileName().isEmpty()) {
+          fileName_ = other.fileName_;
+          bitField0_ |= 0x00000008;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                fileId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                data_ = input.readBytes();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                mimetype_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                fileName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object fileId_ = "";
+      /**
+       * <code>string file_id = 1;</code>
+       * @return The fileId.
+       */
+      public java.lang.String getFileId() {
+        java.lang.Object ref = fileId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          fileId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string file_id = 1;</code>
+       * @return The bytes for fileId.
+       */
+      public com.google.protobuf.ByteString
+          getFileIdBytes() {
+        java.lang.Object ref = fileId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          fileId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string file_id = 1;</code>
+       * @param value The fileId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFileId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        fileId_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string file_id = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearFileId() {
+        fileId_ = getDefaultInstance().getFileId();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string file_id = 1;</code>
+       * @param value The bytes for fileId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFileIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        fileId_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes data = 2;</code>
+       * @return The data.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+      /**
+       * <code>bytes data = 2;</code>
+       * @param value The data to set.
+       * @return This builder for chaining.
+       */
+      public Builder setData(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        data_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes data = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearData() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object mimetype_ = "";
+      /**
+       * <code>string mimetype = 3;</code>
+       * @return The mimetype.
+       */
+      public java.lang.String getMimetype() {
+        java.lang.Object ref = mimetype_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          mimetype_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string mimetype = 3;</code>
+       * @return The bytes for mimetype.
+       */
+      public com.google.protobuf.ByteString
+          getMimetypeBytes() {
+        java.lang.Object ref = mimetype_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          mimetype_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string mimetype = 3;</code>
+       * @param value The mimetype to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMimetype(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        mimetype_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string mimetype = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearMimetype() {
+        mimetype_ = getDefaultInstance().getMimetype();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string mimetype = 3;</code>
+       * @param value The bytes for mimetype to set.
+       * @return This builder for chaining.
+       */
+      public Builder setMimetypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        mimetype_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object fileName_ = "";
+      /**
+       * <code>string file_name = 4;</code>
+       * @return The fileName.
+       */
+      public java.lang.String getFileName() {
+        java.lang.Object ref = fileName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          fileName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string file_name = 4;</code>
+       * @return The bytes for fileName.
+       */
+      public com.google.protobuf.ByteString
+          getFileNameBytes() {
+        java.lang.Object ref = fileName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          fileName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string file_name = 4;</code>
+       * @param value The fileName to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFileName(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        fileName_ = value;
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string file_name = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearFileName() {
+        fileName_ = getDefaultInstance().getFileName();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string file_name = 4;</code>
+       * @param value The bytes for fileName to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFileNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        fileName_ = value;
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:MessageFile)
+    }
+
+    // @@protoc_insertion_point(class_scope:MessageFile)
+    private static final com.hsj.messagingdemo.dto.Messages.MessageFile DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.hsj.messagingdemo.dto.Messages.MessageFile();
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.MessageFile getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<MessageFile>
+        PARSER = new com.google.protobuf.AbstractParser<MessageFile>() {
+      @java.lang.Override
+      public MessageFile parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<MessageFile> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<MessageFile> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.MessageFile getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface MessageContentsOrBuilder extends
       // @@protoc_insertion_point(interface_extends:MessageContents)
       com.google.protobuf.MessageOrBuilder {
@@ -6045,6 +6924,11 @@ public final class Messages {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_MessageFile_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_MessageFile_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MessageContents_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -6083,69 +6967,77 @@ public final class Messages {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016messages.proto\"c\n\017MessageContents\022\014\n\004t" +
-      "ext\030\001 \001(\t\022\024\n\007file_id\030\002 \001(\tH\000\210\001\001\022\024\n\007file_" +
-      "iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_iv\"\362\001" +
-      "\n\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.MessageT" +
-      "ype\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n\014chain_leng" +
-      "th\030\003 \001(\r\022\022\n\nmessage_iv\030\005 \001(\014\022\026\n\tsender_i" +
-      "d\030\006 \001(\tH\000\210\001\001\022\032\n\rephemeral_key\030\007 \001(\014H\001\210\001\001" +
-      "\022\034\n\017one_time_prekey\030\010 \001(\014H\002\210\001\001B\014\n\n_sende" +
-      "r_idB\020\n\016_ephemeral_keyB\022\n\020_one_time_prek" +
-      "ey\"\243\001\n\013ChatMessage\022\017\n\007chat_id\030\002 \001(\t\022&\n\016m" +
-      "essage_header\030\003 \001(\0132\016.MessageHeader\022\"\n\032m" +
-      "essage_contents_encrypted\030\004 \001(\014\022\021\n\ttimes" +
-      "tamp\030\005 \001(\004\022\026\n\theader_iv\030\006 \001(\014H\000\210\001\001B\014\n\n_h" +
-      "eader_iv\"\234\001\n\014PreKeyBundle\022\017\n\002id\030\001 \001(\tH\000\210" +
-      "\001\001\022\024\n\014identity_key\030\002 \001(\014\022\024\n\014verifier_key" +
-      "\030\003 \001(\014\022\025\n\rsigned_prekey\030\004 \001(\014\022\030\n\020prekey_" +
-      "signature\030\005 \001(\014\022\027\n\017one_time_prekey\030\006 \003(\014" +
-      "B\005\n\003_id\"2\n\007KeyPair\022\022\n\npublic_key\030\001 \001(\014\022\023" +
-      "\n\013private_key\030\002 \001(\014\"\301\001\n\010Identity\022\017\n\007user" +
-      "_id\030\001 \001(\t\022\036\n\014identity_key\030\002 \001(\0132\010.KeyPai" +
-      "r\022\036\n\014verifier_key\030\003 \001(\0132\010.KeyPair\022\037\n\rsig" +
-      "ned_prekey\030\004 \001(\0132\010.KeyPair\022 \n\030signed_pre" +
-      "key_expiration\030\005 \001(\004\022!\n\017one_time_prekey\030" +
-      "\006 \003(\0132\010.KeyPair*-\n\013MessageType\022\n\n\006JOINED" +
-      "\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002B\033\n\031com.hsj.messag" +
-      "ingdemo.dtob\006proto3"
+      "\n\016messages.proto\"Q\n\013MessageFile\022\017\n\007file_" +
+      "id\030\001 \001(\t\022\014\n\004data\030\002 \001(\014\022\020\n\010mimetype\030\003 \001(\t" +
+      "\022\021\n\tfile_name\030\004 \001(\t\"c\n\017MessageContents\022\014" +
+      "\n\004text\030\001 \001(\t\022\024\n\007file_id\030\002 \001(\tH\000\210\001\001\022\024\n\007fi" +
+      "le_iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_iv" +
+      "\"\362\001\n\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.Messa" +
+      "geType\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n\014chain_l" +
+      "ength\030\003 \001(\r\022\022\n\nmessage_iv\030\005 \001(\014\022\026\n\tsende" +
+      "r_id\030\006 \001(\tH\000\210\001\001\022\032\n\rephemeral_key\030\007 \001(\014H\001" +
+      "\210\001\001\022\034\n\017one_time_prekey\030\010 \001(\014H\002\210\001\001B\014\n\n_se" +
+      "nder_idB\020\n\016_ephemeral_keyB\022\n\020_one_time_p" +
+      "rekey\"\243\001\n\013ChatMessage\022\017\n\007chat_id\030\002 \001(\t\022&" +
+      "\n\016message_header\030\003 \001(\0132\016.MessageHeader\022\"" +
+      "\n\032message_contents_encrypted\030\004 \001(\014\022\021\n\tti" +
+      "mestamp\030\005 \001(\004\022\026\n\theader_iv\030\006 \001(\014H\000\210\001\001B\014\n" +
+      "\n_header_iv\"\234\001\n\014PreKeyBundle\022\017\n\002id\030\001 \001(\t" +
+      "H\000\210\001\001\022\024\n\014identity_key\030\002 \001(\014\022\024\n\014verifier_" +
+      "key\030\003 \001(\014\022\025\n\rsigned_prekey\030\004 \001(\014\022\030\n\020prek" +
+      "ey_signature\030\005 \001(\014\022\027\n\017one_time_prekey\030\006 " +
+      "\003(\014B\005\n\003_id\"2\n\007KeyPair\022\022\n\npublic_key\030\001 \001(" +
+      "\014\022\023\n\013private_key\030\002 \001(\014\"\301\001\n\010Identity\022\017\n\007u" +
+      "ser_id\030\001 \001(\t\022\036\n\014identity_key\030\002 \001(\0132\010.Key" +
+      "Pair\022\036\n\014verifier_key\030\003 \001(\0132\010.KeyPair\022\037\n\r" +
+      "signed_prekey\030\004 \001(\0132\010.KeyPair\022 \n\030signed_" +
+      "prekey_expiration\030\005 \001(\004\022!\n\017one_time_prek" +
+      "ey\030\006 \003(\0132\010.KeyPair*-\n\013MessageType\022\n\n\006JOI" +
+      "NED\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002B\033\n\031com.hsj.mes" +
+      "sagingdemo.dtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_MessageContents_descriptor =
+    internal_static_MessageFile_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_MessageFile_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_MessageFile_descriptor,
+        new java.lang.String[] { "FileId", "Data", "Mimetype", "FileName", });
+    internal_static_MessageContents_descriptor =
+      getDescriptor().getMessageTypes().get(1);
     internal_static_MessageContents_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageContents_descriptor,
         new java.lang.String[] { "Text", "FileId", "FileIv", });
     internal_static_MessageHeader_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(2);
     internal_static_MessageHeader_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageHeader_descriptor,
         new java.lang.String[] { "Type", "DhPublicKey", "ChainLength", "MessageIv", "SenderId", "EphemeralKey", "OneTimePrekey", });
     internal_static_ChatMessage_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_ChatMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ChatMessage_descriptor,
         new java.lang.String[] { "ChatId", "MessageHeader", "MessageContentsEncrypted", "Timestamp", "HeaderIv", });
     internal_static_PreKeyBundle_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_PreKeyBundle_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_PreKeyBundle_descriptor,
         new java.lang.String[] { "Id", "IdentityKey", "VerifierKey", "SignedPrekey", "PrekeySignature", "OneTimePrekey", });
     internal_static_KeyPair_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_KeyPair_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_KeyPair_descriptor,
         new java.lang.String[] { "PublicKey", "PrivateKey", });
     internal_static_Identity_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_Identity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Identity_descriptor,

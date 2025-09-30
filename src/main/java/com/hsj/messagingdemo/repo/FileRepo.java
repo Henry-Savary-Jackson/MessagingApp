@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.hsj.messagingdemo.model.MessageFile;
+import com.hsj.messagingdemo.model.DBFile;
 
-public interface FileRepo extends MongoRepository<MessageFile,UUID>{
+public interface FileRepo extends MongoRepository<DBFile,UUID>{
 
 }

@@ -6,10 +6,11 @@ enum MessageType {
   LEFT = 2;
 }
 
-message File{
-  string file_id = 1
+message MessageFile{
+  string file_id = 1;
   bytes data = 2;
   string mimetype = 3;
+  string file_name = 4;
 }
 
 message MessageContents{
