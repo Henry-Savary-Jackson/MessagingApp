@@ -1,5 +1,6 @@
-import { convertArrayBufferToBase64 } from "./EncodingUtils";
-import {Identity,MessageFile, MessageContents} from "../utils/protocol/messages"
+import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer } from "./EncodingUtils";
+import {Identity,MessageFile, MessageHeader,MessageContents} from "../utils/protocol/messages"
+import { v4 } from 'uuid'
 
 export function generateChallengeBuffer() {
     return crypto.getRandomValues(new Uint8Array(new ArrayBuffer(200))).buffer
@@ -79,15 +80,18 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
 
     let AD_decrypted = new Uint8Array( await crypto.subtle.decrypt({"name":"AES-GCM", iv:AD_iv}, SK, AD_encrypted))
 
+    let chat_id_bytes = AD_decrypted.slice(64)
+    let chat_id = atob(convertArrayBufferToBase64(chat_id_bytes))
+
     console.log(KM)
     console.log(AD_decrypted)
     console.log(AD_derived)
     // verify the ad byte sequence is correct
-    if (!AD_decrypted.every( (a,index)=>a===AD_derived.at(index) )){
+    if (!AD_decrypted.slice(0,64).every( (a,index)=>a===AD_derived.at(index) )){
         throw new Error("The AD byte sequence does not match the one given")
     }
 
-    return KM // only need to give secret key
+    return {KM, chat_id} // only need to give secret key
 
 }
 
@@ -143,6 +147,7 @@ export async function X3DH_send(identity, prekey_bundle){
     // choose random one time prekey
     let onetime_prekeys = prekey_bundle.oneTimePrekey
 
+
     let onetime_prekey =  onetime_prekeys.length> 0 && await extractC25519ExchangePublicKey(onetime_prekeys[Math.floor(Math.random()*onetime_prekeys.length)])
 
     let KM = await derive_root_key_sender(identityCryptoKeyExchangePair, otherIdentityKey, othersignedPrekKey, ephemeralKeyPair, onetime_prekey)
@@ -151,11 +156,19 @@ export async function X3DH_send(identity, prekey_bundle){
     let SK = await create_shared_key(KM)
     let bytesYourIdentityPubKey = new Uint8Array( await crypto.subtle.exportKey("raw", identityCryptoKeyExchangePair.publicKey))
     let bytesOtherIdentityPubKey = new Uint8Array(await crypto.subtle.exportKey("raw", otherIdentityKey))
-    let AD =concatenateUIntArray(bytesYourIdentityPubKey,bytesOtherIdentityPubKey) 
+
+    let chat_id = v4() // generate chat_id
+    let chat_id_bytes = new Uint8Array(convertBase64StringToArrayBuffer(window.btoa(chat_id)))
+
+    let AD =concatenateUIntArray(bytesYourIdentityPubKey,bytesOtherIdentityPubKey, chat_id_bytes) 
+
+
+    // concatenate chat id to ad byte sequence. 
+
     let AD_IV = crypto.getRandomValues(new Uint8Array(12)) 
     let AD_encrypted = new Uint8Array(await crypto.subtle.encrypt({"name":"AES-GCM", iv:AD_IV}, SK, AD))
 
-    return { KM, AD, AD_encrypted,AD_IV, ephemeralKeyPair, onetime_prekey }
+    return { KM, AD, AD_encrypted,AD_IV, ephemeralKeyPair, onetime_prekey, chat_id }
 }
 
 
@@ -168,7 +181,7 @@ export async function create_shared_key(KM){
 }
 
 export function concatenateUIntArray(...arr){
-    let length = arr.reduce((a,b)=>a+b.length, 0)
+    let length = arr.reduce((a,b)=>a+b.length,0)
     let offset = 0;
     let output = new Uint8Array(length)
     for (let element of arr){
@@ -199,6 +212,14 @@ export async function KDF_chain_key( chain_key_bits){
     return resultBits 
 }
 
+
+export async function  encrypt_header(message_header, header_key_bits){
+    let header_iv = new Uint8Array(32);
+    let header_key = await crypto.subtle.importKey("raw", header_key_bits, {name:"AES-GCM"}, true, ["encrypt"])
+    let header_contents_bytes  =  MessageHeader.encode(message_header).finish()
+    let encrypted_bytes_buffer = new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM", iv:header_iv}, header_key, header_contents_bytes) )
+    return [ encrypted_bytes_buffer, header_iv ]
+}
 
 export function createHKDFRootInput(KM_bytes){
     let output= new Uint8Array(32+KM_bytes.byteLength)
@@ -297,6 +318,16 @@ export async function convert_js_identity_to_protobuf_identity(js_identity){
     return Identity.fromObject({identityKey,verifierKey, signedPrekey, signedPrekeyExpiration, oneTimePrekey})
 }
 
+export async function decrypt_message_header(header_key_bits,header_contents_bytes, header_iv){
+    try {
+    let header_key = await crypto.subtle.importKey("raw", header_key_bits, {name:"AES-GCM"}, true, ["decrypt"])
+    let decrypted_bytes_buffer = new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM", iv:header_iv}, header_key, header_contents_bytes) )
+    return MessageHeader.decode(decrypted_bytes_buffer) 
+    }catch(err){
+        console.log(`Failed to here decrypt:${err}`)
+        throw err
+    }
+}
 
 export async function decrypt_message_contents(message_key_bits,message_contents_bytes, message_iv) {
     try {

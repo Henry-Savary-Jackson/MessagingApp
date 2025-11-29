@@ -1,5 +1,5 @@
-import { ChatMessage, MessageFile,MessageContents } from "./protocol/messages"
-import { encrypt_file_contents, encrypt_message_contents, exportX25519PublicKey } from './CryptoUtils'
+import { ChatMessage,MessageHeader, MessageFile,MessageContents } from "./protocol/messages"
+import { encrypt_file_contents, encrypt_header, encrypt_message_contents, exportX25519PublicKey } from './CryptoUtils'
 import { get_chat_info, store_chat } from './StorageUtils'
 import { ratchet_turn_send } from "./RatchetUtils"
 import { uploadFile } from "./RequestUtils"
@@ -26,12 +26,13 @@ export function parseMessage(message_bytes) {
 export async function send_new_encrypted_message(client, indexed_db, chat_id, contents) {
 
     let chat_object = await get_chat_info(indexed_db, chat_id)
-    // ratchet turn
-    // ratchet turn root
-    await ratchet_turn_send(chat_object, chat_object.sending_chain.n_sent <= 0)
-    await store_chat(indexed_db, chat_object)
+    // ratchet turn, if you have not send any messages on the sending chain, you should do a ratchet turn for the root key
     let message_keys = chat_object.sending_chain.message_keys
-    let message_key = message_keys[message_keys.length - 1]
+    await ratchet_turn_send(chat_object, chat_object.receiving_chain.message_keys.length > 0)
+    // save changes
+    await store_chat(indexed_db, chat_object)
+    // get the message key for the message
+    let message_key = chat_object.sending_chain.chain_key
 
     let message_contents_js_obj = { text: contents.text }
     if (contents.file) {
@@ -47,25 +48,25 @@ export async function send_new_encrypted_message(client, indexed_db, chat_id, co
         type: "CHAT",
         chainLength: message_keys.length,
         messageIv: iv,
+        previousLength:chat_object.receiving_chain.pn, // put previous n
         dhPublicKey: await exportX25519PublicKey(chat_object.dh_keypair_private.publicKey)
     }
 
-    let chat_message_js_obj = {
-        chatId: chat_id,
-        messageHeader: message_header_js_obj,
-        messageContentsEncrypted: message_contents_encrypted,
-        timestamp: new Date().getTime()
 
+    let message_header_proto = MessageHeader.fromObject(message_header_js_obj)
+    let [ message_header_enc, header_iv ]=await encrypt_header(message_header_proto, chat_object.sending_chain.header_key)
+
+    let chat_message_js_obj = {
+        messageHeaderEncrypted: message_header_enc,
+        messageContentsEncrypted: message_contents_encrypted,
+        timestamp: new Date().getTime(),
+        headerIv : header_iv
     }
 
     let chat_message_proto_obj = ChatMessage.fromObject(chat_message_js_obj)
     send(client, chat_object.user_id, chat_message_proto_obj)
 
-    await store_chat(indexed_db, chat_object)
-
     return message_contents_js_obj
-
-    // send it via websockets
 }
 
 

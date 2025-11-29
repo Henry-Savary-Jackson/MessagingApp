@@ -5,7 +5,7 @@ import { userIdContext } from '../../globals'
 import { getCSRF, getPrekeyBundle, getUsername, logout, setAxiosCSRF } from '../../utils/RequestUtils'
 import ChatWindow from "./../chat/ChatWindow"
 import ChatListBar from "./../chat/ChatListBar"
-import { handle_message } from '../../utils/RatchetUtils'
+import { handle_message, init_ratchet_root_receiver, init_ratchet_root_sender } from '../../utils/RatchetUtils'
 import { handle_X3DH_message } from '../../utils/X3DHUtils'
 import { send, send_new_encrypted_message } from '../../utils/WebsocketUtils'
 import { ChatMessage, MessageType, MessageHeader } from '../../utils/protocol/messages'
@@ -82,11 +82,11 @@ function ChatPage({ logoutCallback }) {
 
     let { identity, verifier_key, signed_prekey, expiration } = useIdentityInformation(db, user_id)
 
-    const convet_proto_chat_msg = (message_proto,chat_object)=>{
+    const convert_proto_chat_msg = (message_proto,chat_object)=>{
         return {
-            chat_id:message_proto.chatId,
+            chat_id:chat_object.chat_id,
             sender_id:chat_object.user_id,
-            contents:message_proto.messageContents,
+            contents:message_proto.message_contents,
             timestamp:message_proto.timestamp*1000,
             message_key:message_proto.message_key
         }
@@ -95,28 +95,35 @@ function ChatPage({ logoutCallback }) {
     const onMessage = async (message) => {
         console.log("New STOMP message!")
         let chat_message = ChatMessage.decode(message.binaryBody)
-        if (chat_message.messageHeader.type === MessageType.JOINED) {
+        if (chat_message.messageHeader ) {
             // X3DH message
             let otp = !chat_message.messageHeader.oneTimePrekey || await getOneTimePrekeyWithPubKey(db, chat_message.messageHeader.oneTimePrekey)
-            let KM = await handle_X3DH_message(db, identity, signed_prekey, chat_message, otp)
+            // if a one time prekey is specified
+            let  {KM, chat_id} = await handle_X3DH_message(db, identity, signed_prekey, chat_message, otp)
+
             let sender_id = chat_message.messageHeader.senderId
+
             let name = await getUsername(db, sender_id)
-            let chat_id = chat_message.chatId
+
             let other_dh_public = chat_message.messageHeader.dhPublicKey
+
             let chat_object = await create_chat_object_recipient(identity, chat_id, sender_id, name, other_dh_public, KM)
+            await init_ratchet_root_receiver(chat_object)
+
             await store_chat(db, chat_object)
+
             addNewChatUI({chat_id:chat_id,user_id:sender_id, name:name})
         } else {
+
+
             // nortmal message, decrypt with double ratchet algo
-            let [messageContents, message_key] = await handle_message(db, identity, chat_message)
+            let {message_contents, message_key, chat_object } = await handle_message(db, identity, chat_message)
             
-            console.log(messageContents)
+            console.log(message_contents)
 
-            let decrypted_chat_message = { ...chat_message, messageContents, message_key }
-            let chat_object =await get_chat_info(db,decrypted_chat_message.chatId)
-            let msg_obj = convet_proto_chat_msg( decrypted_chat_message, chat_object)
+            let decrypted_chat_message = { ...chat_message, message_contents, message_key }
+            let msg_obj = convert_proto_chat_msg( decrypted_chat_message, chat_object)
             await store_message(db,msg_obj)
-
 
             addMessageUI(msg_obj)
             if (currentChat && chat_object.chat_id === currentChat.chat_id)
@@ -153,14 +160,14 @@ function ChatPage({ logoutCallback }) {
         }
         let prekey_bundle = await getPrekeyBundle(name)
         let other_id = prekey_bundle.id
-        let { KM, AD, AD_encrypted, AD_IV, ephemeralKeyPair, onetime_prekey } = await X3DH_send({ identityKey: identity, verifierKey: verifier_key, signedPrekey: signed_prekey }, prekey_bundle)
+        let { KM, AD, AD_encrypted, AD_IV, ephemeralKeyPair, onetime_prekey, chat_id } = await X3DH_send({ identityKey: identity, verifierKey: verifier_key, signedPrekey: signed_prekey }, prekey_bundle)
         let ephemeral_key_bytes = await exportX25519PublicKey(ephemeralKeyPair.publicKey)
 
         let sender_ratchet_key = await generate25519KeyExchangePair()
         let sender_ratchet_key_bytes = await exportX25519PublicKey(sender_ratchet_key.publicKey)
-        let messageHeader = MessageHeader.fromObject({ type: "JOINED", messageIv: AD_IV, chainLength: 0, dhPublicKey: sender_ratchet_key_bytes, ephemeralKey: ephemeral_key_bytes, oneTimePrekey: await exportX25519PublicKey(onetime_prekey), senderId: user_id })
-        let chat_id = v4() // generate chat_id
-        let chat_message = ChatMessage.fromObject({ chatId: chat_id, messageHeader: messageHeader, messageContentsEncrypted: AD_encrypted, timestamp: new Date().getTime() })
+        let msg_header_js = { type: "JOINED", messageIv: AD_IV, chainLength: 0, dhPublicKey: sender_ratchet_key_bytes, ephemeralKey: ephemeral_key_bytes, oneTimePrekey: await exportX25519PublicKey(onetime_prekey), senderId: user_id }
+        let messageHeader = MessageHeader.fromObject(msg_header_js)
+        let chat_message = ChatMessage.fromObject({ messageHeader: messageHeader, messageContentsEncrypted: AD_encrypted, timestamp: new Date().getTime() })
 
         if (client) {
             send(client, other_id, chat_message)
@@ -171,12 +178,17 @@ function ChatPage({ logoutCallback }) {
         console.log(KM)
         console.log(`AD:${AD}`)
         let chat_object = await create_chat_object_sender(chat_id, other_id, name, sender_ratchet_key, prekey_bundle.identityKey, KM)
+        await init_ratchet_root_sender(chat_object)
         await store_chat(db, chat_object)
         addNewChatUI({chat_id:chat_id,user_id:other_id,name:name})
     }
     const leaveChat = async (chat_id) => {
+
         await delete_chat(db, chat_id);
         delChatUI(chat_id);
+        if (currentChat && chat_id === currentChat.chat_id)
+            setCurrentChat( undefined)
+
     }
     const onChatClick = async (chat_object) =>{
         if (currentChat && currentChat.chat_id === chat_object.chat_id)

@@ -10,7 +10,10 @@ const chat_store_name = "chats"
 const otp_store_name = "one_time_prekeys"
 const dh_keystore_name = "dh_keys_prev"
 const file_store_name = "message_files"
+const sending_chain_keystore_name = "sending_chains"
 const user_info_store_name = "user_cache"
+const groups_store_name = "groups"
+const current_version = 2
 const max_otp = 100;
 
 
@@ -24,12 +27,12 @@ export function useIndexedDB() {
         let db_obj = null
         const open = async () => {
 
-            db_obj = await openDB(db_string, 1, {
+            db_obj = await openDB(db_string, current_version, {
                 upgrade(db_obj, oldVersion, newVersion, transaction) {
                     const identity_store = db_obj.createObjectStore(identity_store_name, { keyPath: "user_id" });
                     const chat_store = db_obj.createObjectStore(chat_store_name, { keyPath: "chat_id" });
                     const otp_store = db_obj.createObjectStore(otp_store_name);
-                    const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "dh_bytes_sender" })
+                    const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "header_key_bytes" })
                     const file_store = db_obj.createObjectStore(file_store_name)
                     const user_info_cache = db_obj.createObjectStore(user_info_store_name, { keyPath: "user_id" })
                 }
@@ -101,6 +104,10 @@ export async function refill_otp(indexed_db) {
     }
 }
 
+export async function delete_otp(indexed_db, otp_bytes){
+    await indexed_db.delete(otp_store_name, otp_bytes)
+}
+
 export async function delete_chat(indexed_db, chat_id) {
     await indexed_db.delete(chat_store_name,chat_id)
 }
@@ -121,7 +128,7 @@ export async function store_message(indexed_db, message) {
     let chat_id = message.chat_id
     let chat_info = await get_chat_info(indexed_db, chat_id) 
     let messages = chat_info.messages
-    messages.push(message) // TODO: add in sorted fashing
+    messages.push(message) // TODO: add in sorted hashing
     await store_chat(indexed_db,chat_info) 
 }
 
@@ -187,8 +194,12 @@ export async function getIdentityDataFromDB(indexed_db, user_id) {
     return await get_user_data(indexed_db, user_id)
 }
 
-export async function store_previous_receiving_chain(indexed_db, other_dh, receiving_chain){
-   let message_keys_dh = {dh_bytes_sender:other_dh, receiving_chain:receiving_chain}
+export async function get_recieving_chains(indexed_db){
+    return await indexed_db.getAll(dh_keystore_name)
+}
+
+export async function store_recieving_chain(indexed_db, header_key, receiving_chain){
+   let message_keys_dh = {...receiving_chain,header_key_bytes:header_key }
     await indexed_db.put(dh_keystore_name,message_keys_dh)
 }
 
@@ -213,7 +224,6 @@ export async function create_chat_object_sender(chat_id, other_id, name,sender_d
         dh_input: dh_input,
         sending_chain: {
             message_keys:[],
-            n_sent:0
         },
         receiving_chain: {
             message_keys:[]
@@ -221,14 +231,19 @@ export async function create_chat_object_sender(chat_id, other_id, name,sender_d
         messages :[]
     }
 }
+
+
 export async function get_previous_messages_keys(indexed_db,other_dh_public){
     return await indexed_db.get(dh_keystore_name, other_dh_public)
 }
+
+
 
 export async function create_chat_object_recipient(identityKey,chat_id, other_id,name, other_public_key_bytes, shared_key) {
 
     let other_ratchet_key_public = await extractC25519ExchangePublicKey(other_public_key_bytes)
     let dh_input = await DH(identityKey.privateKey, other_ratchet_key_public)
+
 
     return {
         chat_id: chat_id,
@@ -241,7 +256,6 @@ export async function create_chat_object_recipient(identityKey,chat_id, other_id
         dh_input: dh_input,
         sending_chain: {
             message_keys:[],
-            n_sent:0
         },
         receiving_chain: {
             message_keys:[]

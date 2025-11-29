@@ -128,7 +128,7 @@ export async function updateOTPs(otps) {
 
 export async function getUsername(indexed_db,user_id) {
     let user_info = await get_user_info(indexed_db, user_id)
-    if (user_info) {
+    if (user_info && user_info.name) {
         return user_info.name;
     }
     let username = await performRequest(async () => (await axios.get(`${api_url}/user/username/${user_id}`, { withCredentials: true })).data)
