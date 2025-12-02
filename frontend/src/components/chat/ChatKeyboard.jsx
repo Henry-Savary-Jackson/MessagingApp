@@ -18,7 +18,7 @@ function ChatKeyboard({chat_id, onMessageSend }) {
             if (file) {
                 let reader = new FileReader();
                 reader.onloadend = async (e) => {
-                    let file_obj = { data: new Uint8Array(reader.result), mimetype: file.type }
+                    let file_obj = { data: new Uint8Array(reader.result), mimeType: file.type, fileName:file.name }
 
                     document.getElementById("input-file").value =null 
                     await submitMessage(file_obj)

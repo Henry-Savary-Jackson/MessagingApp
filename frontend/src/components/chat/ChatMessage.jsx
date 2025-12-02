@@ -1,9 +1,9 @@
-import { Container, Stack, Image, Card } from "react-bootstrap"
+import { Container, Stack, Image, Card, Button } from "react-bootstrap"
 import { getFile, getUsername } from "../../utils/RequestUtils"
 import { useState, useEffect, useContext, memo } from "react"
 import { userIdContext } from "../../globals"
 import { useIndexedDB } from "../../utils/StorageUtils";
-
+import "../../css/chats.scss"
 
 const ChatMessage = memo(({ message_key, contents, sender }) => {
 
@@ -14,7 +14,7 @@ const ChatMessage = memo(({ message_key, contents, sender }) => {
 
     useEffect(() => {
         if (file) {
-            setFileBlobURL(URL.createObjectURL(new Blob([file.data]), { type: file.mimetype }))
+            setFileBlobURL(URL.createObjectURL(new Blob([file.data], { type: file.mimeType})))
         }
     }, [file])
 
@@ -37,15 +37,12 @@ const ChatMessage = memo(({ message_key, contents, sender }) => {
             }
         })()
     }, [db])
-    return <Container className={user_id === sender ? "text-end" : "text-start"}>
-        <Stack>
-            <Stack className="p-3 ms-3 mw-50 gap-2 align-items-end" style={{ "border-radius": "15px", "background-color": "rgba(57, 192, 237,.2)" }} >
-                <span className=" text-bg-white " >{user_id === sender ? `${contents.text}:${username}` : `${username}:${contents.text}`}</span>
-                {fileBlobURL && file.mimetype.startsWith("image/") && <Image thumbnail className={user_id === sender ? "align-self-end" : "align-self-start"} style={{ "maxHeight": "500px", "maxWidth": "500px", height: "auto", width: "auto" }} src={fileBlobURL} />}
-                {fileBlobURL && <a href={fileBlobURL} download={`${contents.fileId}`}>Download file</a>}
+    return <Stack className={user_id === sender ? "chat-message-sender": "chat-message-other" }  >
+                <span className={user_id === sender ? "chat-text-sender": "chat-text-other" }  >{contents.text}</span>
+                <span className={user_id==sender?  "text-end":"text-start"} >{username}</span> 
+                {fileBlobURL && file.mimeType.startsWith("image/") && <Image thumbnail className={user_id === sender ? "align-self-end" : "align-self-start"} style={{ "maxHeight": "500px", "maxWidth": "500px", height: "auto", width: "auto" }} src={fileBlobURL} />}
+                {fileBlobURL && <Button  href={fileBlobURL} download={file.fileName}>Download file</Button>}
             </Stack>
-        </Stack>
-    </Container>
 })
 
 

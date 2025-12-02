@@ -33,7 +33,7 @@ $root.MessageFile = (function() {
      * @interface IMessageFile
      * @property {string|null} [fileId] MessageFile fileId
      * @property {Uint8Array|null} [data] MessageFile data
-     * @property {string|null} [mimetype] MessageFile mimetype
+     * @property {string|null} [mimeType] MessageFile mimeType
      * @property {string|null} [fileName] MessageFile fileName
      */
 
@@ -69,12 +69,12 @@ $root.MessageFile = (function() {
     MessageFile.prototype.data = $util.newBuffer([]);
 
     /**
-     * MessageFile mimetype.
-     * @member {string} mimetype
+     * MessageFile mimeType.
+     * @member {string} mimeType
      * @memberof MessageFile
      * @instance
      */
-    MessageFile.prototype.mimetype = "";
+    MessageFile.prototype.mimeType = "";
 
     /**
      * MessageFile fileName.
@@ -112,8 +112,8 @@ $root.MessageFile = (function() {
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.fileId);
         if (message.data != null && Object.hasOwnProperty.call(message, "data"))
             writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.data);
-        if (message.mimetype != null && Object.hasOwnProperty.call(message, "mimetype"))
-            writer.uint32(/* id 3, wireType 2 =*/26).string(message.mimetype);
+        if (message.mimeType != null && Object.hasOwnProperty.call(message, "mimeType"))
+            writer.uint32(/* id 3, wireType 2 =*/26).string(message.mimeType);
         if (message.fileName != null && Object.hasOwnProperty.call(message, "fileName"))
             writer.uint32(/* id 4, wireType 2 =*/34).string(message.fileName);
         return writer;
@@ -161,7 +161,7 @@ $root.MessageFile = (function() {
                     break;
                 }
             case 3: {
-                    message.mimetype = reader.string();
+                    message.mimeType = reader.string();
                     break;
                 }
             case 4: {
@@ -209,9 +209,9 @@ $root.MessageFile = (function() {
         if (message.data != null && message.hasOwnProperty("data"))
             if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
                 return "data: buffer expected";
-        if (message.mimetype != null && message.hasOwnProperty("mimetype"))
-            if (!$util.isString(message.mimetype))
-                return "mimetype: string expected";
+        if (message.mimeType != null && message.hasOwnProperty("mimeType"))
+            if (!$util.isString(message.mimeType))
+                return "mimeType: string expected";
         if (message.fileName != null && message.hasOwnProperty("fileName"))
             if (!$util.isString(message.fileName))
                 return "fileName: string expected";
@@ -237,8 +237,8 @@ $root.MessageFile = (function() {
                 $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
             else if (object.data.length >= 0)
                 message.data = object.data;
-        if (object.mimetype != null)
-            message.mimetype = String(object.mimetype);
+        if (object.mimeType != null)
+            message.mimeType = String(object.mimeType);
         if (object.fileName != null)
             message.fileName = String(object.fileName);
         return message;
@@ -266,15 +266,15 @@ $root.MessageFile = (function() {
                 if (options.bytes !== Array)
                     object.data = $util.newBuffer(object.data);
             }
-            object.mimetype = "";
+            object.mimeType = "";
             object.fileName = "";
         }
         if (message.fileId != null && message.hasOwnProperty("fileId"))
             object.fileId = message.fileId;
         if (message.data != null && message.hasOwnProperty("data"))
             object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-        if (message.mimetype != null && message.hasOwnProperty("mimetype"))
-            object.mimetype = message.mimetype;
+        if (message.mimeType != null && message.hasOwnProperty("mimeType"))
+            object.mimeType = message.mimeType;
         if (message.fileName != null && message.hasOwnProperty("fileName"))
             object.fileName = message.fileName;
         return object;

@@ -41,7 +41,7 @@ function ChatPage({ logoutCallback }) {
         let chatMessages = prev[chat_id] || []
         switch (action.action) {
             case "pop":
-                return { ...prev , chat_id:[...chatMessages.slice(0,-1)]}
+                return { ...prev , [chat_id]:[...chatMessages.slice(0,-1)]}
             case "add":
                 return { ...prev, [chat_id]:[...chatMessages, action.new].sort((a, b) => a.timestamp - b.timestamp) }
             case "init":
@@ -87,7 +87,7 @@ function ChatPage({ logoutCallback }) {
             chat_id:chat_object.chat_id,
             sender_id:chat_object.user_id,
             contents:message_proto.message_contents,
-            timestamp:message_proto.timestamp*1000,
+            timestamp:message_proto.timestamp,
             message_key:message_proto.message_key
         }
     }
@@ -208,7 +208,7 @@ function ChatPage({ logoutCallback }) {
         }} >Logout</Link>
         <Link style={{top:"40px", width:"6%"}} className='btn btn-primary position-fixed start-0 ' to={"/profile"} >Edit Profile</Link>
         <Container>
-            <Row fluid={"true"} >
+            <Row fluid >
                 <Col sm={4} >
                     <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onChatJoin={(e) => { }} onChatCreate={createNewChat} />
                 </Col>

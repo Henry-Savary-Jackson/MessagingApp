@@ -1,7 +1,6 @@
-import { Col, Row, Container, Stack, Card, CardBody, CardFooter } from "react-bootstrap";
+import {  Stack, Card, CardBody, CardFooter } from "react-bootstrap";
 import ChatMessage from "./ChatMessage";
 import ChatKeyboard from "./ChatKeyboard";
-import { v4 } from 'uuid'
 
 
 function ChatWindow({ chat_object, messages, onMessageSend }) {
@@ -9,9 +8,10 @@ function ChatWindow({ chat_object, messages, onMessageSend }) {
 
 
     return <Card fluid className="border position-relative vh-100">
-        <CardBody style={{paddingBottom:"15%"}} className="border h-100 mh-100 overflow-y-scroll" >
-                {messages && messages.sort((a, b) => b.timestamp - a.timestamp).map((message,index) => <ChatMessage key={index} message_key={message.message_key} contents={message.contents} sender={message.sender_id} />)}
-
+        <CardBody className="overflow-y-scroll" >
+        <Stack style={{paddingBottom:"15%"}} className="border h-100 mh-100 overflow-y-scroll gap-2 " >
+                {messages && messages.sort((a, b) => a.timestamp - b.timestamp).map((message,index) => <ChatMessage key={index} message_key={message.message_key} contents={message.contents} sender={message.sender_id} />)}
+        </Stack>
         </CardBody>
         <CardFooter className="position-absolute w-100  bg-white bottom-0">
 

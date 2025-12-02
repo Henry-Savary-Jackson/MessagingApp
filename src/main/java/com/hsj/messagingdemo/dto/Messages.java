@@ -175,16 +175,16 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     com.google.protobuf.ByteString getData();
 
     /**
-     * <code>string mimetype = 3;</code>
-     * @return The mimetype.
+     * <code>string mime_type = 3;</code>
+     * @return The mimeType.
      */
-    java.lang.String getMimetype();
+    java.lang.String getMimeType();
     /**
-     * <code>string mimetype = 3;</code>
-     * @return The bytes for mimetype.
+     * <code>string mime_type = 3;</code>
+     * @return The bytes for mimeType.
      */
     com.google.protobuf.ByteString
-        getMimetypeBytes();
+        getMimeTypeBytes();
 
     /**
      * <code>string file_name = 4;</code>
@@ -222,7 +222,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     private MessageFile() {
       fileId_ = "";
       data_ = com.google.protobuf.ByteString.EMPTY;
-      mimetype_ = "";
+      mimeType_ = "";
       fileName_ = "";
     }
 
@@ -289,39 +289,39 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return data_;
     }
 
-    public static final int MIMETYPE_FIELD_NUMBER = 3;
+    public static final int MIME_TYPE_FIELD_NUMBER = 3;
     @SuppressWarnings("serial")
-    private volatile java.lang.Object mimetype_ = "";
+    private volatile java.lang.Object mimeType_ = "";
     /**
-     * <code>string mimetype = 3;</code>
-     * @return The mimetype.
+     * <code>string mime_type = 3;</code>
+     * @return The mimeType.
      */
     @java.lang.Override
-    public java.lang.String getMimetype() {
-      java.lang.Object ref = mimetype_;
+    public java.lang.String getMimeType() {
+      java.lang.Object ref = mimeType_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        mimetype_ = s;
+        mimeType_ = s;
         return s;
       }
     }
     /**
-     * <code>string mimetype = 3;</code>
-     * @return The bytes for mimetype.
+     * <code>string mime_type = 3;</code>
+     * @return The bytes for mimeType.
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getMimetypeBytes() {
-      java.lang.Object ref = mimetype_;
+        getMimeTypeBytes() {
+      java.lang.Object ref = mimeType_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        mimetype_ = b;
+        mimeType_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -387,8 +387,8 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (!data_.isEmpty()) {
         output.writeBytes(2, data_);
       }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mimetype_)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 3, mimetype_);
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mimeType_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 3, mimeType_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(fileName_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 4, fileName_);
@@ -409,8 +409,8 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, data_);
       }
-      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mimetype_)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, mimetype_);
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(mimeType_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(3, mimeType_);
       }
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(fileName_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(4, fileName_);
@@ -434,8 +434,8 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           .equals(other.getFileId())) return false;
       if (!getData()
           .equals(other.getData())) return false;
-      if (!getMimetype()
-          .equals(other.getMimetype())) return false;
+      if (!getMimeType()
+          .equals(other.getMimeType())) return false;
       if (!getFileName()
           .equals(other.getFileName())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
@@ -453,8 +453,8 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       hash = (53 * hash) + getFileId().hashCode();
       hash = (37 * hash) + DATA_FIELD_NUMBER;
       hash = (53 * hash) + getData().hashCode();
-      hash = (37 * hash) + MIMETYPE_FIELD_NUMBER;
-      hash = (53 * hash) + getMimetype().hashCode();
+      hash = (37 * hash) + MIME_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getMimeType().hashCode();
       hash = (37 * hash) + FILE_NAME_FIELD_NUMBER;
       hash = (53 * hash) + getFileName().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
@@ -590,7 +590,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         bitField0_ = 0;
         fileId_ = "";
         data_ = com.google.protobuf.ByteString.EMPTY;
-        mimetype_ = "";
+        mimeType_ = "";
         fileName_ = "";
         return this;
       }
@@ -632,7 +632,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           result.data_ = data_;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.mimetype_ = mimetype_;
+          result.mimeType_ = mimeType_;
         }
         if (((from_bitField0_ & 0x00000008) != 0)) {
           result.fileName_ = fileName_;
@@ -659,8 +659,8 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         if (!other.getData().isEmpty()) {
           setData(other.getData());
         }
-        if (!other.getMimetype().isEmpty()) {
-          mimetype_ = other.mimetype_;
+        if (!other.getMimeType().isEmpty()) {
+          mimeType_ = other.mimeType_;
           bitField0_ |= 0x00000004;
           onChanged();
         }
@@ -706,7 +706,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
                 break;
               } // case 18
               case 26: {
-                mimetype_ = input.readStringRequireUtf8();
+                mimeType_ = input.readStringRequireUtf8();
                 bitField0_ |= 0x00000004;
                 break;
               } // case 26
@@ -836,73 +836,73 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
 
-      private java.lang.Object mimetype_ = "";
+      private java.lang.Object mimeType_ = "";
       /**
-       * <code>string mimetype = 3;</code>
-       * @return The mimetype.
+       * <code>string mime_type = 3;</code>
+       * @return The mimeType.
        */
-      public java.lang.String getMimetype() {
-        java.lang.Object ref = mimetype_;
+      public java.lang.String getMimeType() {
+        java.lang.Object ref = mimeType_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          mimetype_ = s;
+          mimeType_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string mimetype = 3;</code>
-       * @return The bytes for mimetype.
+       * <code>string mime_type = 3;</code>
+       * @return The bytes for mimeType.
        */
       public com.google.protobuf.ByteString
-          getMimetypeBytes() {
-        java.lang.Object ref = mimetype_;
+          getMimeTypeBytes() {
+        java.lang.Object ref = mimeType_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          mimetype_ = b;
+          mimeType_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string mimetype = 3;</code>
-       * @param value The mimetype to set.
+       * <code>string mime_type = 3;</code>
+       * @param value The mimeType to set.
        * @return This builder for chaining.
        */
-      public Builder setMimetype(
+      public Builder setMimeType(
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
-        mimetype_ = value;
+        mimeType_ = value;
         bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>string mimetype = 3;</code>
+       * <code>string mime_type = 3;</code>
        * @return This builder for chaining.
        */
-      public Builder clearMimetype() {
-        mimetype_ = getDefaultInstance().getMimetype();
+      public Builder clearMimeType() {
+        mimeType_ = getDefaultInstance().getMimeType();
         bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
       /**
-       * <code>string mimetype = 3;</code>
-       * @param value The bytes for mimetype to set.
+       * <code>string mime_type = 3;</code>
+       * @param value The bytes for mimeType to set.
        * @return This builder for chaining.
        */
-      public Builder setMimetypeBytes(
+      public Builder setMimeTypeBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
-        mimetype_ = value;
+        mimeType_ = value;
         bitField0_ |= 0x00000004;
         onChanged();
         return this;
@@ -7090,37 +7090,37 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016messages.proto\"Q\n\013MessageFile\022\017\n\007file_" +
-      "id\030\001 \001(\t\022\014\n\004data\030\002 \001(\014\022\020\n\010mimetype\030\003 \001(\t" +
-      "\022\021\n\tfile_name\030\004 \001(\t\"c\n\017MessageContents\022\014" +
-      "\n\004text\030\001 \001(\t\022\024\n\007file_id\030\002 \001(\tH\000\210\001\001\022\024\n\007fi" +
-      "le_iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_iv" +
-      "\"\255\002\n\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.Messa" +
-      "geType\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n\014chain_l" +
-      "ength\030\003 \001(\r\022\027\n\017previous_length\030\004 \001(\r\022\022\n\n" +
-      "message_iv\030\005 \001(\014\022\026\n\tsender_id\030\006 \001(\tH\000\210\001\001" +
-      "\022\024\n\007chat_id\030\t \001(\014H\001\210\001\001\022\032\n\rephemeral_key\030" +
-      "\007 \001(\014H\002\210\001\001\022\034\n\017one_time_prekey\030\010 \001(\014H\003\210\001\001" +
-      "B\014\n\n_sender_idB\n\n\010_chat_idB\020\n\016_ephemeral" +
-      "_keyB\022\n\020_one_time_prekey\"\356\001\n\013ChatMessage" +
-      "\022+\n\016message_header\030\003 \001(\0132\016.MessageHeader" +
-      "H\000\210\001\001\022%\n\030message_header_encrypted\030\010 \001(\014H" +
-      "\001\210\001\001\022\"\n\032message_contents_encrypted\030\004 \001(\014" +
-      "\022\021\n\ttimestamp\030\005 \001(\004\022\026\n\theader_iv\030\006 \001(\014H\002" +
-      "\210\001\001B\021\n\017_message_headerB\033\n\031_message_heade" +
-      "r_encryptedB\014\n\n_header_iv\"\234\001\n\014PreKeyBund" +
-      "le\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014identity_key\030\002 \001(" +
-      "\014\022\024\n\014verifier_key\030\003 \001(\014\022\025\n\rsigned_prekey" +
-      "\030\004 \001(\014\022\030\n\020prekey_signature\030\005 \001(\014\022\027\n\017one_" +
-      "time_prekey\030\006 \003(\014B\005\n\003_id\"2\n\007KeyPair\022\022\n\np" +
-      "ublic_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\301\001\n" +
-      "\010Identity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_k" +
-      "ey\030\002 \001(\0132\010.KeyPair\022\036\n\014verifier_key\030\003 \001(\013" +
-      "2\010.KeyPair\022\037\n\rsigned_prekey\030\004 \001(\0132\010.KeyP" +
-      "air\022 \n\030signed_prekey_expiration\030\005 \001(\004\022!\n" +
-      "\017one_time_prekey\030\006 \003(\0132\010.KeyPair*-\n\013Mess" +
-      "ageType\022\n\n\006JOINED\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002B" +
-      "\033\n\031com.hsj.messagingdemo.dtob\006proto3"
+      "\n\016messages.proto\"R\n\013MessageFile\022\017\n\007file_" +
+      "id\030\001 \001(\t\022\014\n\004data\030\002 \001(\014\022\021\n\tmime_type\030\003 \001(" +
+      "\t\022\021\n\tfile_name\030\004 \001(\t\"c\n\017MessageContents\022" +
+      "\014\n\004text\030\001 \001(\t\022\024\n\007file_id\030\002 \001(\tH\000\210\001\001\022\024\n\007f" +
+      "ile_iv\030\003 \001(\014H\001\210\001\001B\n\n\010_file_idB\n\n\010_file_i" +
+      "v\"\255\002\n\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.Mess" +
+      "ageType\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n\014chain_" +
+      "length\030\003 \001(\r\022\027\n\017previous_length\030\004 \001(\r\022\022\n" +
+      "\nmessage_iv\030\005 \001(\014\022\026\n\tsender_id\030\006 \001(\tH\000\210\001" +
+      "\001\022\024\n\007chat_id\030\t \001(\014H\001\210\001\001\022\032\n\rephemeral_key" +
+      "\030\007 \001(\014H\002\210\001\001\022\034\n\017one_time_prekey\030\010 \001(\014H\003\210\001" +
+      "\001B\014\n\n_sender_idB\n\n\010_chat_idB\020\n\016_ephemera" +
+      "l_keyB\022\n\020_one_time_prekey\"\356\001\n\013ChatMessag" +
+      "e\022+\n\016message_header\030\003 \001(\0132\016.MessageHeade" +
+      "rH\000\210\001\001\022%\n\030message_header_encrypted\030\010 \001(\014" +
+      "H\001\210\001\001\022\"\n\032message_contents_encrypted\030\004 \001(" +
+      "\014\022\021\n\ttimestamp\030\005 \001(\004\022\026\n\theader_iv\030\006 \001(\014H" +
+      "\002\210\001\001B\021\n\017_message_headerB\033\n\031_message_head" +
+      "er_encryptedB\014\n\n_header_iv\"\234\001\n\014PreKeyBun" +
+      "dle\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014identity_key\030\002 \001" +
+      "(\014\022\024\n\014verifier_key\030\003 \001(\014\022\025\n\rsigned_preke" +
+      "y\030\004 \001(\014\022\030\n\020prekey_signature\030\005 \001(\014\022\027\n\017one" +
+      "_time_prekey\030\006 \003(\014B\005\n\003_id\"2\n\007KeyPair\022\022\n\n" +
+      "public_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\301\001" +
+      "\n\010Identity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_" +
+      "key\030\002 \001(\0132\010.KeyPair\022\036\n\014verifier_key\030\003 \001(" +
+      "\0132\010.KeyPair\022\037\n\rsigned_prekey\030\004 \001(\0132\010.Key" +
+      "Pair\022 \n\030signed_prekey_expiration\030\005 \001(\004\022!" +
+      "\n\017one_time_prekey\030\006 \003(\0132\010.KeyPair*-\n\013Mes" +
+      "sageType\022\n\n\006JOINED\020\000\022\010\n\004CHAT\020\001\022\010\n\004LEFT\020\002" +
+      "B\033\n\031com.hsj.messagingdemo.dtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -7131,7 +7131,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     internal_static_MessageFile_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageFile_descriptor,
-        new java.lang.String[] { "FileId", "Data", "Mimetype", "FileName", });
+        new java.lang.String[] { "FileId", "Data", "MimeType", "FileName", });
     internal_static_MessageContents_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_MessageContents_fieldAccessorTable = new

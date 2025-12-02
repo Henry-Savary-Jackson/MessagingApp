@@ -1,0 +1,45 @@
+.chat-window{
+    padding-bottom: 15%;
+}
+
+%chat-message {
+    width: 35%;
+}
+
+.chat-message-other{
+    @extend %chat-message;
+    align-self: flex-start !important;
+
+}
+.chat-message-sender{
+    @extend %chat-message;
+    align-self: flex-end !important;
+}
+
+%chat-text{
+    padding: 10px;
+    margin: 2px;
+    border-radius: 15px ;
+    background-color: rgba(57, 192, 237,.2);
+    color:black;
+}
+
+.chat-text-other{
+    @extend %chat-text;
+    border-bottom-left-radius: 0px
+}
+
+.chat-text-sender{
+    @extend %chat-text;
+    border-bottom-right-radius: 0px
+}
+
+.chat-item{
+    height: 100px;
+}
+
+.chat-item img{
+    height: 100%;
+    width: 25%;
+    border-radius: 50% !important;
+}

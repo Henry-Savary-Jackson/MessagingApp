@@ -4,12 +4,14 @@ enum MessageType {
   JOINED= 0;
   CHAT = 1;
   LEFT = 2;
+  GROUP_INVITE =3;
+  GROUP = 4;
 }
 
 message MessageFile{
   string file_id = 1;
   bytes data = 2;
-  string mimetype = 3;
+  string mime_type = 3;
   string file_name = 4;
 }
 
@@ -17,6 +19,7 @@ message MessageContents{
   string text =1;
   optional string file_id =2;
   optional bytes file_iv = 3;
+  optional string group_chat_id = 4;
 }
 
 message MessageHeader{

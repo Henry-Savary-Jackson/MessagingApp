@@ -1,6 +1,7 @@
 package com.hsj.messagingdemo.controller;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -49,7 +50,7 @@ public class WebSocketController {
         try {
             ChatMessage newMessage = ChatMessage.parseFrom(message);
             ChatMessage.Builder builder = newMessage.toBuilder();
-            newMessage = builder.setTimestamp((long) LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(2))).build();
+            newMessage = builder.setTimestamp(Instant.now().toEpochMilli()).build();
             kafkaTemplate.send(new ProducerRecord<String, byte[]>(user_id, newMessage.toByteArray()));
         } catch (InvalidProtocolBufferException ie) {
             throw ie;

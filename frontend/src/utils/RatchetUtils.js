@@ -5,7 +5,6 @@ import { get_all_chats, get_chat_info,get_previous_messages_keys ,get_recieving_
 
 
 export async function ratchet_turn_until_match(chain, index){
-     
     if (chain.message_keys.length <= index){
         for (let i = chain.message_keys.length; i < index+1 ; i++) {
             chain.message_keys.push(chain.chain_key)
@@ -13,7 +12,6 @@ export async function ratchet_turn_until_match(chain, index){
         }
     }
     return chain.message_keys[index]
-
 }
 
 export async function get_previous_message_key(indexed_db, other_dh, index){
@@ -31,6 +29,7 @@ export async function get_previous_message_key(indexed_db, other_dh, index){
 
 export async function ratchet_turn_send(chat_object, turn_root = true) {
     if (turn_root) {
+        console.log("Turning root sender! ")
         // perform a diffie helmann key exchans with the otherś dh key
         chat_object.dh_keypair_private = await generate25519KeyExchangePair()
 
@@ -42,15 +41,13 @@ export async function ratchet_turn_send(chat_object, turn_root = true) {
 
         // use this diffie helman output in the ratchet turn step
         await turn_ratchet_root_sender(chat_object)
-    }else{
-
-        let message_keys = chat_object.sending_chain.message_keys
-        let chain_key =  chat_object.sending_chain.chain_key 
-        // do only a kdf ratchet turn on the current sending chain
-        let new_chain_key = await KDF_chain_key(chain_key)
-        chat_object.sending_chain.chain_key = new_chain_key 
-        message_keys.push(chain_key)
     }
+    let message_keys = chat_object.sending_chain.message_keys
+    let chain_key =  chat_object.sending_chain.chain_key 
+    // do only a kdf ratchet turn on the current sending chain
+    let new_chain_key = await KDF_chain_key(chain_key)
+    chat_object.sending_chain.chain_key = new_chain_key 
+    message_keys.push(chain_key)
 }
 
 export async function init_ratchet_root_receiver(chat_object){
@@ -188,22 +185,25 @@ export async function get_message_key_for_message(indexed_db, chat_message) {
         if (Uint8ArrayEquals(header_key,chat_object.receiving_chain.next_header_key) ){
             // ratchet turn
             // store previous n now that you have ratchet turned
+            console.log("Ratchet turn receive!")
             chat_object.receiving_chain.max_n = messageHeader.previousLength
 
-
-            await store_recieving_chain(indexed_db, chat_object.header_key ,chat_object.receiving_chain) 
+            await store_recieving_chain(indexed_db, chat_object.receiving_chain.header_key ,chat_object.receiving_chain) 
 
             await root_ratchet_turn_recieve(chat_object, dh_public_bytes)
 
-            let message_key = await ratchet_turn_until_match(chat_object.receiving_chain, messageHeader.chainLength)
+            let message_key = await ratchet_turn_until_match(chat_object.receiving_chain, messageHeader.chainLength-1)
 
             // get the total messages sent in the previous chain 
             await store_chat(indexed_db,chat_object)
-            return {message_key, chat_object}
+            return {message_key, chat_object, messageHeader}
             
         } else{
-            let message_key = await ratchet_turn_until_match(chat_object.receiving_chain, messageHeader.chainLength) 
-            await store_recieving_chain(indexed_db, header_key,chat_object.receiving_chain)
+
+            console.log("No ratchet turn receive!")
+            let message_key = await ratchet_turn_until_match(chat_object.receiving_chain, messageHeader.chainLength-1) 
+            await store_chat(indexed_db, chat_object)
+
             return {message_key, chat_object, messageHeader}
             // use the current recieving chain
         }

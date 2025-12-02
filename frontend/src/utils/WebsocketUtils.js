@@ -32,7 +32,7 @@ export async function send_new_encrypted_message(client, indexed_db, chat_id, co
     // save changes
     await store_chat(indexed_db, chat_object)
     // get the message key for the message
-    let message_key = chat_object.sending_chain.chain_key
+    let message_key = message_keys[message_keys.length-1]
 
     let message_contents_js_obj = { text: contents.text }
     if (contents.file) {
@@ -59,7 +59,7 @@ export async function send_new_encrypted_message(client, indexed_db, chat_id, co
     let chat_message_js_obj = {
         messageHeaderEncrypted: message_header_enc,
         messageContentsEncrypted: message_contents_encrypted,
-        timestamp: new Date().getTime(),
+        timestamp: new Date().getTime(), 
         headerIv : header_iv
     }
 
