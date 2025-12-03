@@ -1,5 +1,5 @@
 import { useContext, useEffect, useReducer, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Stack, Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router'
 import { userIdContext } from '../../globals'
 import { getCSRF, getPrekeyBundle, getUsername, logout, setAxiosCSRF } from '../../utils/RequestUtils'
@@ -41,16 +41,16 @@ function ChatPage({ logoutCallback }) {
         let chatMessages = prev[chat_id] || []
         switch (action.action) {
             case "pop":
-                return { ...prev , [chat_id]:[...chatMessages.slice(0,-1)]}
+                return { ...prev, [chat_id]: [...chatMessages.slice(0, -1)] }
             case "add":
-                return { ...prev, [chat_id]:[...chatMessages, action.new].sort((a, b) => a.timestamp - b.timestamp) }
+                return { ...prev, [chat_id]: [...chatMessages, action.new].sort((a, b) => a.timestamp - b.timestamp) }
             case "init":
-                prev[chat_id] =  [...action.messages]
-                return {...prev}
+                prev[chat_id] = [...action.messages]
+                return { ...prev }
         }
     }, {})
 
-    
+
 
     const addMessageUI = (newMessage) => { messageReducer({ action: "add", new: newMessage, chat_id: newMessage.chat_id }) }
     const popMessageUI = () => { messageReducer({ action: "pop" }) }
@@ -82,24 +82,24 @@ function ChatPage({ logoutCallback }) {
 
     let { identity, verifier_key, signed_prekey, expiration } = useIdentityInformation(db, user_id)
 
-    const convert_proto_chat_msg = (message_proto,chat_object)=>{
+    const convert_proto_chat_msg = (message_proto, chat_object) => {
         return {
-            chat_id:chat_object.chat_id,
-            sender_id:chat_object.user_id,
-            contents:message_proto.message_contents,
-            timestamp:message_proto.timestamp,
-            message_key:message_proto.message_key
+            chat_id: chat_object.chat_id,
+            sender_id: chat_object.user_id,
+            contents: message_proto.message_contents,
+            timestamp: message_proto.timestamp,
+            message_key: message_proto.message_key
         }
     }
 
     const onMessage = async (message) => {
         console.log("New STOMP message!")
         let chat_message = ChatMessage.decode(message.binaryBody)
-        if (chat_message.messageHeader ) {
+        if (chat_message.messageHeader) {
             // X3DH message
             let otp = !chat_message.messageHeader.oneTimePrekey || await getOneTimePrekeyWithPubKey(db, chat_message.messageHeader.oneTimePrekey)
             // if a one time prekey is specified
-            let  {KM, chat_id} = await handle_X3DH_message(db, identity, signed_prekey, chat_message, otp)
+            let { KM, chat_id } = await handle_X3DH_message(db, identity, signed_prekey, chat_message, otp)
 
             let sender_id = chat_message.messageHeader.senderId
 
@@ -112,18 +112,18 @@ function ChatPage({ logoutCallback }) {
 
             await store_chat(db, chat_object)
 
-            addNewChatUI({chat_id:chat_id,user_id:sender_id, name:name})
+            addNewChatUI({ chat_id: chat_id, user_id: sender_id, name: name })
         } else {
 
 
             // nortmal message, decrypt with double ratchet algo
-            let {message_contents, message_key, chat_object } = await handle_message(db, identity, chat_message)
-            
+            let { message_contents, message_key, chat_object } = await handle_message(db, identity, chat_message)
+
             console.log(message_contents)
 
             let decrypted_chat_message = { ...chat_message, message_contents, message_key }
-            let msg_obj = convert_proto_chat_msg( decrypted_chat_message, chat_object)
-            await store_message(db,msg_obj)
+            let msg_obj = convert_proto_chat_msg(decrypted_chat_message, chat_object)
+            await store_message(db, msg_obj)
 
             addMessageUI(msg_obj)
             if (currentChat && chat_object.chat_id === currentChat.chat_id)
@@ -139,14 +139,14 @@ function ChatPage({ logoutCallback }) {
 
     const sendMessage = async (chat_id, text, file_object) => {
         let contents = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object })
-        let timestamp =Date.now() 
-        const message = {chat_id:chat_id, contents: contents,sender_id:user_id , timestamp:timestamp, message_key:contents.message_key}
-        await store_message(db,message )
+        let timestamp = Date.now()
+        const message = { chat_id: chat_id, contents: contents, sender_id: user_id, timestamp: timestamp, message_key: contents.message_key }
+        await store_message(db, message)
         readMessages(chat_id)
         addMessageUI(message)
     }
-    const setMessages= (chat_id,messages) => {
-        messageReducer({action:"init",chat_id:chat_id, messages:messages})
+    const setMessages = (chat_id, messages) => {
+        messageReducer({ action: "init", chat_id: chat_id, messages: messages })
     }
 
     const createNewChat = async () => {
@@ -165,7 +165,7 @@ function ChatPage({ logoutCallback }) {
 
         let sender_ratchet_key = await generate25519KeyExchangePair()
         let sender_ratchet_key_bytes = await exportX25519PublicKey(sender_ratchet_key.publicKey)
-        let msg_header_js = { type: "JOINED", messageIv: AD_IV, chainLength: 0, dhPublicKey: sender_ratchet_key_bytes, ephemeralKey: ephemeral_key_bytes, oneTimePrekey: await exportX25519PublicKey(onetime_prekey), senderId: user_id }
+        let msg_header_js = { type: "X3DH", messageIv: AD_IV, chainLength: 0, dhPublicKey: sender_ratchet_key_bytes, ephemeralKey: ephemeral_key_bytes, oneTimePrekey: await exportX25519PublicKey(onetime_prekey), senderId: user_id }
         let messageHeader = MessageHeader.fromObject(msg_header_js)
         let chat_message = ChatMessage.fromObject({ messageHeader: messageHeader, messageContentsEncrypted: AD_encrypted, timestamp: new Date().getTime() })
 
@@ -180,45 +180,45 @@ function ChatPage({ logoutCallback }) {
         let chat_object = await create_chat_object_sender(chat_id, other_id, name, sender_ratchet_key, prekey_bundle.identityKey, KM)
         await init_ratchet_root_sender(chat_object)
         await store_chat(db, chat_object)
-        addNewChatUI({chat_id:chat_id,user_id:other_id,name:name})
+        addNewChatUI({ chat_id: chat_id, user_id: other_id, name: name })
     }
     const leaveChat = async (chat_id) => {
 
         await delete_chat(db, chat_id);
         delChatUI(chat_id);
         if (currentChat && chat_id === currentChat.chat_id)
-            setCurrentChat( undefined)
+            setCurrentChat(undefined)
 
     }
-    const onChatClick = async (chat_object) =>{
+    const onChatClick = async (chat_object) => {
         if (currentChat && currentChat.chat_id === chat_object.chat_id)
             return
-        let chat_messages =  messages[chat_object.chat_id] || await get_messages(db,chat_object.chat_id)
+        let chat_messages = messages[chat_object.chat_id] || await get_messages(db, chat_object.chat_id)
         const chat_id = chat_object.chat_id
         setMessages(chat_id, chat_messages)
-        setCurrentChat( {...chat_object} )
+        setCurrentChat({ ...chat_object })
         readMessages(chat_id)
-    } 
+    }
 
-    return <Container className='vh-100 vw-100'>
-        <Link style={{ width:"6%"}} className='btn btn-danger position-fixed top-0 start-0' to={"/login"} onClick={async (e) => {
-            await logout()
-            setAxiosCSRF(await getCSRF())
-            logoutCallback()
-        }} >Logout</Link>
-        <Link style={{top:"40px", width:"6%"}} className='btn btn-primary position-fixed start-0 ' to={"/profile"} >Edit Profile</Link>
-        <Container>
-            <Row fluid >
-                <Col sm={4} >
-                    <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onChatJoin={(e) => { }} onChatCreate={createNewChat} />
-                </Col>
-                <Col sm={8}>
-                    {currentChat && <ChatWindow chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage}  />}
-                </Col>
-            </Row>
-        </Container>
+    return <Container fluid><Row>
+        <Col sm={2} >
+            <Stack>
+                <Link className='btn btn-danger' to={"/login"} onClick={async (e) => {
+                    await logout()
+                    setAxiosCSRF(await getCSRF())
+                    logoutCallback()
+                }} >Logout</Link>
+                <Link className='btn btn-primary' to={"/profile"} >Edit Profile</Link>
+            </Stack>
+        </Col>
+        <Col sm={4} >
+            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onChatJoin={(e) => { }} onChatCreate={createNewChat} />
+        </Col>
+        <Col sm={6}>
+            {currentChat && <ChatWindow chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
+        </Col>
+    </Row>
     </Container>
-
 }
 
 export default ChatPage

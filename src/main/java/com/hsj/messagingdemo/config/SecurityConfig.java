@@ -3,6 +3,7 @@ package com.hsj.messagingdemo.config;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
@@ -21,6 +24,7 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.RememberMeTokenAlgorithm;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter.Directive;
@@ -31,6 +35,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hsj.messagingdemo.auth.CustomRememberMeServices;
 import com.hsj.messagingdemo.auth.DigitalSignatureAuthenticationProvider;
+import com.hsj.messagingdemo.error.CustomAccessDeniedHandler;
 import com.hsj.messagingdemo.filter.DigitalSignatureAuthenticationFilter;
 import com.hsj.messagingdemo.filter.ExceptionHandlerFilter;
 import com.hsj.messagingdemo.model.User;
@@ -39,6 +44,7 @@ import com.hsj.messagingdemo.service.UserService;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+
 
     @Value("${remember-me-key}")
     String rememberMeKey;
@@ -54,12 +60,12 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        
+
         http.authorizeHttpRequests(
                 (a) -> a.requestMatchers("/csrf", "/user/login", "/user/register").permitAll().anyRequest()
                         .authenticated())
                 .addFilterBefore(digitalSignatureAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(exceptionHandlerFilter, LogoutFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, CsrfFilter.class)
                 .userDetailsService(userDetailsService())
                 .rememberMe(rememberMe -> rememberMe.rememberMeServices(rememberMeServices(userDetailsService())))
                 .logout((logout) -> logout.addLogoutHandler(
@@ -68,7 +74,8 @@ public class SecurityConfig {
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()))
                 .csrf((csrf) -> csrf
                         .csrfTokenRepository(httpSessionCsrfTokenRepository()))
-                .cors((c) -> c.configurationSource(corsConfigurationSource()));
+                .cors((c) -> c.configurationSource(corsConfigurationSource()))
+                .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedHandler(new CustomAccessDeniedHandler()));
         return http.build();
     }
 
@@ -81,7 +88,7 @@ public class SecurityConfig {
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("OPTIONS","POST", "PATCH", "GET", "PUT", "DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("OPTIONS", "POST", "PATCH", "GET", "PUT", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -101,7 +108,7 @@ public class SecurityConfig {
         // this gives UUID instead of usual string in #ReponseMapping
         filter.setAuthenticationSuccessHandler((request, response, auth) -> {
             response.getWriter()
-                    .write(((User)auth.getPrincipal()).getId());
+                    .write(((User) auth.getPrincipal()).getId());
         });
         return filter;
     }

@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.csrf.CsrfException;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException.Forbidden;
@@ -27,6 +30,12 @@ public class ErrorController {
         return generateErrorResponse(ErrorMessage.builder().code(401).message(a.getMessage())
                 .advice("Login with proper credentials.").build());
 
+    }
+
+    @ExceptionHandler(CsrfException.class)
+    public ResponseEntity<ErrorMessage> onCSRF(CsrfException exc) {
+        return generateErrorResponse(ErrorMessage.builder().code(403).message("Wrong/No CSRF token.")
+                .advice("Refetch the correct CSRF token from /csrf").build());
     }
 
     @ExceptionHandler(Forbidden.class)

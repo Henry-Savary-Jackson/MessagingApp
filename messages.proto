@@ -1,11 +1,12 @@
 syntax =  "proto3";
 option java_package = "com.hsj.messagingdemo.dto";
 enum MessageType {
-  JOINED= 0;
-  CHAT = 1;
-  LEFT = 2;
-  GROUP_INVITE =3;
-  GROUP = 4;
+  X3DH = 0
+  DIRECT = 1;
+  GROUP_INVITE =2;
+  GROUP = 3;
+  JOINED= 4;
+  LEFT = 5;
 }
 
 message MessageFile{
@@ -15,11 +16,16 @@ message MessageFile{
   string file_name = 4;
 }
 
+message UserGroupChatList{
+  repeated string user_ids=1;
+}
+
 message MessageContents{
   string text =1;
   optional string file_id =2;
   optional bytes file_iv = 3;
   optional string group_chat_id = 4;
+  optional UserGroupChatList group_chat_users = 5;
 }
 
 message MessageHeader{

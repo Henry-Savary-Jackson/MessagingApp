@@ -18,9 +18,16 @@ function App() {
   let [user_id, setUserId] = useState(cookies.user_id || "")
   let [csrf, setCSRF] = useState("")
 
+  async function set_csrf() {
+    let new_token = setAxiosCSRF(await getCSRF());
+    setCSRF(new_token)
+    return new_token
+  }
+
   useEffect(() => {
-    (async () => { setCSRF(setAxiosCSRF(await getCSRF())) })()
+    set_csrf()
   }, [])
+
 
 
   let setUserCallback = (username, user_id) => {
@@ -43,7 +50,7 @@ function App() {
           <Routes>
             <Route element={<PrivateRoute auth={user} />} >
               <Route element={
-                csrf && <StompSessionProvider connectHeaders={{ "X-CSRF-TOKEN": csrf }} url={broker_url}>
+                csrf && <StompSessionProvider connectHeaders={{"X-CSRF-TOKEN" :  csrf } } url={broker_url}>
                   <ChatPage logoutCallback={logoutCallback} />
                 </StompSessionProvider>
               } path='/' />

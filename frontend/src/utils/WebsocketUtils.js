@@ -23,7 +23,7 @@ export function parseMessage(message_bytes) {
 
 
 
-export async function send_new_encrypted_message(client, indexed_db, chat_id, contents) {
+export async function send_new_encrypted_message(client, indexed_db, chat_id, contents, type="DIRECT") {
 
     let chat_object = await get_chat_info(indexed_db, chat_id)
     // ratchet turn, if you have not send any messages on the sending chain, you should do a ratchet turn for the root key
@@ -45,7 +45,7 @@ export async function send_new_encrypted_message(client, indexed_db, chat_id, co
     let [message_contents_encrypted, iv] = await encrypt_message_contents(message_key, message_contents_protobuf_obj)
 
     let message_header_js_obj = {
-        type: "CHAT",
+        type: "DIRECT",
         chainLength: message_keys.length,
         messageIv: iv,
         previousLength:chat_object.receiving_chain.pn, // put previous n

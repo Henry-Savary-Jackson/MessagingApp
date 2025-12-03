@@ -2,20 +2,16 @@ package com.hsj.messagingdemo.controller;
 
 import java.security.Principal;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.config.KafkaListenerEndpoint;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.security.access.method.P;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
@@ -23,7 +19,6 @@ import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.hsj.messagingdemo.dto.Messages.ChatMessage;
-import com.hsj.messagingdemo.dto.Messages.MessageType;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
 import com.hsj.messagingdemo.service.MessageService;

@@ -1,3 +1,5 @@
+@import "global.scss";
+
 .chat-window{
     padding-bottom: 15%;
 }
@@ -42,4 +44,20 @@
     height: 100%;
     width: 25%;
     border-radius: 50% !important;
+}
+
+
+.chat-file-upload{
+    border: 1px;
+}
+
+.chat-file-upload img{
+    width: 40px;
+    height: 40px;
+}
+
+
+
+#input-file-chat{
+    @extend %disappear-input
 }
