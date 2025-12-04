@@ -21,6 +21,14 @@ export function setAxiosCSRF(csrf_data) {
     return csrf_data.token
 }
 
+export async function addOTP(otps){
+    return await performRequest(async () => (await axios.put(`${api_url}/otp`, concatenateUIntArray(...otps), { withCredentials: true , withXSRFToken:true})))
+}
+
+export async function setSignedPrekey(new_signed_prekey, new_prekey_signature){
+    return await performRequest(async () => (await axios.put(`${api_url}/signed_prekey`, {b64NewSignedPrekey:new_signed_prekey, b64NewPrekeySignature:new_prekey_signature}, { withCredentials: true , withXSRFToken:true})))
+}
+
 export async function getCSRF() {
     return await performRequest(async () => (await axios.get(`${api_url}/csrf`, { withCredentials: true })).data)
 }
@@ -73,7 +81,6 @@ export async function login(data) {
 export async function register(data) {
     return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/user/register`, data, { withCredentials: true })).data);
 }
-
 
 export async function createChat(name) {
     return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/chat/create`, name, { withCredentials: true, withXSRFToken: true })).data);
@@ -144,9 +151,6 @@ export async function getPrekeyBundle(username) {
 
 }
 
-export async function updateOTPs(otps) {
-    // return await performRequest(async () => (await axios.get(`${api_url}/file/${uuid}`, { withCredentials: true, withXSRFToken: true })).data);
-}
 
 
 export async function getUsername(indexed_db, user_id) {

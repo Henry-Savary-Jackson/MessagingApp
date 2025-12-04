@@ -2,6 +2,8 @@ import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer } from "./
 import {Identity,MessageFile, MessageHeader,MessageContents} from "../utils/protocol/messages"
 import { v4 } from 'uuid'
 
+export const signed_prekey_lifetime_ms = 5*24*60*60*1000 
+
 export function generateChallengeBuffer() {
     return crypto.getRandomValues(new Uint8Array(new ArrayBuffer(200))).buffer
 }
@@ -14,7 +16,7 @@ export async function generate25519SignaturePair() {
 }
 
 export async function extractC25519ExchangePublicKey(publicKey) {
-    return await crypto.subtle.importKey("raw", publicKey, {name:"X25519"}, true,  []);
+    return await crypto.subtle.importKey("raw", publicKey, {name:"X25519"}, true,  ["deriveBits" ,"deriveKey" ]);
 }
 export async function extractC25519SignaturePublicKey(publicKey) {
     return await crypto.subtle.importKey("raw", publicKey, {name:"Ed25519"}, true, [ "verify" ]);
@@ -80,8 +82,6 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
 
     let AD_decrypted = new Uint8Array( await crypto.subtle.decrypt({"name":"AES-GCM", iv:AD_iv}, SK, AD_encrypted))
 
-    let chat_id_bytes = AD_decrypted.slice(64)
-    let chat_id = atob(convertArrayBufferToBase64(chat_id_bytes))
 
     console.log(KM)
     console.log(AD_decrypted)
@@ -91,7 +91,7 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
         throw new Error("The AD byte sequence does not match the one given")
     }
 
-    return {KM, chat_id} // only need to give secret key
+    return KM  // only need to give secret key
 
 }
 
@@ -157,18 +157,13 @@ export async function X3DH_send(identity, prekey_bundle){
     let bytesYourIdentityPubKey = new Uint8Array( await crypto.subtle.exportKey("raw", identityCryptoKeyExchangePair.publicKey))
     let bytesOtherIdentityPubKey = new Uint8Array(await crypto.subtle.exportKey("raw", otherIdentityKey))
 
-    let chat_id = v4() // generate chat_id
-    let chat_id_bytes = new Uint8Array(convertBase64StringToArrayBuffer(window.btoa(chat_id)))
-
-    let AD =concatenateUIntArray(bytesYourIdentityPubKey,bytesOtherIdentityPubKey, chat_id_bytes) 
-
-
+    let AD =concatenateUIntArray(bytesYourIdentityPubKey,bytesOtherIdentityPubKey) 
     // concatenate chat id to ad byte sequence. 
 
     let AD_IV = crypto.getRandomValues(new Uint8Array(12)) 
     let AD_encrypted = new Uint8Array(await crypto.subtle.encrypt({"name":"AES-GCM", iv:AD_IV}, SK, AD))
 
-    return { KM, AD, AD_encrypted,AD_IV, ephemeralKeyPair, onetime_prekey, chat_id }
+    return { KM, AD, AD_encrypted,AD_IV, ephemeralKeyPair, onetime_prekey }
 }
 
 
@@ -278,14 +273,14 @@ export async function create_new_identity(){
     let signedPrekey = await generate25519KeyExchangePair();
 
     let current_date = new Date()
-    let signedPreKeyExpiration = current_date.getTime() + 5*24*60*60*1000 
+    let expiration = current_date.getTime() + signed_prekey_lifetime_ms
 
     let n_otp = 100;
     let oneTimePrekey  = []
     for (let i=0 ; i< n_otp; i++){
         oneTimePrekey.push(await generate25519KeyExchangePair())
     }
-    return {identityKey,verifierKey, signedPrekey, signedPreKeyExpiration, oneTimePrekey}
+    return {identityKey,verifierKey, signedPrekey, expiration, oneTimePrekey}
 }
 
 export async function create_new_prekey_bundle(js_identity){
@@ -307,7 +302,7 @@ export async function convert_js_identity_to_protobuf_identity(js_identity){
     let verifierKey  =await exportX25519KeyPair(js_identity.verifierKey);
     let signedPrekey = await exportX25519KeyPair(js_identity.signedPrekey);
 
-    let signedPrekeyExpiration = js_identity.signedPreKeyExpiration
+    let signedPrekeyExpiration = js_identity.expiration
 
     let oneTimePrekey  = [] 
     for (let otp of js_identity.oneTimePrekey){

@@ -1,14 +1,12 @@
 import { Container, Stack, Image, Card, Button } from "react-bootstrap"
 import { getFile, getUsername } from "../../utils/RequestUtils"
 import { useState, useEffect, useContext, memo } from "react"
-import { userIdContext } from "../../globals"
 import { useIndexedDB } from "../../utils/StorageUtils";
 import "../../css/chats.scss"
 
-const ChatMessage = memo(({ message_key, contents, sender }) => {
+const ChatMessage = memo(({user_id, message_key, contents, sender }) => {
 
     let { db, loading } = useIndexedDB()
-    let [user_id, setUserId] = useContext(userIdContext);
     let [file, setFile] = useState(undefined)
     let [fileBlobURL, setFileBlobURL] = useState(undefined)
 

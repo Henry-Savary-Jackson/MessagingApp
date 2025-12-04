@@ -33,7 +33,7 @@ public class User implements UserDetails {
     @Indexed(unique = true)
     String username;
 
-    byte[] preKeyBundle;
+    PrekeyBundleDB prekeyBundle; 
 
     ProfileImage profilePicture;
 
@@ -43,7 +43,7 @@ public class User implements UserDetails {
     }
     @Override
     public String getPassword() {
-        return Arrays.toString(preKeyBundle); 
+        return prekeyBundle.toString(); 
     }
 
 }

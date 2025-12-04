@@ -2,6 +2,8 @@ package com.hsj.messagingdemo.controller;
 
 import java.security.Principal;
 import java.time.Instant;
+import java.util.Arrays;
+
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -17,11 +19,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.hsj.messagingdemo.dto.RegistrationRequest;
+import com.hsj.messagingdemo.dto.UserChangeDTO;
 import com.hsj.messagingdemo.dto.Messages.ChatMessage;
+import com.hsj.messagingdemo.dto.Messages.MessageHeader;
+import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
+import com.hsj.messagingdemo.model.PrekeyBundleDB;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
 import com.hsj.messagingdemo.service.MessageService;
+import com.hsj.messagingdemo.service.UserService;
 
 @Controller
 public class WebSocketController {
@@ -31,6 +40,9 @@ public class WebSocketController {
 
     @Autowired
     MessageService messageService;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     KafkaListenerCreator kafkaListenerCreator;
@@ -45,6 +57,21 @@ public class WebSocketController {
         try {
             ChatMessage newMessage = ChatMessage.parseFrom(message);
             ChatMessage.Builder builder = newMessage.toBuilder();
+
+            // if X3DH message remove the relvant otp
+            if (newMessage.hasMessageHeader()){
+                MessageHeader messageHeader = newMessage.getMessageHeader();
+                if (messageHeader.hasOneTimePrekey()){
+                    // delete this one time prekey from the prekey bundle
+
+                    byte[] otp_user = messageHeader.getOneTimePrekey().toByteArray();
+                    User other = userService.getUserById(user_id);
+                    PrekeyBundleDB preKeyBundle = other.getPrekeyBundle();
+                    preKeyBundle.getOneTimePreKeys().removeIf((otp)->Arrays.equals(otp, otp_user));
+                    userService.setPreKeyBundle(user, preKeyBundle);
+                }
+            }
+            // set timestamp correctly
             newMessage = builder.setTimestamp(Instant.now().toEpochMilli()).build();
             kafkaTemplate.send(new ProducerRecord<String, byte[]>(user_id, newMessage.toByteArray()));
         } catch (InvalidProtocolBufferException ie) {

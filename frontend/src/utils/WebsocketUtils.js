@@ -1,6 +1,6 @@
 import { ChatMessage,MessageHeader, MessageFile,MessageContents } from "./protocol/messages"
 import { encrypt_file_contents, encrypt_header, encrypt_message_contents, exportX25519PublicKey } from './CryptoUtils'
-import { get_chat_info, store_chat } from './StorageUtils'
+import { get_double_ratchet_session, store_chat } from './StorageUtils'
 import { ratchet_turn_send } from "./RatchetUtils"
 import { uploadFile } from "./RequestUtils"
 
@@ -25,7 +25,7 @@ export function parseMessage(message_bytes) {
 
 export async function send_new_encrypted_message(client, indexed_db, chat_id, contents, type="DIRECT") {
 
-    let chat_object = await get_chat_info(indexed_db, chat_id)
+    let chat_object = await get_double_ratchet_session(indexed_db, chat_id)
     // ratchet turn, if you have not send any messages on the sending chain, you should do a ratchet turn for the root key
     let message_keys = chat_object.sending_chain.message_keys
     await ratchet_turn_send(chat_object, chat_object.receiving_chain.message_keys.length > 0)
@@ -48,7 +48,7 @@ export async function send_new_encrypted_message(client, indexed_db, chat_id, co
         type: "DIRECT",
         chainLength: message_keys.length,
         messageIv: iv,
-        previousLength:chat_object.receiving_chain.pn, // put previous n
+        previousLength:chat_object.sending_chain.pn, // put previous n
         dhPublicKey: await exportX25519PublicKey(chat_object.dh_keypair_private.publicKey)
     }
 

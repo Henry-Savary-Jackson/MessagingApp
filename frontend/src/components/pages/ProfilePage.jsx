@@ -1,7 +1,7 @@
 
 import { useContext, useEffect, useState } from "react";
 import { Form, Image, Button, FormLabel, FormControl, FormGroup } from "react-bootstrap";
-import { userContext, userIdContext } from "../../globals";
+import { identity_context} from "../../globals";
 import { getUserProfile, putUserProfile } from "../../utils/RequestUtils";
 import { Link } from "react-router";
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer } from "../../utils/EncodingUtils";
@@ -10,10 +10,9 @@ import "../../css/profile-page.scss";
 
 function ProfilePage() {
     let { db, loading } = useIndexedDB()
-    let [oldUsername, setOldUsername] = useContext(userContext)
+    let [identity , set_ident_info] = useContext(identity_context)
 
-    let [newUsername, setNewUsername] = useState(oldUsername)
-    let [userId, getUserId] = useContext(userIdContext)
+    let [newUsername, setNewUsername] = useState(identity.username)
     let [profileImage, setProfileImage] = useState(undefined)
 
     let [profileBlobURL, setProfileBlobURL] = useState("")
@@ -40,7 +39,7 @@ function ProfilePage() {
 
         (async () => {
             if (db)
-                setProfileImage(await getUserProfile(db, userId) || undefined)
+                setProfileImage(await getUserProfile(db, identity.user_id) || undefined)
         })()
 
     }, [db])
@@ -53,6 +52,7 @@ function ProfilePage() {
                 request = { ...request, "profile": newProfileImage }
             await putUserProfile(request)
             console.log("success")
+            set_ident_info({...identity , username:newUsername})
         }
         if (newFile) {
             const fileReader = new FileReader()

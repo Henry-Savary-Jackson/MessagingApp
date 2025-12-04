@@ -5,19 +5,20 @@ import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyP
 import { getCSRF, register, setAxiosCSRF } from "../../utils/RequestUtils"
 import { useLocation } from 'react-router'
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../../utils/EncodingUtils";
-import { userContext } from "../../globals";
 import { performActionWithAlert } from "../../utils/UIUtils";
 import { storeUserData, useIndexedDB } from "../../utils/StorageUtils";
 import { Identity,PreKeyBundle } from "../../utils/protocol/messages";
-import messages from "../../utils/protocol/messages";
+import { identity_context } from "../../globals";
 
-function RegisterForm({ setUserCallback }) {
+function RegisterForm() {
 
     let location = useLocation()
     let {db ,loading} = useIndexedDB()
 
     let [username, setUsername] = useState("")
     let [profileImageBlob, setProfileImageBlob] = useState(undefined)
+
+    let [ident_info, set_ident_info] = useContext(identity_context)
 
     let [identity_file_name, set_identity_file_name] = useState("IdentityFile.bin")
     let [identity_data, set_identity_data] = useState(null)
@@ -54,13 +55,8 @@ function RegisterForm({ setUserCallback }) {
             await performActionWithAlert(async () => {
                 let user_id = await register(registerRequest)
                 // now put it into indexeddb
-                if (db) {
-                    await storeUserData(db, {...identity_data, "user_id":user_id}) 
-                } else {
-                    throw new  Error("no database object found")
-                }
+                await set_ident_info({...identity_data, username:username,user_id:user_id}) 
                 setAxiosCSRF(await getCSRF())
-                setUserCallback(username, user_id)
                 location.pathname = "/"
             });
         }

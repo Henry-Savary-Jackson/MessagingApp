@@ -20,8 +20,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.hsj.messagingdemo.dto.AuthenticationRequest;
 import com.hsj.messagingdemo.dto.DigitalSignatureAuthenticationToken;
 import com.hsj.messagingdemo.dto.RegistrationRequest;
+import com.hsj.messagingdemo.dto.SignedPrekeyUpdate;
 import com.hsj.messagingdemo.dto.UserChangeDTO;
 import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
+import com.hsj.messagingdemo.model.PrekeyBundleDB;
 import com.hsj.messagingdemo.model.ProfileImage;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.repo.UserRepo;
@@ -52,8 +54,7 @@ public class UserService {
     public Authentication loginUser(AuthenticationRequest request) {
         try {
             User user = getUserByUsername(request.getUsername()).orElseThrow();
-            byte [] preKeyBundleBytes = user.getPreKeyBundle();
-            PreKeyBundle preKeyBundle = PreKeyBundle.parseFrom(preKeyBundleBytes);
+            PreKeyBundle preKeyBundle = user.getPrekeyBundle().convertToProtobufPrekeyBundle();
             if (!CryptoUtils.verifySignature(preKeyBundle.getVerifierKey().toByteArray(), request.getChallenge(),
                     request.getChallengeSignature())) {
                 throw new SignatureException("");
@@ -76,16 +77,33 @@ public class UserService {
     public User getUserById(String userId){
         return userRepo.findById(userId).orElseThrow();
     }
+    public void setPreKeyBundle(User user, PrekeyBundleDB preKeyBundle){
+        user.setPrekeyBundle(preKeyBundle);
+        userRepo.save(user);
+    }
+    public void setPreKeyBundle(User user, PreKeyBundle preKeyBundle){
+        setPreKeyBundle(user,new PrekeyBundleDB(preKeyBundle));
+    }
+
+    public void setSignedPrekey(User user, SignedPrekeyUpdate signedPreKeyUpdate){
+        PrekeyBundleDB prekeyBundleDB =  user.getPrekeyBundle();
+        byte[] signedPreKey = Base64.getDecoder().decode(signedPreKeyUpdate.getB64NewSignedPrekey());
+        byte[] preKeySignature = Base64.getDecoder().decode(signedPreKeyUpdate.getB64NewPrekeySignature());
+        prekeyBundleDB.setSignedPrekey(signedPreKey);
+        prekeyBundleDB.setPrekeySignature(preKeySignature);
+        setPreKeyBundle(user,prekeyBundleDB);
+    }
 
     public User saveUser(RegistrationRequest request)
             throws AuthenticationException, InvalidKeySpecException, NoSuchAlgorithmException, IOException {
         // verify inegrity of pubkey
         try {
             byte[] preKeyBundleBytes = Base64.getDecoder().decode(request.getBase64PrekeyBundle());
-            // PreKeyBundle preKeyBundle = PreKeyBundle.parseFrom(preKeyBundleBytes);
+            PreKeyBundle preKeyBundle = PreKeyBundle.parseFrom(preKeyBundleBytes);
 
             User user = User.builder().id(UUID.randomUUID().toString()).username(request.getUsername())
-                    .preKeyBundle(preKeyBundleBytes).profilePicture(request.getProfileImage()).build();
+                    .prekeyBundle(new PrekeyBundleDB(preKeyBundle)).profilePicture(request.getProfileImage()).build();
+
             userRepo.save(user);
             return user;
         } catch (DuplicateKeyException mwe) {

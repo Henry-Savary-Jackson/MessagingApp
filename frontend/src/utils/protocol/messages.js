@@ -13,15 +13,21 @@ var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
  * MessageType enum.
  * @exports MessageType
  * @enum {number}
- * @property {number} JOINED=0 JOINED value
- * @property {number} CHAT=1 CHAT value
- * @property {number} LEFT=2 LEFT value
+ * @property {number} X3DH=0 X3DH value
+ * @property {number} DIRECT=1 DIRECT value
+ * @property {number} GROUP_INVITE=2 GROUP_INVITE value
+ * @property {number} GROUP=3 GROUP value
+ * @property {number} JOINED=4 JOINED value
+ * @property {number} LEFT=5 LEFT value
  */
 $root.MessageType = (function() {
     var valuesById = {}, values = Object.create(valuesById);
-    values[valuesById[0] = "JOINED"] = 0;
-    values[valuesById[1] = "CHAT"] = 1;
-    values[valuesById[2] = "LEFT"] = 2;
+    values[valuesById[0] = "X3DH"] = 0;
+    values[valuesById[1] = "DIRECT"] = 1;
+    values[valuesById[2] = "GROUP_INVITE"] = 2;
+    values[valuesById[3] = "GROUP"] = 3;
+    values[valuesById[4] = "JOINED"] = 4;
+    values[valuesById[5] = "LEFT"] = 5;
     return values;
 })();
 
@@ -309,6 +315,244 @@ $root.MessageFile = (function() {
     return MessageFile;
 })();
 
+$root.FileInfo = (function() {
+
+    /**
+     * Properties of a FileInfo.
+     * @exports IFileInfo
+     * @interface IFileInfo
+     * @property {string|null} [fileId] FileInfo fileId
+     * @property {Uint8Array|null} [fileIv] FileInfo fileIv
+     */
+
+    /**
+     * Constructs a new FileInfo.
+     * @exports FileInfo
+     * @classdesc Represents a FileInfo.
+     * @implements IFileInfo
+     * @constructor
+     * @param {IFileInfo=} [properties] Properties to set
+     */
+    function FileInfo(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * FileInfo fileId.
+     * @member {string} fileId
+     * @memberof FileInfo
+     * @instance
+     */
+    FileInfo.prototype.fileId = "";
+
+    /**
+     * FileInfo fileIv.
+     * @member {Uint8Array} fileIv
+     * @memberof FileInfo
+     * @instance
+     */
+    FileInfo.prototype.fileIv = $util.newBuffer([]);
+
+    /**
+     * Creates a new FileInfo instance using the specified properties.
+     * @function create
+     * @memberof FileInfo
+     * @static
+     * @param {IFileInfo=} [properties] Properties to set
+     * @returns {FileInfo} FileInfo instance
+     */
+    FileInfo.create = function create(properties) {
+        return new FileInfo(properties);
+    };
+
+    /**
+     * Encodes the specified FileInfo message. Does not implicitly {@link FileInfo.verify|verify} messages.
+     * @function encode
+     * @memberof FileInfo
+     * @static
+     * @param {IFileInfo} message FileInfo message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    FileInfo.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.fileId != null && Object.hasOwnProperty.call(message, "fileId"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.fileId);
+        if (message.fileIv != null && Object.hasOwnProperty.call(message, "fileIv"))
+            writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.fileIv);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified FileInfo message, length delimited. Does not implicitly {@link FileInfo.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof FileInfo
+     * @static
+     * @param {IFileInfo} message FileInfo message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    FileInfo.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a FileInfo message from the specified reader or buffer.
+     * @function decode
+     * @memberof FileInfo
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {FileInfo} FileInfo
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    FileInfo.decode = function decode(reader, length, error) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.FileInfo();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            if (tag === error)
+                break;
+            switch (tag >>> 3) {
+            case 1: {
+                    message.fileId = reader.string();
+                    break;
+                }
+            case 2: {
+                    message.fileIv = reader.bytes();
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a FileInfo message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof FileInfo
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {FileInfo} FileInfo
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    FileInfo.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a FileInfo message.
+     * @function verify
+     * @memberof FileInfo
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    FileInfo.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.fileId != null && message.hasOwnProperty("fileId"))
+            if (!$util.isString(message.fileId))
+                return "fileId: string expected";
+        if (message.fileIv != null && message.hasOwnProperty("fileIv"))
+            if (!(message.fileIv && typeof message.fileIv.length === "number" || $util.isString(message.fileIv)))
+                return "fileIv: buffer expected";
+        return null;
+    };
+
+    /**
+     * Creates a FileInfo message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof FileInfo
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {FileInfo} FileInfo
+     */
+    FileInfo.fromObject = function fromObject(object) {
+        if (object instanceof $root.FileInfo)
+            return object;
+        var message = new $root.FileInfo();
+        if (object.fileId != null)
+            message.fileId = String(object.fileId);
+        if (object.fileIv != null)
+            if (typeof object.fileIv === "string")
+                $util.base64.decode(object.fileIv, message.fileIv = $util.newBuffer($util.base64.length(object.fileIv)), 0);
+            else if (object.fileIv.length >= 0)
+                message.fileIv = object.fileIv;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a FileInfo message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof FileInfo
+     * @static
+     * @param {FileInfo} message FileInfo
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    FileInfo.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.fileId = "";
+            if (options.bytes === String)
+                object.fileIv = "";
+            else {
+                object.fileIv = [];
+                if (options.bytes !== Array)
+                    object.fileIv = $util.newBuffer(object.fileIv);
+            }
+        }
+        if (message.fileId != null && message.hasOwnProperty("fileId"))
+            object.fileId = message.fileId;
+        if (message.fileIv != null && message.hasOwnProperty("fileIv"))
+            object.fileIv = options.bytes === String ? $util.base64.encode(message.fileIv, 0, message.fileIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.fileIv) : message.fileIv;
+        return object;
+    };
+
+    /**
+     * Converts this FileInfo to JSON.
+     * @function toJSON
+     * @memberof FileInfo
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    FileInfo.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for FileInfo
+     * @function getTypeUrl
+     * @memberof FileInfo
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    FileInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/FileInfo";
+    };
+
+    return FileInfo;
+})();
+
 $root.MessageContents = (function() {
 
     /**
@@ -316,8 +560,8 @@ $root.MessageContents = (function() {
      * @exports IMessageContents
      * @interface IMessageContents
      * @property {string|null} [text] MessageContents text
-     * @property {string|null} [fileId] MessageContents fileId
-     * @property {Uint8Array|null} [fileIv] MessageContents fileIv
+     * @property {IFileInfo|null} [fileInfo] MessageContents fileInfo
+     * @property {IGroupChatInvite|null} [groupChatInvite] MessageContents groupChatInvite
      */
 
     /**
@@ -337,50 +581,61 @@ $root.MessageContents = (function() {
 
     /**
      * MessageContents text.
-     * @member {string} text
+     * @member {string|null|undefined} text
      * @memberof MessageContents
      * @instance
      */
-    MessageContents.prototype.text = "";
+    MessageContents.prototype.text = null;
 
     /**
-     * MessageContents fileId.
-     * @member {string|null|undefined} fileId
+     * MessageContents fileInfo.
+     * @member {IFileInfo|null|undefined} fileInfo
      * @memberof MessageContents
      * @instance
      */
-    MessageContents.prototype.fileId = null;
+    MessageContents.prototype.fileInfo = null;
 
     /**
-     * MessageContents fileIv.
-     * @member {Uint8Array|null|undefined} fileIv
+     * MessageContents groupChatInvite.
+     * @member {IGroupChatInvite|null|undefined} groupChatInvite
      * @memberof MessageContents
      * @instance
      */
-    MessageContents.prototype.fileIv = null;
+    MessageContents.prototype.groupChatInvite = null;
 
     // OneOf field names bound to virtual getters and setters
     var $oneOfFields;
 
     /**
-     * MessageContents _fileId.
-     * @member {"fileId"|undefined} _fileId
+     * MessageContents _text.
+     * @member {"text"|undefined} _text
      * @memberof MessageContents
      * @instance
      */
-    Object.defineProperty(MessageContents.prototype, "_fileId", {
-        get: $util.oneOfGetter($oneOfFields = ["fileId"]),
+    Object.defineProperty(MessageContents.prototype, "_text", {
+        get: $util.oneOfGetter($oneOfFields = ["text"]),
         set: $util.oneOfSetter($oneOfFields)
     });
 
     /**
-     * MessageContents _fileIv.
-     * @member {"fileIv"|undefined} _fileIv
+     * MessageContents _fileInfo.
+     * @member {"fileInfo"|undefined} _fileInfo
      * @memberof MessageContents
      * @instance
      */
-    Object.defineProperty(MessageContents.prototype, "_fileIv", {
-        get: $util.oneOfGetter($oneOfFields = ["fileIv"]),
+    Object.defineProperty(MessageContents.prototype, "_fileInfo", {
+        get: $util.oneOfGetter($oneOfFields = ["fileInfo"]),
+        set: $util.oneOfSetter($oneOfFields)
+    });
+
+    /**
+     * MessageContents _groupChatInvite.
+     * @member {"groupChatInvite"|undefined} _groupChatInvite
+     * @memberof MessageContents
+     * @instance
+     */
+    Object.defineProperty(MessageContents.prototype, "_groupChatInvite", {
+        get: $util.oneOfGetter($oneOfFields = ["groupChatInvite"]),
         set: $util.oneOfSetter($oneOfFields)
     });
 
@@ -410,10 +665,10 @@ $root.MessageContents = (function() {
             writer = $Writer.create();
         if (message.text != null && Object.hasOwnProperty.call(message, "text"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
-        if (message.fileId != null && Object.hasOwnProperty.call(message, "fileId"))
-            writer.uint32(/* id 2, wireType 2 =*/18).string(message.fileId);
-        if (message.fileIv != null && Object.hasOwnProperty.call(message, "fileIv"))
-            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.fileIv);
+        if (message.fileInfo != null && Object.hasOwnProperty.call(message, "fileInfo"))
+            $root.FileInfo.encode(message.fileInfo, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+        if (message.groupChatInvite != null && Object.hasOwnProperty.call(message, "groupChatInvite"))
+            $root.GroupChatInvite.encode(message.groupChatInvite, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
         return writer;
     };
 
@@ -455,11 +710,11 @@ $root.MessageContents = (function() {
                     break;
                 }
             case 2: {
-                    message.fileId = reader.string();
+                    message.fileInfo = $root.FileInfo.decode(reader, reader.uint32());
                     break;
                 }
             case 3: {
-                    message.fileIv = reader.bytes();
+                    message.groupChatInvite = $root.GroupChatInvite.decode(reader, reader.uint32());
                     break;
                 }
             default:
@@ -498,18 +753,26 @@ $root.MessageContents = (function() {
         if (typeof message !== "object" || message === null)
             return "object expected";
         var properties = {};
-        if (message.text != null && message.hasOwnProperty("text"))
+        if (message.text != null && message.hasOwnProperty("text")) {
+            properties._text = 1;
             if (!$util.isString(message.text))
                 return "text: string expected";
-        if (message.fileId != null && message.hasOwnProperty("fileId")) {
-            properties._fileId = 1;
-            if (!$util.isString(message.fileId))
-                return "fileId: string expected";
         }
-        if (message.fileIv != null && message.hasOwnProperty("fileIv")) {
-            properties._fileIv = 1;
-            if (!(message.fileIv && typeof message.fileIv.length === "number" || $util.isString(message.fileIv)))
-                return "fileIv: buffer expected";
+        if (message.fileInfo != null && message.hasOwnProperty("fileInfo")) {
+            properties._fileInfo = 1;
+            {
+                var error = $root.FileInfo.verify(message.fileInfo);
+                if (error)
+                    return "fileInfo." + error;
+            }
+        }
+        if (message.groupChatInvite != null && message.hasOwnProperty("groupChatInvite")) {
+            properties._groupChatInvite = 1;
+            {
+                var error = $root.GroupChatInvite.verify(message.groupChatInvite);
+                if (error)
+                    return "groupChatInvite." + error;
+            }
         }
         return null;
     };
@@ -528,13 +791,16 @@ $root.MessageContents = (function() {
         var message = new $root.MessageContents();
         if (object.text != null)
             message.text = String(object.text);
-        if (object.fileId != null)
-            message.fileId = String(object.fileId);
-        if (object.fileIv != null)
-            if (typeof object.fileIv === "string")
-                $util.base64.decode(object.fileIv, message.fileIv = $util.newBuffer($util.base64.length(object.fileIv)), 0);
-            else if (object.fileIv.length >= 0)
-                message.fileIv = object.fileIv;
+        if (object.fileInfo != null) {
+            if (typeof object.fileInfo !== "object")
+                throw TypeError(".MessageContents.fileInfo: object expected");
+            message.fileInfo = $root.FileInfo.fromObject(object.fileInfo);
+        }
+        if (object.groupChatInvite != null) {
+            if (typeof object.groupChatInvite !== "object")
+                throw TypeError(".MessageContents.groupChatInvite: object expected");
+            message.groupChatInvite = $root.GroupChatInvite.fromObject(object.groupChatInvite);
+        }
         return message;
     };
 
@@ -551,19 +817,20 @@ $root.MessageContents = (function() {
         if (!options)
             options = {};
         var object = {};
-        if (options.defaults)
-            object.text = "";
-        if (message.text != null && message.hasOwnProperty("text"))
+        if (message.text != null && message.hasOwnProperty("text")) {
             object.text = message.text;
-        if (message.fileId != null && message.hasOwnProperty("fileId")) {
-            object.fileId = message.fileId;
             if (options.oneofs)
-                object._fileId = "fileId";
+                object._text = "text";
         }
-        if (message.fileIv != null && message.hasOwnProperty("fileIv")) {
-            object.fileIv = options.bytes === String ? $util.base64.encode(message.fileIv, 0, message.fileIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.fileIv) : message.fileIv;
+        if (message.fileInfo != null && message.hasOwnProperty("fileInfo")) {
+            object.fileInfo = $root.FileInfo.toObject(message.fileInfo, options);
             if (options.oneofs)
-                object._fileIv = "fileIv";
+                object._fileInfo = "fileInfo";
+        }
+        if (message.groupChatInvite != null && message.hasOwnProperty("groupChatInvite")) {
+            object.groupChatInvite = $root.GroupChatInvite.toObject(message.groupChatInvite, options);
+            if (options.oneofs)
+                object._groupChatInvite = "groupChatInvite";
         }
         return object;
     };
@@ -595,6 +862,251 @@ $root.MessageContents = (function() {
     };
 
     return MessageContents;
+})();
+
+$root.GroupChatInvite = (function() {
+
+    /**
+     * Properties of a GroupChatInvite.
+     * @exports IGroupChatInvite
+     * @interface IGroupChatInvite
+     * @property {string|null} [groupChatId] GroupChatInvite groupChatId
+     * @property {Array.<string>|null} [userIds] GroupChatInvite userIds
+     */
+
+    /**
+     * Constructs a new GroupChatInvite.
+     * @exports GroupChatInvite
+     * @classdesc Represents a GroupChatInvite.
+     * @implements IGroupChatInvite
+     * @constructor
+     * @param {IGroupChatInvite=} [properties] Properties to set
+     */
+    function GroupChatInvite(properties) {
+        this.userIds = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * GroupChatInvite groupChatId.
+     * @member {string} groupChatId
+     * @memberof GroupChatInvite
+     * @instance
+     */
+    GroupChatInvite.prototype.groupChatId = "";
+
+    /**
+     * GroupChatInvite userIds.
+     * @member {Array.<string>} userIds
+     * @memberof GroupChatInvite
+     * @instance
+     */
+    GroupChatInvite.prototype.userIds = $util.emptyArray;
+
+    /**
+     * Creates a new GroupChatInvite instance using the specified properties.
+     * @function create
+     * @memberof GroupChatInvite
+     * @static
+     * @param {IGroupChatInvite=} [properties] Properties to set
+     * @returns {GroupChatInvite} GroupChatInvite instance
+     */
+    GroupChatInvite.create = function create(properties) {
+        return new GroupChatInvite(properties);
+    };
+
+    /**
+     * Encodes the specified GroupChatInvite message. Does not implicitly {@link GroupChatInvite.verify|verify} messages.
+     * @function encode
+     * @memberof GroupChatInvite
+     * @static
+     * @param {IGroupChatInvite} message GroupChatInvite message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GroupChatInvite.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.groupChatId != null && Object.hasOwnProperty.call(message, "groupChatId"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.groupChatId);
+        if (message.userIds != null && message.userIds.length)
+            for (var i = 0; i < message.userIds.length; ++i)
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.userIds[i]);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified GroupChatInvite message, length delimited. Does not implicitly {@link GroupChatInvite.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof GroupChatInvite
+     * @static
+     * @param {IGroupChatInvite} message GroupChatInvite message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GroupChatInvite.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a GroupChatInvite message from the specified reader or buffer.
+     * @function decode
+     * @memberof GroupChatInvite
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {GroupChatInvite} GroupChatInvite
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GroupChatInvite.decode = function decode(reader, length, error) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GroupChatInvite();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            if (tag === error)
+                break;
+            switch (tag >>> 3) {
+            case 1: {
+                    message.groupChatId = reader.string();
+                    break;
+                }
+            case 2: {
+                    if (!(message.userIds && message.userIds.length))
+                        message.userIds = [];
+                    message.userIds.push(reader.string());
+                    break;
+                }
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a GroupChatInvite message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof GroupChatInvite
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {GroupChatInvite} GroupChatInvite
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GroupChatInvite.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a GroupChatInvite message.
+     * @function verify
+     * @memberof GroupChatInvite
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    GroupChatInvite.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.groupChatId != null && message.hasOwnProperty("groupChatId"))
+            if (!$util.isString(message.groupChatId))
+                return "groupChatId: string expected";
+        if (message.userIds != null && message.hasOwnProperty("userIds")) {
+            if (!Array.isArray(message.userIds))
+                return "userIds: array expected";
+            for (var i = 0; i < message.userIds.length; ++i)
+                if (!$util.isString(message.userIds[i]))
+                    return "userIds: string[] expected";
+        }
+        return null;
+    };
+
+    /**
+     * Creates a GroupChatInvite message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof GroupChatInvite
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {GroupChatInvite} GroupChatInvite
+     */
+    GroupChatInvite.fromObject = function fromObject(object) {
+        if (object instanceof $root.GroupChatInvite)
+            return object;
+        var message = new $root.GroupChatInvite();
+        if (object.groupChatId != null)
+            message.groupChatId = String(object.groupChatId);
+        if (object.userIds) {
+            if (!Array.isArray(object.userIds))
+                throw TypeError(".GroupChatInvite.userIds: array expected");
+            message.userIds = [];
+            for (var i = 0; i < object.userIds.length; ++i)
+                message.userIds[i] = String(object.userIds[i]);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a GroupChatInvite message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof GroupChatInvite
+     * @static
+     * @param {GroupChatInvite} message GroupChatInvite
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    GroupChatInvite.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.userIds = [];
+        if (options.defaults)
+            object.groupChatId = "";
+        if (message.groupChatId != null && message.hasOwnProperty("groupChatId"))
+            object.groupChatId = message.groupChatId;
+        if (message.userIds && message.userIds.length) {
+            object.userIds = [];
+            for (var j = 0; j < message.userIds.length; ++j)
+                object.userIds[j] = message.userIds[j];
+        }
+        return object;
+    };
+
+    /**
+     * Converts this GroupChatInvite to JSON.
+     * @function toJSON
+     * @memberof GroupChatInvite
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    GroupChatInvite.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    /**
+     * Gets the default type url for GroupChatInvite
+     * @function getTypeUrl
+     * @memberof GroupChatInvite
+     * @static
+     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+     * @returns {string} The default type url
+     */
+    GroupChatInvite.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        if (typeUrlPrefix === undefined) {
+            typeUrlPrefix = "type.googleapis.com";
+        }
+        return typeUrlPrefix + "/GroupChatInvite";
+    };
+
+    return GroupChatInvite;
 })();
 
 $root.MessageHeader = (function() {
@@ -905,6 +1417,9 @@ $root.MessageHeader = (function() {
             case 0:
             case 1:
             case 2:
+            case 3:
+            case 4:
+            case 5:
                 break;
             }
         if (message.dhPublicKey != null && message.hasOwnProperty("dhPublicKey"))
@@ -961,17 +1476,29 @@ $root.MessageHeader = (function() {
                 break;
             }
             break;
-        case "JOINED":
+        case "X3DH":
         case 0:
             message.type = 0;
             break;
-        case "CHAT":
+        case "DIRECT":
         case 1:
             message.type = 1;
             break;
-        case "LEFT":
+        case "GROUP_INVITE":
         case 2:
             message.type = 2;
+            break;
+        case "GROUP":
+        case 3:
+            message.type = 3;
+            break;
+        case "JOINED":
+        case 4:
+            message.type = 4;
+            break;
+        case "LEFT":
+        case 5:
+            message.type = 5;
             break;
         }
         if (object.dhPublicKey != null)
@@ -1022,7 +1549,7 @@ $root.MessageHeader = (function() {
             options = {};
         var object = {};
         if (options.defaults) {
-            object.type = options.enums === String ? "JOINED" : 0;
+            object.type = options.enums === String ? "X3DH" : 0;
             if (options.bytes === String)
                 object.dhPublicKey = "";
             else {

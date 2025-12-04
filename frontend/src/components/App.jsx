@@ -3,20 +3,23 @@ import LoginForm from './pages/LoginForm.jsx';
 import RegisterForm from './pages/RegisterForm.jsx';
 import ChatPage from './pages/ChatPage.jsx';
 import PrivateRoute from './PrivateRoute';
-import { setAxiosCSRF, getCSRF } from '../utils/RequestUtils.js';
+import { setAxiosCSRF, getCSRF, setSignedPrekey } from '../utils/RequestUtils.js';
 import { useContext, useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie'
-import { userContext, userIdContext, csrf_context } from '../globals.js'
+import { csrf_context, identity_context } from '../globals.js'
+import { updateSignedPrekey, useIdentityInformation } from '../utils/StorageUtils.js';
+import { useIndexedDB } from '../utils/StorageUtils.js';
 import { broker_url } from '../utils/WebsocketUtils.js';
 import { StompSessionProvider } from 'react-stomp-hooks'
 import ProfilePage from './pages/ProfilePage.jsx';
+import LoadingLogin from './pages/LoadingLogin.jsx';
 
 function App() {
 
-  let [cookies, setCookies, removeCookies] = useCookies()
-  let [user, setUser] = useState(cookies.user || "")
-  let [user_id, setUserId] = useState(cookies.user_id || "")
   let [csrf, setCSRF] = useState("")
+
+  let { db, loading } = useIndexedDB()
+  let [ident_info, set_ident_info] = useIdentityInformation(db, user_id)
+  let [logged_in, set_logged_in ] = useState(false)
 
   async function set_csrf() {
     let new_token = setAxiosCSRF(await getCSRF());
@@ -24,35 +27,43 @@ function App() {
     return new_token
   }
 
+  async function do_signed_prekey_update(){
+      let new_prekey_info =await updateSignedPrekey(db)
+      await setSignedPrekey(...new_prekey_info)
+
+  }
+
   useEffect(() => {
     set_csrf()
   }, [])
 
+  useEffect(() => {
+    if (new Date().getTime() > ident_info.expiration) {
+      do_signed_prekey_update()
+    }
+
+  }, [ident_info])
+
+  useEffect(()=>{
+    
+  }, [ident_info])
 
 
   let setUserCallback = (username, user_id) => {
-    setUser(username)
-    setUserId(user_id)
-    setCookies("user", username)
-    setCookies("user_id", user_id)
   }
   let logoutCallback = () => {
-    setUser("")
-    removeCookies("user")
-    removeCookies("user_id")
   }
 
 
-  return < userContext.Provider value={[user, setUser]}>
-    <userIdContext.Provider value={[user_id, setUserId]}>
+  return <identity_context.Provider value={[ident_info, set_ident_info]}>
       <csrf_context.Provider value={[csrf, setCSRF]}>
         <MemoryRouter>
           <Routes>
-            <Route element={<PrivateRoute auth={user} />} >
+            <Route element={<PrivateRoute auth={ident_info} />} >
               <Route element={
-                csrf && <StompSessionProvider connectHeaders={{"X-CSRF-TOKEN" :  csrf } } url={broker_url}>
+                logged_in  ?  <StompSessionProvider connectHeaders={{ "X-CSRF-TOKEN": csrf }} url={broker_url}>
                   <ChatPage logoutCallback={logoutCallback} />
-                </StompSessionProvider>
+                </StompSessionProvider> : <LoadingLogin set_logged_in={set_logged_in} />
               } path='/' />
             </Route>
             <Route element={<PrivateRoute auth={user} />} >
@@ -60,13 +71,13 @@ function App() {
                 <ProfilePage />
               } path='/profile' />
             </Route>
-            <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />
-            <Route element={<RegisterForm setUserCallback={setUserCallback} />} path='/register' />
+            <Route element={<LoginForm />} path='/login' />
+            <Route element={<RegisterForm />} path='/register' />
           </Routes>
         </MemoryRouter>
       </csrf_context.Provider>
-    </userIdContext.Provider>
-  </userContext.Provider >;
+  </identity_context.Provider>
+    ;
 
 }
 

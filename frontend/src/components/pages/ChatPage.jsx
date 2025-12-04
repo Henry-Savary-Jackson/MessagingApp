@@ -1,18 +1,16 @@
 import { useContext, useEffect, useReducer, useState } from 'react'
 import { Stack, Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router'
-import { userIdContext } from '../../globals'
-import { getCSRF, getPrekeyBundle, getUsername, logout, setAxiosCSRF } from '../../utils/RequestUtils'
+import { createChat, getCSRF, getPrekeyBundle, getUsername, logout, setAxiosCSRF } from '../../utils/RequestUtils'
 import ChatWindow from "./../chat/ChatWindow"
 import ChatListBar from "./../chat/ChatListBar"
 import { handle_message, init_ratchet_root_receiver, init_ratchet_root_sender } from '../../utils/RatchetUtils'
-import { handle_X3DH_message } from '../../utils/X3DHUtils'
-import { send, send_new_encrypted_message } from '../../utils/WebsocketUtils'
-import { ChatMessage, MessageType, MessageHeader } from '../../utils/protocol/messages'
-import { generate25519KeyExchangePair, exportX25519PublicKey, X3DH_send } from '../../utils/CryptoUtils'
-import { create_chat_object_recipient, create_chat_object_sender, delete_chat, get_all_chats, get_chat_info, get_messages, getOneTimePrekeyWithPubKey, store_chat, store_message, useIdentityInformation, useIndexedDB } from '../../utils/StorageUtils'
-import { v4 } from 'uuid'
+import { handle_X3DH_message, send_X3DH_message } from '../../utils/X3DHUtils'
+import { send_new_encrypted_message } from '../../utils/WebsocketUtils'
+import { ChatMessage } from '../../utils/protocol/messages'
+import { create_chat_object, create_double_ratchet_recipient, delete_chat, get_all_double_ratchet_sess,  get_chat,  get_messages, getOneTimePrekeyWithPubKey, store_chat, store_double_ratchet_session, store_message, useIdentityInformation, useIndexedDB } from '../../utils/StorageUtils'
 import { useStompClient, useSubscription } from 'react-stomp-hooks'
+import { identity_context } from '../../globals'
 
 
 function ChatPage({ logoutCallback }) {
@@ -64,14 +62,13 @@ function ChatPage({ logoutCallback }) {
     const setNewChats = (newChats) => { chatsReducer({ "action": "init", "data": newChats }) }
     const delChatUI = (chat_id) => { chatsReducer({ "action": "del", chat_id: chat_id }) }
 
-    let [user_id, set_user_id] = useContext(userIdContext)
 
     let { db, loading } = useIndexedDB()
 
     useEffect(() => {
         async function get_chats_callback() {
             if (db) {
-                let chats = await get_all_chats(db)
+                let chats = await get_all_double_ratchet_sess(db)
                 setNewChats(chats)
             }
         }
@@ -80,15 +77,15 @@ function ChatPage({ logoutCallback }) {
     }, [db])
 
 
-    let { identity, verifier_key, signed_prekey, expiration } = useIdentityInformation(db, user_id)
+    let [{ user_id, identityKey,  verifierKey, signedPreKey, expiration },set_ident_info] = useContext(identity_context)
 
-    const convert_proto_chat_msg = (message_proto, chat_object) => {
+    const convert_proto_chat_msg = (message_proto, message_contents, message_header, message_key) => {
         return {
-            chat_id: chat_object.chat_id,
-            sender_id: chat_object.user_id,
-            contents: message_proto.message_contents,
+            chat_id: message_header.chat_id || message_header.senderId, // if chat id is not given, the sender_id identitfies the chat as the direct chat
+            sender_id: message_header.senderId,
+            contents: message_contents,
             timestamp: message_proto.timestamp,
-            message_key: message_proto.message_key
+            message_key: message_key
         }
     }
 
@@ -99,7 +96,7 @@ function ChatPage({ logoutCallback }) {
             // X3DH message
             let otp = !chat_message.messageHeader.oneTimePrekey || await getOneTimePrekeyWithPubKey(db, chat_message.messageHeader.oneTimePrekey)
             // if a one time prekey is specified
-            let { KM, chat_id } = await handle_X3DH_message(db, identity, signed_prekey, chat_message, otp)
+            let { KM, chat_id } = await handle_X3DH_message(db, identityKey, signedPreKey, chat_message, otp)
 
             let sender_id = chat_message.messageHeader.senderId
 
@@ -107,28 +104,28 @@ function ChatPage({ logoutCallback }) {
 
             let other_dh_public = chat_message.messageHeader.dhPublicKey
 
-            let chat_object = await create_chat_object_recipient(identity, chat_id, sender_id, name, other_dh_public, KM)
-            await init_ratchet_root_receiver(chat_object)
+            let dr_session = await create_double_ratchet_recipient(identityKey, chat_id, sender_id, name, other_dh_public, KM)
+            await init_ratchet_root_receiver(dr_session)
 
-            await store_chat(db, chat_object)
+            await store_double_ratchet_session(db, dr_session)
+            await store_chat(db, create_chat_object(sender_id, name, "DIRECT"))
 
             addNewChatUI({ chat_id: chat_id, user_id: sender_id, name: name })
         } else {
 
 
             // nortmal message, decrypt with double ratchet algo
-            let { message_contents, message_key, chat_object } = await handle_message(db, identity, chat_message)
+            let { message_contents,messageHeader, message_key } = await handle_message(db,  chat_message)
 
             console.log(message_contents)
 
-            let decrypted_chat_message = { ...chat_message, message_contents, message_key }
-            let msg_obj = convert_proto_chat_msg(decrypted_chat_message, chat_object)
+            let msg_obj = convert_proto_chat_msg(chat_message, message_contents, messageHeader, message_key )
+            let chat_object = await get_chat(db, msg_obj.chat_id)
             await store_message(db, msg_obj)
-
             addMessageUI(msg_obj)
             if (currentChat && chat_object.chat_id === currentChat.chat_id)
                 readMessages(chat_object.chat_id)
-            addMessageToChatCount(chat_object.chat_id, decrypted_chat_message.timestamp)
+            addMessageToChatCount(chat_object.chat_id, chat_message.timestamp)
         }
 
 
@@ -150,7 +147,7 @@ function ChatPage({ logoutCallback }) {
     }
 
     const createNewChat = async () => {
-        if (!identity || !signed_prekey) {
+        if (!identityKey || !signedPreKey) {
             alert("No identity loaded");
             return
         }
@@ -158,28 +155,7 @@ function ChatPage({ logoutCallback }) {
         if (!name) {
             return
         }
-        let prekey_bundle = await getPrekeyBundle(name)
-        let other_id = prekey_bundle.id
-        let { KM, AD, AD_encrypted, AD_IV, ephemeralKeyPair, onetime_prekey, chat_id } = await X3DH_send({ identityKey: identity, verifierKey: verifier_key, signedPrekey: signed_prekey }, prekey_bundle)
-        let ephemeral_key_bytes = await exportX25519PublicKey(ephemeralKeyPair.publicKey)
-
-        let sender_ratchet_key = await generate25519KeyExchangePair()
-        let sender_ratchet_key_bytes = await exportX25519PublicKey(sender_ratchet_key.publicKey)
-        let msg_header_js = { type: "X3DH", messageIv: AD_IV, chainLength: 0, dhPublicKey: sender_ratchet_key_bytes, ephemeralKey: ephemeral_key_bytes, oneTimePrekey: await exportX25519PublicKey(onetime_prekey), senderId: user_id }
-        let messageHeader = MessageHeader.fromObject(msg_header_js)
-        let chat_message = ChatMessage.fromObject({ messageHeader: messageHeader, messageContentsEncrypted: AD_encrypted, timestamp: new Date().getTime() })
-
-        if (client) {
-            send(client, other_id, chat_message)
-        } else {
-            console.error("No stomp connection")
-        }
-        console.log("shared root key")
-        console.log(KM)
-        console.log(`AD:${AD}`)
-        let chat_object = await create_chat_object_sender(chat_id, other_id, name, sender_ratchet_key, prekey_bundle.identityKey, KM)
-        await init_ratchet_root_sender(chat_object)
-        await store_chat(db, chat_object)
+        await send_X3DH_message(db, client, user_id, name, identityKey , signedPreKey, verifierKey)
         addNewChatUI({ chat_id: chat_id, user_id: other_id, name: name })
     }
     const leaveChat = async (chat_id) => {
@@ -215,7 +191,7 @@ function ChatPage({ logoutCallback }) {
             <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onChatJoin={(e) => { }} onChatCreate={createNewChat} />
         </Col>
         <Col sm={6}>
-            {currentChat && <ChatWindow chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
+            {currentChat && <ChatWindow user_id={user_id} chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
         </Col>
     </Row>
     </Container>

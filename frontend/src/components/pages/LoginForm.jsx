@@ -3,15 +3,15 @@ import { Button, Form, FormControl, FormGroup, FormLabel } from "react-bootstrap
 import { removeHeaderFooterToKey, signChallenge } from "../../utils/CryptoUtils";
 import { getCSRF, login , setAxiosCSRF} from "../../utils/RequestUtils";
 import { Link, useLocation } from "react-router";
-import { userContext , csrf_context } from "../../globals";
+import {  csrf_context, identity_context } from "../../globals";
 import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
 import { performActionWithAlert } from "../../utils/UIUtils";
 import {convertProtoBufIdentityToObject, import_identity, storeUserData, useIndexedDB} from "../../utils/StorageUtils"
 
-function LoginForm({setUserCallback}) {
+function LoginForm() {
 
     let location = useLocation()
-    let {db,loading} = useIndexedDB()
+    let [ident_info, set_ident_info] = useContext(identity_context)
     let [csrf, setCSRF]  = useContext(csrf_context)
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
@@ -34,15 +34,10 @@ function LoginForm({setUserCallback}) {
             authenticationRequest.username = username
             await performActionWithAlert(async () => {
                 let user_id = await login(authenticationRequest)
-                if (db){
-                    await storeUserData(db,  {...identity_js_object, user_id:user_id})
+                    await set_ident_info({...identity_js_object, username:username,user_id:user_id})
 
-                }else{
-                    throw new Error("No db initialized") 
-                }
                 // Great, store user_id into idb
                 setCSRF(setAxiosCSRF(await getCSRF()))
-                setUserCallback(username, user_id)
                 location.pathname = "/"
             })
         }
