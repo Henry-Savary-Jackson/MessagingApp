@@ -40,21 +40,25 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
      */
     DIRECT(1),
     /**
-     * <code>GROUP_INVITE = 2;</code>
+     * <code>GROUP = 2;</code>
      */
-    GROUP_INVITE(2),
+    GROUP(2),
     /**
-     * <code>GROUP = 3;</code>
+     * <code>USER_ADDED = 3;</code>
      */
-    GROUP(3),
+    USER_ADDED(3),
     /**
-     * <code>JOINED = 4;</code>
+     * <code>USER_REMOVED = 4;</code>
      */
-    JOINED(4),
+    USER_REMOVED(4),
     /**
-     * <code>LEFT = 5;</code>
+     * <code>GROUP_INVITE = 5;</code>
      */
-    LEFT(5),
+    GROUP_INVITE(5),
+    /**
+     * <code>GROUP_MEMBERSHIP = 6;</code>
+     */
+    GROUP_MEMBERSHIP(6),
     UNRECOGNIZED(-1),
     ;
 
@@ -76,21 +80,25 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
      */
     public static final int DIRECT_VALUE = 1;
     /**
-     * <code>GROUP_INVITE = 2;</code>
+     * <code>GROUP = 2;</code>
      */
-    public static final int GROUP_INVITE_VALUE = 2;
+    public static final int GROUP_VALUE = 2;
     /**
-     * <code>GROUP = 3;</code>
+     * <code>USER_ADDED = 3;</code>
      */
-    public static final int GROUP_VALUE = 3;
+    public static final int USER_ADDED_VALUE = 3;
     /**
-     * <code>JOINED = 4;</code>
+     * <code>USER_REMOVED = 4;</code>
      */
-    public static final int JOINED_VALUE = 4;
+    public static final int USER_REMOVED_VALUE = 4;
     /**
-     * <code>LEFT = 5;</code>
+     * <code>GROUP_INVITE = 5;</code>
      */
-    public static final int LEFT_VALUE = 5;
+    public static final int GROUP_INVITE_VALUE = 5;
+    /**
+     * <code>GROUP_MEMBERSHIP = 6;</code>
+     */
+    public static final int GROUP_MEMBERSHIP_VALUE = 6;
 
 
     public final int getNumber() {
@@ -119,10 +127,11 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       switch (value) {
         case 0: return X3DH;
         case 1: return DIRECT;
-        case 2: return GROUP_INVITE;
-        case 3: return GROUP;
-        case 4: return JOINED;
-        case 5: return LEFT;
+        case 2: return GROUP;
+        case 3: return USER_ADDED;
+        case 4: return USER_REMOVED;
+        case 5: return GROUP_INVITE;
+        case 6: return GROUP_MEMBERSHIP;
         default: return null;
       }
     }
@@ -1678,19 +1687,49 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     com.hsj.messagingdemo.dto.Messages.FileInfoOrBuilder getFileInfoOrBuilder();
 
     /**
-     * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
-     * @return Whether the groupChatInvite field is set.
+     * <code>optional .UserGroupChange user_group_change = 3;</code>
+     * @return Whether the userGroupChange field is set.
      */
-    boolean hasGroupChatInvite();
+    boolean hasUserGroupChange();
     /**
-     * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
-     * @return The groupChatInvite.
+     * <code>optional .UserGroupChange user_group_change = 3;</code>
+     * @return The userGroupChange.
      */
-    com.hsj.messagingdemo.dto.Messages.GroupChatInvite getGroupChatInvite();
+    com.hsj.messagingdemo.dto.Messages.UserGroupChange getUserGroupChange();
     /**
-     * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+     * <code>optional .UserGroupChange user_group_change = 3;</code>
      */
-    com.hsj.messagingdemo.dto.Messages.GroupChatInviteOrBuilder getGroupChatInviteOrBuilder();
+    com.hsj.messagingdemo.dto.Messages.UserGroupChangeOrBuilder getUserGroupChangeOrBuilder();
+
+    /**
+     * <code>optional .GroupInvite group_invite = 4;</code>
+     * @return Whether the groupInvite field is set.
+     */
+    boolean hasGroupInvite();
+    /**
+     * <code>optional .GroupInvite group_invite = 4;</code>
+     * @return The groupInvite.
+     */
+    com.hsj.messagingdemo.dto.Messages.GroupInvite getGroupInvite();
+    /**
+     * <code>optional .GroupInvite group_invite = 4;</code>
+     */
+    com.hsj.messagingdemo.dto.Messages.GroupInviteOrBuilder getGroupInviteOrBuilder();
+
+    /**
+     * <code>optional .GroupMembership group_membership = 5;</code>
+     * @return Whether the groupMembership field is set.
+     */
+    boolean hasGroupMembership();
+    /**
+     * <code>optional .GroupMembership group_membership = 5;</code>
+     * @return The groupMembership.
+     */
+    com.hsj.messagingdemo.dto.Messages.GroupMembership getGroupMembership();
+    /**
+     * <code>optional .GroupMembership group_membership = 5;</code>
+     */
+    com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder getGroupMembershipOrBuilder();
   }
   /**
    * Protobuf type {@code MessageContents}
@@ -1804,30 +1843,82 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return fileInfo_ == null ? com.hsj.messagingdemo.dto.Messages.FileInfo.getDefaultInstance() : fileInfo_;
     }
 
-    public static final int GROUP_CHAT_INVITE_FIELD_NUMBER = 3;
-    private com.hsj.messagingdemo.dto.Messages.GroupChatInvite groupChatInvite_;
+    public static final int USER_GROUP_CHANGE_FIELD_NUMBER = 3;
+    private com.hsj.messagingdemo.dto.Messages.UserGroupChange userGroupChange_;
     /**
-     * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
-     * @return Whether the groupChatInvite field is set.
+     * <code>optional .UserGroupChange user_group_change = 3;</code>
+     * @return Whether the userGroupChange field is set.
      */
     @java.lang.Override
-    public boolean hasGroupChatInvite() {
+    public boolean hasUserGroupChange() {
       return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
-     * @return The groupChatInvite.
+     * <code>optional .UserGroupChange user_group_change = 3;</code>
+     * @return The userGroupChange.
      */
     @java.lang.Override
-    public com.hsj.messagingdemo.dto.Messages.GroupChatInvite getGroupChatInvite() {
-      return groupChatInvite_ == null ? com.hsj.messagingdemo.dto.Messages.GroupChatInvite.getDefaultInstance() : groupChatInvite_;
+    public com.hsj.messagingdemo.dto.Messages.UserGroupChange getUserGroupChange() {
+      return userGroupChange_ == null ? com.hsj.messagingdemo.dto.Messages.UserGroupChange.getDefaultInstance() : userGroupChange_;
     }
     /**
-     * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+     * <code>optional .UserGroupChange user_group_change = 3;</code>
      */
     @java.lang.Override
-    public com.hsj.messagingdemo.dto.Messages.GroupChatInviteOrBuilder getGroupChatInviteOrBuilder() {
-      return groupChatInvite_ == null ? com.hsj.messagingdemo.dto.Messages.GroupChatInvite.getDefaultInstance() : groupChatInvite_;
+    public com.hsj.messagingdemo.dto.Messages.UserGroupChangeOrBuilder getUserGroupChangeOrBuilder() {
+      return userGroupChange_ == null ? com.hsj.messagingdemo.dto.Messages.UserGroupChange.getDefaultInstance() : userGroupChange_;
+    }
+
+    public static final int GROUP_INVITE_FIELD_NUMBER = 4;
+    private com.hsj.messagingdemo.dto.Messages.GroupInvite groupInvite_;
+    /**
+     * <code>optional .GroupInvite group_invite = 4;</code>
+     * @return Whether the groupInvite field is set.
+     */
+    @java.lang.Override
+    public boolean hasGroupInvite() {
+      return ((bitField0_ & 0x00000008) != 0);
+    }
+    /**
+     * <code>optional .GroupInvite group_invite = 4;</code>
+     * @return The groupInvite.
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.GroupInvite getGroupInvite() {
+      return groupInvite_ == null ? com.hsj.messagingdemo.dto.Messages.GroupInvite.getDefaultInstance() : groupInvite_;
+    }
+    /**
+     * <code>optional .GroupInvite group_invite = 4;</code>
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.GroupInviteOrBuilder getGroupInviteOrBuilder() {
+      return groupInvite_ == null ? com.hsj.messagingdemo.dto.Messages.GroupInvite.getDefaultInstance() : groupInvite_;
+    }
+
+    public static final int GROUP_MEMBERSHIP_FIELD_NUMBER = 5;
+    private com.hsj.messagingdemo.dto.Messages.GroupMembership groupMembership_;
+    /**
+     * <code>optional .GroupMembership group_membership = 5;</code>
+     * @return Whether the groupMembership field is set.
+     */
+    @java.lang.Override
+    public boolean hasGroupMembership() {
+      return ((bitField0_ & 0x00000010) != 0);
+    }
+    /**
+     * <code>optional .GroupMembership group_membership = 5;</code>
+     * @return The groupMembership.
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.GroupMembership getGroupMembership() {
+      return groupMembership_ == null ? com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance() : groupMembership_;
+    }
+    /**
+     * <code>optional .GroupMembership group_membership = 5;</code>
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder getGroupMembershipOrBuilder() {
+      return groupMembership_ == null ? com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance() : groupMembership_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1851,7 +1942,13 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         output.writeMessage(2, getFileInfo());
       }
       if (((bitField0_ & 0x00000004) != 0)) {
-        output.writeMessage(3, getGroupChatInvite());
+        output.writeMessage(3, getUserGroupChange());
+      }
+      if (((bitField0_ & 0x00000008) != 0)) {
+        output.writeMessage(4, getGroupInvite());
+      }
+      if (((bitField0_ & 0x00000010) != 0)) {
+        output.writeMessage(5, getGroupMembership());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1871,7 +1968,15 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       }
       if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getGroupChatInvite());
+          .computeMessageSize(3, getUserGroupChange());
+      }
+      if (((bitField0_ & 0x00000008) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, getGroupInvite());
+      }
+      if (((bitField0_ & 0x00000010) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, getGroupMembership());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1898,10 +2003,20 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         if (!getFileInfo()
             .equals(other.getFileInfo())) return false;
       }
-      if (hasGroupChatInvite() != other.hasGroupChatInvite()) return false;
-      if (hasGroupChatInvite()) {
-        if (!getGroupChatInvite()
-            .equals(other.getGroupChatInvite())) return false;
+      if (hasUserGroupChange() != other.hasUserGroupChange()) return false;
+      if (hasUserGroupChange()) {
+        if (!getUserGroupChange()
+            .equals(other.getUserGroupChange())) return false;
+      }
+      if (hasGroupInvite() != other.hasGroupInvite()) return false;
+      if (hasGroupInvite()) {
+        if (!getGroupInvite()
+            .equals(other.getGroupInvite())) return false;
+      }
+      if (hasGroupMembership() != other.hasGroupMembership()) return false;
+      if (hasGroupMembership()) {
+        if (!getGroupMembership()
+            .equals(other.getGroupMembership())) return false;
       }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
@@ -1922,9 +2037,17 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         hash = (37 * hash) + FILE_INFO_FIELD_NUMBER;
         hash = (53 * hash) + getFileInfo().hashCode();
       }
-      if (hasGroupChatInvite()) {
-        hash = (37 * hash) + GROUP_CHAT_INVITE_FIELD_NUMBER;
-        hash = (53 * hash) + getGroupChatInvite().hashCode();
+      if (hasUserGroupChange()) {
+        hash = (37 * hash) + USER_GROUP_CHANGE_FIELD_NUMBER;
+        hash = (53 * hash) + getUserGroupChange().hashCode();
+      }
+      if (hasGroupInvite()) {
+        hash = (37 * hash) + GROUP_INVITE_FIELD_NUMBER;
+        hash = (53 * hash) + getGroupInvite().hashCode();
+      }
+      if (hasGroupMembership()) {
+        hash = (37 * hash) + GROUP_MEMBERSHIP_FIELD_NUMBER;
+        hash = (53 * hash) + getGroupMembership().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -2057,7 +2180,9 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         if (com.google.protobuf.GeneratedMessage
                 .alwaysUseFieldBuilders) {
           internalGetFileInfoFieldBuilder();
-          internalGetGroupChatInviteFieldBuilder();
+          internalGetUserGroupChangeFieldBuilder();
+          internalGetGroupInviteFieldBuilder();
+          internalGetGroupMembershipFieldBuilder();
         }
       }
       @java.lang.Override
@@ -2070,10 +2195,20 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           fileInfoBuilder_.dispose();
           fileInfoBuilder_ = null;
         }
-        groupChatInvite_ = null;
-        if (groupChatInviteBuilder_ != null) {
-          groupChatInviteBuilder_.dispose();
-          groupChatInviteBuilder_ = null;
+        userGroupChange_ = null;
+        if (userGroupChangeBuilder_ != null) {
+          userGroupChangeBuilder_.dispose();
+          userGroupChangeBuilder_ = null;
+        }
+        groupInvite_ = null;
+        if (groupInviteBuilder_ != null) {
+          groupInviteBuilder_.dispose();
+          groupInviteBuilder_ = null;
+        }
+        groupMembership_ = null;
+        if (groupMembershipBuilder_ != null) {
+          groupMembershipBuilder_.dispose();
+          groupMembershipBuilder_ = null;
         }
         return this;
       }
@@ -2120,10 +2255,22 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          result.groupChatInvite_ = groupChatInviteBuilder_ == null
-              ? groupChatInvite_
-              : groupChatInviteBuilder_.build();
+          result.userGroupChange_ = userGroupChangeBuilder_ == null
+              ? userGroupChange_
+              : userGroupChangeBuilder_.build();
           to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.groupInvite_ = groupInviteBuilder_ == null
+              ? groupInvite_
+              : groupInviteBuilder_.build();
+          to_bitField0_ |= 0x00000008;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.groupMembership_ = groupMembershipBuilder_ == null
+              ? groupMembership_
+              : groupMembershipBuilder_.build();
+          to_bitField0_ |= 0x00000010;
         }
         result.bitField0_ |= to_bitField0_;
       }
@@ -2148,8 +2295,14 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         if (other.hasFileInfo()) {
           mergeFileInfo(other.getFileInfo());
         }
-        if (other.hasGroupChatInvite()) {
-          mergeGroupChatInvite(other.getGroupChatInvite());
+        if (other.hasUserGroupChange()) {
+          mergeUserGroupChange(other.getUserGroupChange());
+        }
+        if (other.hasGroupInvite()) {
+          mergeGroupInvite(other.getGroupInvite());
+        }
+        if (other.hasGroupMembership()) {
+          mergeGroupMembership(other.getGroupMembership());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -2191,11 +2344,25 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
               } // case 18
               case 26: {
                 input.readMessage(
-                    internalGetGroupChatInviteFieldBuilder().getBuilder(),
+                    internalGetUserGroupChangeFieldBuilder().getBuilder(),
                     extensionRegistry);
                 bitField0_ |= 0x00000004;
                 break;
               } // case 26
+              case 34: {
+                input.readMessage(
+                    internalGetGroupInviteFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                input.readMessage(
+                    internalGetGroupMembershipFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -2413,125 +2580,367 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return fileInfoBuilder_;
       }
 
-      private com.hsj.messagingdemo.dto.Messages.GroupChatInvite groupChatInvite_;
+      private com.hsj.messagingdemo.dto.Messages.UserGroupChange userGroupChange_;
       private com.google.protobuf.SingleFieldBuilder<
-          com.hsj.messagingdemo.dto.Messages.GroupChatInvite, com.hsj.messagingdemo.dto.Messages.GroupChatInvite.Builder, com.hsj.messagingdemo.dto.Messages.GroupChatInviteOrBuilder> groupChatInviteBuilder_;
+          com.hsj.messagingdemo.dto.Messages.UserGroupChange, com.hsj.messagingdemo.dto.Messages.UserGroupChange.Builder, com.hsj.messagingdemo.dto.Messages.UserGroupChangeOrBuilder> userGroupChangeBuilder_;
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
-       * @return Whether the groupChatInvite field is set.
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
+       * @return Whether the userGroupChange field is set.
        */
-      public boolean hasGroupChatInvite() {
+      public boolean hasUserGroupChange() {
         return ((bitField0_ & 0x00000004) != 0);
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
-       * @return The groupChatInvite.
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
+       * @return The userGroupChange.
        */
-      public com.hsj.messagingdemo.dto.Messages.GroupChatInvite getGroupChatInvite() {
-        if (groupChatInviteBuilder_ == null) {
-          return groupChatInvite_ == null ? com.hsj.messagingdemo.dto.Messages.GroupChatInvite.getDefaultInstance() : groupChatInvite_;
+      public com.hsj.messagingdemo.dto.Messages.UserGroupChange getUserGroupChange() {
+        if (userGroupChangeBuilder_ == null) {
+          return userGroupChange_ == null ? com.hsj.messagingdemo.dto.Messages.UserGroupChange.getDefaultInstance() : userGroupChange_;
         } else {
-          return groupChatInviteBuilder_.getMessage();
+          return userGroupChangeBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
        */
-      public Builder setGroupChatInvite(com.hsj.messagingdemo.dto.Messages.GroupChatInvite value) {
-        if (groupChatInviteBuilder_ == null) {
+      public Builder setUserGroupChange(com.hsj.messagingdemo.dto.Messages.UserGroupChange value) {
+        if (userGroupChangeBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          groupChatInvite_ = value;
+          userGroupChange_ = value;
         } else {
-          groupChatInviteBuilder_.setMessage(value);
+          userGroupChangeBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
        */
-      public Builder setGroupChatInvite(
-          com.hsj.messagingdemo.dto.Messages.GroupChatInvite.Builder builderForValue) {
-        if (groupChatInviteBuilder_ == null) {
-          groupChatInvite_ = builderForValue.build();
+      public Builder setUserGroupChange(
+          com.hsj.messagingdemo.dto.Messages.UserGroupChange.Builder builderForValue) {
+        if (userGroupChangeBuilder_ == null) {
+          userGroupChange_ = builderForValue.build();
         } else {
-          groupChatInviteBuilder_.setMessage(builderForValue.build());
+          userGroupChangeBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
        */
-      public Builder mergeGroupChatInvite(com.hsj.messagingdemo.dto.Messages.GroupChatInvite value) {
-        if (groupChatInviteBuilder_ == null) {
+      public Builder mergeUserGroupChange(com.hsj.messagingdemo.dto.Messages.UserGroupChange value) {
+        if (userGroupChangeBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0) &&
-            groupChatInvite_ != null &&
-            groupChatInvite_ != com.hsj.messagingdemo.dto.Messages.GroupChatInvite.getDefaultInstance()) {
-            getGroupChatInviteBuilder().mergeFrom(value);
+            userGroupChange_ != null &&
+            userGroupChange_ != com.hsj.messagingdemo.dto.Messages.UserGroupChange.getDefaultInstance()) {
+            getUserGroupChangeBuilder().mergeFrom(value);
           } else {
-            groupChatInvite_ = value;
+            userGroupChange_ = value;
           }
         } else {
-          groupChatInviteBuilder_.mergeFrom(value);
+          userGroupChangeBuilder_.mergeFrom(value);
         }
-        if (groupChatInvite_ != null) {
+        if (userGroupChange_ != null) {
           bitField0_ |= 0x00000004;
           onChanged();
         }
         return this;
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
        */
-      public Builder clearGroupChatInvite() {
+      public Builder clearUserGroupChange() {
         bitField0_ = (bitField0_ & ~0x00000004);
-        groupChatInvite_ = null;
-        if (groupChatInviteBuilder_ != null) {
-          groupChatInviteBuilder_.dispose();
-          groupChatInviteBuilder_ = null;
+        userGroupChange_ = null;
+        if (userGroupChangeBuilder_ != null) {
+          userGroupChangeBuilder_.dispose();
+          userGroupChangeBuilder_ = null;
         }
         onChanged();
         return this;
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
        */
-      public com.hsj.messagingdemo.dto.Messages.GroupChatInvite.Builder getGroupChatInviteBuilder() {
+      public com.hsj.messagingdemo.dto.Messages.UserGroupChange.Builder getUserGroupChangeBuilder() {
         bitField0_ |= 0x00000004;
         onChanged();
-        return internalGetGroupChatInviteFieldBuilder().getBuilder();
+        return internalGetUserGroupChangeFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
        */
-      public com.hsj.messagingdemo.dto.Messages.GroupChatInviteOrBuilder getGroupChatInviteOrBuilder() {
-        if (groupChatInviteBuilder_ != null) {
-          return groupChatInviteBuilder_.getMessageOrBuilder();
+      public com.hsj.messagingdemo.dto.Messages.UserGroupChangeOrBuilder getUserGroupChangeOrBuilder() {
+        if (userGroupChangeBuilder_ != null) {
+          return userGroupChangeBuilder_.getMessageOrBuilder();
         } else {
-          return groupChatInvite_ == null ?
-              com.hsj.messagingdemo.dto.Messages.GroupChatInvite.getDefaultInstance() : groupChatInvite_;
+          return userGroupChange_ == null ?
+              com.hsj.messagingdemo.dto.Messages.UserGroupChange.getDefaultInstance() : userGroupChange_;
         }
       }
       /**
-       * <code>optional .GroupChatInvite group_chat_invite = 3;</code>
+       * <code>optional .UserGroupChange user_group_change = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
-          com.hsj.messagingdemo.dto.Messages.GroupChatInvite, com.hsj.messagingdemo.dto.Messages.GroupChatInvite.Builder, com.hsj.messagingdemo.dto.Messages.GroupChatInviteOrBuilder> 
-          internalGetGroupChatInviteFieldBuilder() {
-        if (groupChatInviteBuilder_ == null) {
-          groupChatInviteBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              com.hsj.messagingdemo.dto.Messages.GroupChatInvite, com.hsj.messagingdemo.dto.Messages.GroupChatInvite.Builder, com.hsj.messagingdemo.dto.Messages.GroupChatInviteOrBuilder>(
-                  getGroupChatInvite(),
+          com.hsj.messagingdemo.dto.Messages.UserGroupChange, com.hsj.messagingdemo.dto.Messages.UserGroupChange.Builder, com.hsj.messagingdemo.dto.Messages.UserGroupChangeOrBuilder> 
+          internalGetUserGroupChangeFieldBuilder() {
+        if (userGroupChangeBuilder_ == null) {
+          userGroupChangeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.hsj.messagingdemo.dto.Messages.UserGroupChange, com.hsj.messagingdemo.dto.Messages.UserGroupChange.Builder, com.hsj.messagingdemo.dto.Messages.UserGroupChangeOrBuilder>(
+                  getUserGroupChange(),
                   getParentForChildren(),
                   isClean());
-          groupChatInvite_ = null;
+          userGroupChange_ = null;
         }
-        return groupChatInviteBuilder_;
+        return userGroupChangeBuilder_;
+      }
+
+      private com.hsj.messagingdemo.dto.Messages.GroupInvite groupInvite_;
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.GroupInvite, com.hsj.messagingdemo.dto.Messages.GroupInvite.Builder, com.hsj.messagingdemo.dto.Messages.GroupInviteOrBuilder> groupInviteBuilder_;
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       * @return Whether the groupInvite field is set.
+       */
+      public boolean hasGroupInvite() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       * @return The groupInvite.
+       */
+      public com.hsj.messagingdemo.dto.Messages.GroupInvite getGroupInvite() {
+        if (groupInviteBuilder_ == null) {
+          return groupInvite_ == null ? com.hsj.messagingdemo.dto.Messages.GroupInvite.getDefaultInstance() : groupInvite_;
+        } else {
+          return groupInviteBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       */
+      public Builder setGroupInvite(com.hsj.messagingdemo.dto.Messages.GroupInvite value) {
+        if (groupInviteBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          groupInvite_ = value;
+        } else {
+          groupInviteBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       */
+      public Builder setGroupInvite(
+          com.hsj.messagingdemo.dto.Messages.GroupInvite.Builder builderForValue) {
+        if (groupInviteBuilder_ == null) {
+          groupInvite_ = builderForValue.build();
+        } else {
+          groupInviteBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       */
+      public Builder mergeGroupInvite(com.hsj.messagingdemo.dto.Messages.GroupInvite value) {
+        if (groupInviteBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) != 0) &&
+            groupInvite_ != null &&
+            groupInvite_ != com.hsj.messagingdemo.dto.Messages.GroupInvite.getDefaultInstance()) {
+            getGroupInviteBuilder().mergeFrom(value);
+          } else {
+            groupInvite_ = value;
+          }
+        } else {
+          groupInviteBuilder_.mergeFrom(value);
+        }
+        if (groupInvite_ != null) {
+          bitField0_ |= 0x00000008;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       */
+      public Builder clearGroupInvite() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        groupInvite_ = null;
+        if (groupInviteBuilder_ != null) {
+          groupInviteBuilder_.dispose();
+          groupInviteBuilder_ = null;
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.GroupInvite.Builder getGroupInviteBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return internalGetGroupInviteFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.GroupInviteOrBuilder getGroupInviteOrBuilder() {
+        if (groupInviteBuilder_ != null) {
+          return groupInviteBuilder_.getMessageOrBuilder();
+        } else {
+          return groupInvite_ == null ?
+              com.hsj.messagingdemo.dto.Messages.GroupInvite.getDefaultInstance() : groupInvite_;
+        }
+      }
+      /**
+       * <code>optional .GroupInvite group_invite = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.GroupInvite, com.hsj.messagingdemo.dto.Messages.GroupInvite.Builder, com.hsj.messagingdemo.dto.Messages.GroupInviteOrBuilder> 
+          internalGetGroupInviteFieldBuilder() {
+        if (groupInviteBuilder_ == null) {
+          groupInviteBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.hsj.messagingdemo.dto.Messages.GroupInvite, com.hsj.messagingdemo.dto.Messages.GroupInvite.Builder, com.hsj.messagingdemo.dto.Messages.GroupInviteOrBuilder>(
+                  getGroupInvite(),
+                  getParentForChildren(),
+                  isClean());
+          groupInvite_ = null;
+        }
+        return groupInviteBuilder_;
+      }
+
+      private com.hsj.messagingdemo.dto.Messages.GroupMembership groupMembership_;
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.GroupMembership, com.hsj.messagingdemo.dto.Messages.GroupMembership.Builder, com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder> groupMembershipBuilder_;
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       * @return Whether the groupMembership field is set.
+       */
+      public boolean hasGroupMembership() {
+        return ((bitField0_ & 0x00000010) != 0);
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       * @return The groupMembership.
+       */
+      public com.hsj.messagingdemo.dto.Messages.GroupMembership getGroupMembership() {
+        if (groupMembershipBuilder_ == null) {
+          return groupMembership_ == null ? com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance() : groupMembership_;
+        } else {
+          return groupMembershipBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       */
+      public Builder setGroupMembership(com.hsj.messagingdemo.dto.Messages.GroupMembership value) {
+        if (groupMembershipBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          groupMembership_ = value;
+        } else {
+          groupMembershipBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       */
+      public Builder setGroupMembership(
+          com.hsj.messagingdemo.dto.Messages.GroupMembership.Builder builderForValue) {
+        if (groupMembershipBuilder_ == null) {
+          groupMembership_ = builderForValue.build();
+        } else {
+          groupMembershipBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       */
+      public Builder mergeGroupMembership(com.hsj.messagingdemo.dto.Messages.GroupMembership value) {
+        if (groupMembershipBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) != 0) &&
+            groupMembership_ != null &&
+            groupMembership_ != com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance()) {
+            getGroupMembershipBuilder().mergeFrom(value);
+          } else {
+            groupMembership_ = value;
+          }
+        } else {
+          groupMembershipBuilder_.mergeFrom(value);
+        }
+        if (groupMembership_ != null) {
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       */
+      public Builder clearGroupMembership() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        groupMembership_ = null;
+        if (groupMembershipBuilder_ != null) {
+          groupMembershipBuilder_.dispose();
+          groupMembershipBuilder_ = null;
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.GroupMembership.Builder getGroupMembershipBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return internalGetGroupMembershipFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder getGroupMembershipOrBuilder() {
+        if (groupMembershipBuilder_ != null) {
+          return groupMembershipBuilder_.getMessageOrBuilder();
+        } else {
+          return groupMembership_ == null ?
+              com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance() : groupMembership_;
+        }
+      }
+      /**
+       * <code>optional .GroupMembership group_membership = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.GroupMembership, com.hsj.messagingdemo.dto.Messages.GroupMembership.Builder, com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder> 
+          internalGetGroupMembershipFieldBuilder() {
+        if (groupMembershipBuilder_ == null) {
+          groupMembershipBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.hsj.messagingdemo.dto.Messages.GroupMembership, com.hsj.messagingdemo.dto.Messages.GroupMembership.Builder, com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder>(
+                  getGroupMembership(),
+                  getParentForChildren(),
+                  isClean());
+          groupMembership_ = null;
+        }
+        return groupMembershipBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:MessageContents)
@@ -2585,8 +2994,8 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
 
   }
 
-  public interface GroupChatInviteOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:GroupChatInvite)
+  public interface GroupInviteOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:GroupInvite)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -2602,37 +3011,45 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         getGroupChatIdBytes();
 
     /**
-     * <code>repeated string user_ids = 2;</code>
-     * @return A list containing the userIds.
+     * <code>string group_chat_name = 2;</code>
+     * @return The groupChatName.
      */
-    java.util.List<java.lang.String>
-        getUserIdsList();
+    java.lang.String getGroupChatName();
     /**
-     * <code>repeated string user_ids = 2;</code>
-     * @return The count of userIds.
-     */
-    int getUserIdsCount();
-    /**
-     * <code>repeated string user_ids = 2;</code>
-     * @param index The index of the element to return.
-     * @return The userIds at the given index.
-     */
-    java.lang.String getUserIds(int index);
-    /**
-     * <code>repeated string user_ids = 2;</code>
-     * @param index The index of the value to return.
-     * @return The bytes of the userIds at the given index.
+     * <code>string group_chat_name = 2;</code>
+     * @return The bytes for groupChatName.
      */
     com.google.protobuf.ByteString
-        getUserIdsBytes(int index);
+        getGroupChatNameBytes();
+
+    /**
+     * <code>bytes group_key = 3;</code>
+     * @return The groupKey.
+     */
+    com.google.protobuf.ByteString getGroupKey();
+
+    /**
+     * <code>optional .FileInfo group_image = 4;</code>
+     * @return Whether the groupImage field is set.
+     */
+    boolean hasGroupImage();
+    /**
+     * <code>optional .FileInfo group_image = 4;</code>
+     * @return The groupImage.
+     */
+    com.hsj.messagingdemo.dto.Messages.FileInfo getGroupImage();
+    /**
+     * <code>optional .FileInfo group_image = 4;</code>
+     */
+    com.hsj.messagingdemo.dto.Messages.FileInfoOrBuilder getGroupImageOrBuilder();
   }
   /**
-   * Protobuf type {@code GroupChatInvite}
+   * Protobuf type {@code GroupInvite}
    */
-  public static final class GroupChatInvite extends
+  public static final class GroupInvite extends
       com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:GroupChatInvite)
-      GroupChatInviteOrBuilder {
+      // @@protoc_insertion_point(message_implements:GroupInvite)
+      GroupInviteOrBuilder {
   private static final long serialVersionUID = 0L;
     static {
       com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
@@ -2641,31 +3058,32 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         /* minor= */ 32,
         /* patch= */ 1,
         /* suffix= */ "",
-        GroupChatInvite.class.getName());
+        GroupInvite.class.getName());
     }
-    // Use GroupChatInvite.newBuilder() to construct.
-    private GroupChatInvite(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+    // Use GroupInvite.newBuilder() to construct.
+    private GroupInvite(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
     }
-    private GroupChatInvite() {
+    private GroupInvite() {
       groupChatId_ = "";
-      userIds_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
+      groupChatName_ = "";
+      groupKey_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.hsj.messagingdemo.dto.Messages.internal_static_GroupChatInvite_descriptor;
+      return com.hsj.messagingdemo.dto.Messages.internal_static_GroupInvite_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.hsj.messagingdemo.dto.Messages.internal_static_GroupChatInvite_fieldAccessorTable
+      return com.hsj.messagingdemo.dto.Messages.internal_static_GroupInvite_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.hsj.messagingdemo.dto.Messages.GroupChatInvite.class, com.hsj.messagingdemo.dto.Messages.GroupChatInvite.Builder.class);
+              com.hsj.messagingdemo.dto.Messages.GroupInvite.class, com.hsj.messagingdemo.dto.Messages.GroupInvite.Builder.class);
     }
 
+    private int bitField0_;
     public static final int GROUP_CHAT_ID_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
     private volatile java.lang.Object groupChatId_ = "";
@@ -2705,41 +3123,80 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       }
     }
 
-    public static final int USER_IDS_FIELD_NUMBER = 2;
+    public static final int GROUP_CHAT_NAME_FIELD_NUMBER = 2;
     @SuppressWarnings("serial")
-    private com.google.protobuf.LazyStringArrayList userIds_ =
-        com.google.protobuf.LazyStringArrayList.emptyList();
+    private volatile java.lang.Object groupChatName_ = "";
     /**
-     * <code>repeated string user_ids = 2;</code>
-     * @return A list containing the userIds.
+     * <code>string group_chat_name = 2;</code>
+     * @return The groupChatName.
      */
-    public com.google.protobuf.ProtocolStringList
-        getUserIdsList() {
-      return userIds_;
+    @java.lang.Override
+    public java.lang.String getGroupChatName() {
+      java.lang.Object ref = groupChatName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        groupChatName_ = s;
+        return s;
+      }
     }
     /**
-     * <code>repeated string user_ids = 2;</code>
-     * @return The count of userIds.
+     * <code>string group_chat_name = 2;</code>
+     * @return The bytes for groupChatName.
      */
-    public int getUserIdsCount() {
-      return userIds_.size();
-    }
-    /**
-     * <code>repeated string user_ids = 2;</code>
-     * @param index The index of the element to return.
-     * @return The userIds at the given index.
-     */
-    public java.lang.String getUserIds(int index) {
-      return userIds_.get(index);
-    }
-    /**
-     * <code>repeated string user_ids = 2;</code>
-     * @param index The index of the value to return.
-     * @return The bytes of the userIds at the given index.
-     */
+    @java.lang.Override
     public com.google.protobuf.ByteString
-        getUserIdsBytes(int index) {
-      return userIds_.getByteString(index);
+        getGroupChatNameBytes() {
+      java.lang.Object ref = groupChatName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        groupChatName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int GROUP_KEY_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString groupKey_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>bytes group_key = 3;</code>
+     * @return The groupKey.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getGroupKey() {
+      return groupKey_;
+    }
+
+    public static final int GROUP_IMAGE_FIELD_NUMBER = 4;
+    private com.hsj.messagingdemo.dto.Messages.FileInfo groupImage_;
+    /**
+     * <code>optional .FileInfo group_image = 4;</code>
+     * @return Whether the groupImage field is set.
+     */
+    @java.lang.Override
+    public boolean hasGroupImage() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional .FileInfo group_image = 4;</code>
+     * @return The groupImage.
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.FileInfo getGroupImage() {
+      return groupImage_ == null ? com.hsj.messagingdemo.dto.Messages.FileInfo.getDefaultInstance() : groupImage_;
+    }
+    /**
+     * <code>optional .FileInfo group_image = 4;</code>
+     */
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.FileInfoOrBuilder getGroupImageOrBuilder() {
+      return groupImage_ == null ? com.hsj.messagingdemo.dto.Messages.FileInfo.getDefaultInstance() : groupImage_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2759,8 +3216,14 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(groupChatId_)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 1, groupChatId_);
       }
-      for (int i = 0; i < userIds_.size(); i++) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, userIds_.getRaw(i));
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(groupChatName_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 2, groupChatName_);
+      }
+      if (!groupKey_.isEmpty()) {
+        output.writeBytes(3, groupKey_);
+      }
+      if (((bitField0_ & 0x00000001) != 0)) {
+        output.writeMessage(4, getGroupImage());
       }
       getUnknownFields().writeTo(output);
     }
@@ -2774,13 +3237,16 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (!com.google.protobuf.GeneratedMessage.isStringEmpty(groupChatId_)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(1, groupChatId_);
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < userIds_.size(); i++) {
-          dataSize += computeStringSizeNoTag(userIds_.getRaw(i));
-        }
-        size += dataSize;
-        size += 1 * getUserIdsList().size();
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(groupChatName_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, groupChatName_);
+      }
+      if (!groupKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, groupKey_);
+      }
+      if (((bitField0_ & 0x00000001) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, getGroupImage());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2792,15 +3258,22 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.hsj.messagingdemo.dto.Messages.GroupChatInvite)) {
+      if (!(obj instanceof com.hsj.messagingdemo.dto.Messages.GroupInvite)) {
         return super.equals(obj);
       }
-      com.hsj.messagingdemo.dto.Messages.GroupChatInvite other = (com.hsj.messagingdemo.dto.Messages.GroupChatInvite) obj;
+      com.hsj.messagingdemo.dto.Messages.GroupInvite other = (com.hsj.messagingdemo.dto.Messages.GroupInvite) obj;
 
       if (!getGroupChatId()
           .equals(other.getGroupChatId())) return false;
-      if (!getUserIdsList()
-          .equals(other.getUserIdsList())) return false;
+      if (!getGroupChatName()
+          .equals(other.getGroupChatName())) return false;
+      if (!getGroupKey()
+          .equals(other.getGroupKey())) return false;
+      if (hasGroupImage() != other.hasGroupImage()) return false;
+      if (hasGroupImage()) {
+        if (!getGroupImage()
+            .equals(other.getGroupImage())) return false;
+      }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -2814,53 +3287,57 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + GROUP_CHAT_ID_FIELD_NUMBER;
       hash = (53 * hash) + getGroupChatId().hashCode();
-      if (getUserIdsCount() > 0) {
-        hash = (37 * hash) + USER_IDS_FIELD_NUMBER;
-        hash = (53 * hash) + getUserIdsList().hashCode();
+      hash = (37 * hash) + GROUP_CHAT_NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getGroupChatName().hashCode();
+      hash = (37 * hash) + GROUP_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getGroupKey().hashCode();
+      if (hasGroupImage()) {
+        hash = (37 * hash) + GROUP_IMAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getGroupImage().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(byte[] data)
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(java.io.InputStream input)
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2868,26 +3345,26 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseDelimitedFrom(java.io.InputStream input)
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseDelimitedFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessage
           .parseWithIOException(PARSER, input);
     }
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite parseFrom(
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2900,7 +3377,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.hsj.messagingdemo.dto.Messages.GroupChatInvite prototype) {
+    public static Builder newBuilder(com.hsj.messagingdemo.dto.Messages.GroupInvite prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -2916,59 +3393,70 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return builder;
     }
     /**
-     * Protobuf type {@code GroupChatInvite}
+     * Protobuf type {@code GroupInvite}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:GroupChatInvite)
-        com.hsj.messagingdemo.dto.Messages.GroupChatInviteOrBuilder {
+        // @@protoc_insertion_point(builder_implements:GroupInvite)
+        com.hsj.messagingdemo.dto.Messages.GroupInviteOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupChatInvite_descriptor;
+        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupInvite_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupChatInvite_fieldAccessorTable
+        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupInvite_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.hsj.messagingdemo.dto.Messages.GroupChatInvite.class, com.hsj.messagingdemo.dto.Messages.GroupChatInvite.Builder.class);
+                com.hsj.messagingdemo.dto.Messages.GroupInvite.class, com.hsj.messagingdemo.dto.Messages.GroupInvite.Builder.class);
       }
 
-      // Construct using com.hsj.messagingdemo.dto.Messages.GroupChatInvite.newBuilder()
+      // Construct using com.hsj.messagingdemo.dto.Messages.GroupInvite.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage
+                .alwaysUseFieldBuilders) {
+          internalGetGroupImageFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
         groupChatId_ = "";
-        userIds_ =
-            com.google.protobuf.LazyStringArrayList.emptyList();
+        groupChatName_ = "";
+        groupKey_ = com.google.protobuf.ByteString.EMPTY;
+        groupImage_ = null;
+        if (groupImageBuilder_ != null) {
+          groupImageBuilder_.dispose();
+          groupImageBuilder_ = null;
+        }
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupChatInvite_descriptor;
+        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupInvite_descriptor;
       }
 
       @java.lang.Override
-      public com.hsj.messagingdemo.dto.Messages.GroupChatInvite getDefaultInstanceForType() {
-        return com.hsj.messagingdemo.dto.Messages.GroupChatInvite.getDefaultInstance();
+      public com.hsj.messagingdemo.dto.Messages.GroupInvite getDefaultInstanceForType() {
+        return com.hsj.messagingdemo.dto.Messages.GroupInvite.getDefaultInstance();
       }
 
       @java.lang.Override
-      public com.hsj.messagingdemo.dto.Messages.GroupChatInvite build() {
-        com.hsj.messagingdemo.dto.Messages.GroupChatInvite result = buildPartial();
+      public com.hsj.messagingdemo.dto.Messages.GroupInvite build() {
+        com.hsj.messagingdemo.dto.Messages.GroupInvite result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -2976,50 +3464,61 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       }
 
       @java.lang.Override
-      public com.hsj.messagingdemo.dto.Messages.GroupChatInvite buildPartial() {
-        com.hsj.messagingdemo.dto.Messages.GroupChatInvite result = new com.hsj.messagingdemo.dto.Messages.GroupChatInvite(this);
+      public com.hsj.messagingdemo.dto.Messages.GroupInvite buildPartial() {
+        com.hsj.messagingdemo.dto.Messages.GroupInvite result = new com.hsj.messagingdemo.dto.Messages.GroupInvite(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(com.hsj.messagingdemo.dto.Messages.GroupChatInvite result) {
+      private void buildPartial0(com.hsj.messagingdemo.dto.Messages.GroupInvite result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
           result.groupChatId_ = groupChatId_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          userIds_.makeImmutable();
-          result.userIds_ = userIds_;
+          result.groupChatName_ = groupChatName_;
         }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.groupKey_ = groupKey_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.groupImage_ = groupImageBuilder_ == null
+              ? groupImage_
+              : groupImageBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.hsj.messagingdemo.dto.Messages.GroupChatInvite) {
-          return mergeFrom((com.hsj.messagingdemo.dto.Messages.GroupChatInvite)other);
+        if (other instanceof com.hsj.messagingdemo.dto.Messages.GroupInvite) {
+          return mergeFrom((com.hsj.messagingdemo.dto.Messages.GroupInvite)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.hsj.messagingdemo.dto.Messages.GroupChatInvite other) {
-        if (other == com.hsj.messagingdemo.dto.Messages.GroupChatInvite.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.hsj.messagingdemo.dto.Messages.GroupInvite other) {
+        if (other == com.hsj.messagingdemo.dto.Messages.GroupInvite.getDefaultInstance()) return this;
         if (!other.getGroupChatId().isEmpty()) {
           groupChatId_ = other.groupChatId_;
           bitField0_ |= 0x00000001;
           onChanged();
         }
-        if (!other.userIds_.isEmpty()) {
-          if (userIds_.isEmpty()) {
-            userIds_ = other.userIds_;
-            bitField0_ |= 0x00000002;
-          } else {
-            ensureUserIdsIsMutable();
-            userIds_.addAll(other.userIds_);
-          }
+        if (!other.getGroupChatName().isEmpty()) {
+          groupChatName_ = other.groupChatName_;
+          bitField0_ |= 0x00000002;
           onChanged();
+        }
+        if (!other.getGroupKey().isEmpty()) {
+          setGroupKey(other.getGroupKey());
+        }
+        if (other.hasGroupImage()) {
+          mergeGroupImage(other.getGroupImage());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -3053,11 +3552,22 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
                 break;
               } // case 10
               case 18: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensureUserIdsIsMutable();
-                userIds_.add(s);
+                groupChatName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
+              case 26: {
+                groupKey_ = input.readBytes();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                input.readMessage(
+                    internalGetGroupImageFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -3147,134 +3657,248 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
 
-      private com.google.protobuf.LazyStringArrayList userIds_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-      private void ensureUserIdsIsMutable() {
-        if (!userIds_.isModifiable()) {
-          userIds_ = new com.google.protobuf.LazyStringArrayList(userIds_);
+      private java.lang.Object groupChatName_ = "";
+      /**
+       * <code>string group_chat_name = 2;</code>
+       * @return The groupChatName.
+       */
+      public java.lang.String getGroupChatName() {
+        java.lang.Object ref = groupChatName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          groupChatName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
         }
-        bitField0_ |= 0x00000002;
       }
       /**
-       * <code>repeated string user_ids = 2;</code>
-       * @return A list containing the userIds.
-       */
-      public com.google.protobuf.ProtocolStringList
-          getUserIdsList() {
-        userIds_.makeImmutable();
-        return userIds_;
-      }
-      /**
-       * <code>repeated string user_ids = 2;</code>
-       * @return The count of userIds.
-       */
-      public int getUserIdsCount() {
-        return userIds_.size();
-      }
-      /**
-       * <code>repeated string user_ids = 2;</code>
-       * @param index The index of the element to return.
-       * @return The userIds at the given index.
-       */
-      public java.lang.String getUserIds(int index) {
-        return userIds_.get(index);
-      }
-      /**
-       * <code>repeated string user_ids = 2;</code>
-       * @param index The index of the value to return.
-       * @return The bytes of the userIds at the given index.
+       * <code>string group_chat_name = 2;</code>
+       * @return The bytes for groupChatName.
        */
       public com.google.protobuf.ByteString
-          getUserIdsBytes(int index) {
-        return userIds_.getByteString(index);
+          getGroupChatNameBytes() {
+        java.lang.Object ref = groupChatName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          groupChatName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
       /**
-       * <code>repeated string user_ids = 2;</code>
-       * @param index The index to set the value at.
-       * @param value The userIds to set.
+       * <code>string group_chat_name = 2;</code>
+       * @param value The groupChatName to set.
        * @return This builder for chaining.
        */
-      public Builder setUserIds(
-          int index, java.lang.String value) {
-        if (value == null) { throw new NullPointerException(); }
-        ensureUserIdsIsMutable();
-        userIds_.set(index, value);
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string user_ids = 2;</code>
-       * @param value The userIds to add.
-       * @return This builder for chaining.
-       */
-      public Builder addUserIds(
+      public Builder setGroupChatName(
           java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
-        ensureUserIdsIsMutable();
-        userIds_.add(value);
+        groupChatName_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string user_ids = 2;</code>
-       * @param values The userIds to add.
+       * <code>string group_chat_name = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder addAllUserIds(
-          java.lang.Iterable<java.lang.String> values) {
-        ensureUserIdsIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, userIds_);
-        bitField0_ |= 0x00000002;
+      public Builder clearGroupChatName() {
+        groupChatName_ = getDefaultInstance().getGroupChatName();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string user_ids = 2;</code>
+       * <code>string group_chat_name = 2;</code>
+       * @param value The bytes for groupChatName to set.
        * @return This builder for chaining.
        */
-      public Builder clearUserIds() {
-        userIds_ =
-          com.google.protobuf.LazyStringArrayList.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000002);;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>repeated string user_ids = 2;</code>
-       * @param value The bytes of the userIds to add.
-       * @return This builder for chaining.
-       */
-      public Builder addUserIdsBytes(
+      public Builder setGroupChatNameBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) { throw new NullPointerException(); }
         checkByteStringIsUtf8(value);
-        ensureUserIdsIsMutable();
-        userIds_.add(value);
+        groupChatName_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:GroupChatInvite)
+      private com.google.protobuf.ByteString groupKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes group_key = 3;</code>
+       * @return The groupKey.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getGroupKey() {
+        return groupKey_;
+      }
+      /**
+       * <code>bytes group_key = 3;</code>
+       * @param value The groupKey to set.
+       * @return This builder for chaining.
+       */
+      public Builder setGroupKey(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        groupKey_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes group_key = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearGroupKey() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        groupKey_ = getDefaultInstance().getGroupKey();
+        onChanged();
+        return this;
+      }
+
+      private com.hsj.messagingdemo.dto.Messages.FileInfo groupImage_;
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.FileInfo, com.hsj.messagingdemo.dto.Messages.FileInfo.Builder, com.hsj.messagingdemo.dto.Messages.FileInfoOrBuilder> groupImageBuilder_;
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       * @return Whether the groupImage field is set.
+       */
+      public boolean hasGroupImage() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       * @return The groupImage.
+       */
+      public com.hsj.messagingdemo.dto.Messages.FileInfo getGroupImage() {
+        if (groupImageBuilder_ == null) {
+          return groupImage_ == null ? com.hsj.messagingdemo.dto.Messages.FileInfo.getDefaultInstance() : groupImage_;
+        } else {
+          return groupImageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       */
+      public Builder setGroupImage(com.hsj.messagingdemo.dto.Messages.FileInfo value) {
+        if (groupImageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          groupImage_ = value;
+        } else {
+          groupImageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       */
+      public Builder setGroupImage(
+          com.hsj.messagingdemo.dto.Messages.FileInfo.Builder builderForValue) {
+        if (groupImageBuilder_ == null) {
+          groupImage_ = builderForValue.build();
+        } else {
+          groupImageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       */
+      public Builder mergeGroupImage(com.hsj.messagingdemo.dto.Messages.FileInfo value) {
+        if (groupImageBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) != 0) &&
+            groupImage_ != null &&
+            groupImage_ != com.hsj.messagingdemo.dto.Messages.FileInfo.getDefaultInstance()) {
+            getGroupImageBuilder().mergeFrom(value);
+          } else {
+            groupImage_ = value;
+          }
+        } else {
+          groupImageBuilder_.mergeFrom(value);
+        }
+        if (groupImage_ != null) {
+          bitField0_ |= 0x00000008;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       */
+      public Builder clearGroupImage() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        groupImage_ = null;
+        if (groupImageBuilder_ != null) {
+          groupImageBuilder_.dispose();
+          groupImageBuilder_ = null;
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.FileInfo.Builder getGroupImageBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return internalGetGroupImageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       */
+      public com.hsj.messagingdemo.dto.Messages.FileInfoOrBuilder getGroupImageOrBuilder() {
+        if (groupImageBuilder_ != null) {
+          return groupImageBuilder_.getMessageOrBuilder();
+        } else {
+          return groupImage_ == null ?
+              com.hsj.messagingdemo.dto.Messages.FileInfo.getDefaultInstance() : groupImage_;
+        }
+      }
+      /**
+       * <code>optional .FileInfo group_image = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.hsj.messagingdemo.dto.Messages.FileInfo, com.hsj.messagingdemo.dto.Messages.FileInfo.Builder, com.hsj.messagingdemo.dto.Messages.FileInfoOrBuilder> 
+          internalGetGroupImageFieldBuilder() {
+        if (groupImageBuilder_ == null) {
+          groupImageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.hsj.messagingdemo.dto.Messages.FileInfo, com.hsj.messagingdemo.dto.Messages.FileInfo.Builder, com.hsj.messagingdemo.dto.Messages.FileInfoOrBuilder>(
+                  getGroupImage(),
+                  getParentForChildren(),
+                  isClean());
+          groupImage_ = null;
+        }
+        return groupImageBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:GroupInvite)
     }
 
-    // @@protoc_insertion_point(class_scope:GroupChatInvite)
-    private static final com.hsj.messagingdemo.dto.Messages.GroupChatInvite DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:GroupInvite)
+    private static final com.hsj.messagingdemo.dto.Messages.GroupInvite DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.hsj.messagingdemo.dto.Messages.GroupChatInvite();
+      DEFAULT_INSTANCE = new com.hsj.messagingdemo.dto.Messages.GroupInvite();
     }
 
-    public static com.hsj.messagingdemo.dto.Messages.GroupChatInvite getDefaultInstance() {
+    public static com.hsj.messagingdemo.dto.Messages.GroupInvite getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<GroupChatInvite>
-        PARSER = new com.google.protobuf.AbstractParser<GroupChatInvite>() {
+    private static final com.google.protobuf.Parser<GroupInvite>
+        PARSER = new com.google.protobuf.AbstractParser<GroupInvite>() {
       @java.lang.Override
-      public GroupChatInvite parsePartialFrom(
+      public GroupInvite parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -3293,17 +3917,1043 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       }
     };
 
-    public static com.google.protobuf.Parser<GroupChatInvite> parser() {
+    public static com.google.protobuf.Parser<GroupInvite> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<GroupChatInvite> getParserForType() {
+    public com.google.protobuf.Parser<GroupInvite> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.hsj.messagingdemo.dto.Messages.GroupChatInvite getDefaultInstanceForType() {
+    public com.hsj.messagingdemo.dto.Messages.GroupInvite getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface GroupMembershipOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:GroupMembership)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes group_key = 1;</code>
+     * @return The groupKey.
+     */
+    com.google.protobuf.ByteString getGroupKey();
+  }
+  /**
+   * Protobuf type {@code GroupMembership}
+   */
+  public static final class GroupMembership extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:GroupMembership)
+      GroupMembershipOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 32,
+        /* patch= */ 1,
+        /* suffix= */ "",
+        GroupMembership.class.getName());
+    }
+    // Use GroupMembership.newBuilder() to construct.
+    private GroupMembership(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private GroupMembership() {
+      groupKey_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.hsj.messagingdemo.dto.Messages.internal_static_GroupMembership_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.hsj.messagingdemo.dto.Messages.internal_static_GroupMembership_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.hsj.messagingdemo.dto.Messages.GroupMembership.class, com.hsj.messagingdemo.dto.Messages.GroupMembership.Builder.class);
+    }
+
+    public static final int GROUP_KEY_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString groupKey_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>bytes group_key = 1;</code>
+     * @return The groupKey.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getGroupKey() {
+      return groupKey_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!groupKey_.isEmpty()) {
+        output.writeBytes(1, groupKey_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!groupKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, groupKey_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.hsj.messagingdemo.dto.Messages.GroupMembership)) {
+        return super.equals(obj);
+      }
+      com.hsj.messagingdemo.dto.Messages.GroupMembership other = (com.hsj.messagingdemo.dto.Messages.GroupMembership) obj;
+
+      if (!getGroupKey()
+          .equals(other.getGroupKey())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + GROUP_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getGroupKey().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.hsj.messagingdemo.dto.Messages.GroupMembership prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code GroupMembership}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:GroupMembership)
+        com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupMembership_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupMembership_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.hsj.messagingdemo.dto.Messages.GroupMembership.class, com.hsj.messagingdemo.dto.Messages.GroupMembership.Builder.class);
+      }
+
+      // Construct using com.hsj.messagingdemo.dto.Messages.GroupMembership.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        groupKey_ = com.google.protobuf.ByteString.EMPTY;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_GroupMembership_descriptor;
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.GroupMembership getDefaultInstanceForType() {
+        return com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.GroupMembership build() {
+        com.hsj.messagingdemo.dto.Messages.GroupMembership result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.GroupMembership buildPartial() {
+        com.hsj.messagingdemo.dto.Messages.GroupMembership result = new com.hsj.messagingdemo.dto.Messages.GroupMembership(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.hsj.messagingdemo.dto.Messages.GroupMembership result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.groupKey_ = groupKey_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.hsj.messagingdemo.dto.Messages.GroupMembership) {
+          return mergeFrom((com.hsj.messagingdemo.dto.Messages.GroupMembership)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.hsj.messagingdemo.dto.Messages.GroupMembership other) {
+        if (other == com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance()) return this;
+        if (!other.getGroupKey().isEmpty()) {
+          setGroupKey(other.getGroupKey());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                groupKey_ = input.readBytes();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private com.google.protobuf.ByteString groupKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes group_key = 1;</code>
+       * @return The groupKey.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getGroupKey() {
+        return groupKey_;
+      }
+      /**
+       * <code>bytes group_key = 1;</code>
+       * @param value The groupKey to set.
+       * @return This builder for chaining.
+       */
+      public Builder setGroupKey(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        groupKey_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes group_key = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearGroupKey() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        groupKey_ = getDefaultInstance().getGroupKey();
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:GroupMembership)
+    }
+
+    // @@protoc_insertion_point(class_scope:GroupMembership)
+    private static final com.hsj.messagingdemo.dto.Messages.GroupMembership DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.hsj.messagingdemo.dto.Messages.GroupMembership();
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.GroupMembership getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<GroupMembership>
+        PARSER = new com.google.protobuf.AbstractParser<GroupMembership>() {
+      @java.lang.Override
+      public GroupMembership parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<GroupMembership> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GroupMembership> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.GroupMembership getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface UserGroupChangeOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:UserGroupChange)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string user_id = 1;</code>
+     * @return The userId.
+     */
+    java.lang.String getUserId();
+    /**
+     * <code>string user_id = 1;</code>
+     * @return The bytes for userId.
+     */
+    com.google.protobuf.ByteString
+        getUserIdBytes();
+
+    /**
+     * <code>bytes new_group_key = 2;</code>
+     * @return The newGroupKey.
+     */
+    com.google.protobuf.ByteString getNewGroupKey();
+  }
+  /**
+   * <pre>
+   * deleting or addition is given by the message type in the header
+   * </pre>
+   *
+   * Protobuf type {@code UserGroupChange}
+   */
+  public static final class UserGroupChange extends
+      com.google.protobuf.GeneratedMessage implements
+      // @@protoc_insertion_point(message_implements:UserGroupChange)
+      UserGroupChangeOrBuilder {
+  private static final long serialVersionUID = 0L;
+    static {
+      com.google.protobuf.RuntimeVersion.validateProtobufGencodeVersion(
+        com.google.protobuf.RuntimeVersion.RuntimeDomain.PUBLIC,
+        /* major= */ 4,
+        /* minor= */ 32,
+        /* patch= */ 1,
+        /* suffix= */ "",
+        UserGroupChange.class.getName());
+    }
+    // Use UserGroupChange.newBuilder() to construct.
+    private UserGroupChange(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+    }
+    private UserGroupChange() {
+      userId_ = "";
+      newGroupKey_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.hsj.messagingdemo.dto.Messages.internal_static_UserGroupChange_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.hsj.messagingdemo.dto.Messages.internal_static_UserGroupChange_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.hsj.messagingdemo.dto.Messages.UserGroupChange.class, com.hsj.messagingdemo.dto.Messages.UserGroupChange.Builder.class);
+    }
+
+    public static final int USER_ID_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object userId_ = "";
+    /**
+     * <code>string user_id = 1;</code>
+     * @return The userId.
+     */
+    @java.lang.Override
+    public java.lang.String getUserId() {
+      java.lang.Object ref = userId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        userId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string user_id = 1;</code>
+     * @return The bytes for userId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getUserIdBytes() {
+      java.lang.Object ref = userId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        userId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int NEW_GROUP_KEY_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString newGroupKey_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>bytes new_group_key = 2;</code>
+     * @return The newGroupKey.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getNewGroupKey() {
+      return newGroupKey_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(userId_)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, userId_);
+      }
+      if (!newGroupKey_.isEmpty()) {
+        output.writeBytes(2, newGroupKey_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessage.isStringEmpty(userId_)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, userId_);
+      }
+      if (!newGroupKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, newGroupKey_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.hsj.messagingdemo.dto.Messages.UserGroupChange)) {
+        return super.equals(obj);
+      }
+      com.hsj.messagingdemo.dto.Messages.UserGroupChange other = (com.hsj.messagingdemo.dto.Messages.UserGroupChange) obj;
+
+      if (!getUserId()
+          .equals(other.getUserId())) return false;
+      if (!getNewGroupKey()
+          .equals(other.getNewGroupKey())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + USER_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getUserId().hashCode();
+      hash = (37 * hash) + NEW_GROUP_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getNewGroupKey().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.hsj.messagingdemo.dto.Messages.UserGroupChange prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     * deleting or addition is given by the message type in the header
+     * </pre>
+     *
+     * Protobuf type {@code UserGroupChange}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:UserGroupChange)
+        com.hsj.messagingdemo.dto.Messages.UserGroupChangeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_UserGroupChange_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_UserGroupChange_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.hsj.messagingdemo.dto.Messages.UserGroupChange.class, com.hsj.messagingdemo.dto.Messages.UserGroupChange.Builder.class);
+      }
+
+      // Construct using com.hsj.messagingdemo.dto.Messages.UserGroupChange.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        bitField0_ = 0;
+        userId_ = "";
+        newGroupKey_ = com.google.protobuf.ByteString.EMPTY;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.hsj.messagingdemo.dto.Messages.internal_static_UserGroupChange_descriptor;
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.UserGroupChange getDefaultInstanceForType() {
+        return com.hsj.messagingdemo.dto.Messages.UserGroupChange.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.UserGroupChange build() {
+        com.hsj.messagingdemo.dto.Messages.UserGroupChange result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.hsj.messagingdemo.dto.Messages.UserGroupChange buildPartial() {
+        com.hsj.messagingdemo.dto.Messages.UserGroupChange result = new com.hsj.messagingdemo.dto.Messages.UserGroupChange(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(com.hsj.messagingdemo.dto.Messages.UserGroupChange result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.userId_ = userId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.newGroupKey_ = newGroupKey_;
+        }
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.hsj.messagingdemo.dto.Messages.UserGroupChange) {
+          return mergeFrom((com.hsj.messagingdemo.dto.Messages.UserGroupChange)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.hsj.messagingdemo.dto.Messages.UserGroupChange other) {
+        if (other == com.hsj.messagingdemo.dto.Messages.UserGroupChange.getDefaultInstance()) return this;
+        if (!other.getUserId().isEmpty()) {
+          userId_ = other.userId_;
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
+        if (!other.getNewGroupKey().isEmpty()) {
+          setNewGroupKey(other.getNewGroupKey());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                userId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                newGroupKey_ = input.readBytes();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object userId_ = "";
+      /**
+       * <code>string user_id = 1;</code>
+       * @return The userId.
+       */
+      public java.lang.String getUserId() {
+        java.lang.Object ref = userId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          userId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string user_id = 1;</code>
+       * @return The bytes for userId.
+       */
+      public com.google.protobuf.ByteString
+          getUserIdBytes() {
+        java.lang.Object ref = userId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          userId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string user_id = 1;</code>
+       * @param value The userId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUserId(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        userId_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string user_id = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearUserId() {
+        userId_ = getDefaultInstance().getUserId();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string user_id = 1;</code>
+       * @param value The bytes for userId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUserIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        userId_ = value;
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString newGroupKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes new_group_key = 2;</code>
+       * @return The newGroupKey.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getNewGroupKey() {
+        return newGroupKey_;
+      }
+      /**
+       * <code>bytes new_group_key = 2;</code>
+       * @param value The newGroupKey to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNewGroupKey(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        newGroupKey_ = value;
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes new_group_key = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearNewGroupKey() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        newGroupKey_ = getDefaultInstance().getNewGroupKey();
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:UserGroupChange)
+    }
+
+    // @@protoc_insertion_point(class_scope:UserGroupChange)
+    private static final com.hsj.messagingdemo.dto.Messages.UserGroupChange DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.hsj.messagingdemo.dto.Messages.UserGroupChange();
+    }
+
+    public static com.hsj.messagingdemo.dto.Messages.UserGroupChange getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<UserGroupChange>
+        PARSER = new com.google.protobuf.AbstractParser<UserGroupChange>() {
+      @java.lang.Override
+      public UserGroupChange parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<UserGroupChange> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<UserGroupChange> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.hsj.messagingdemo.dto.Messages.UserGroupChange getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -3366,34 +5016,40 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         getSenderIdBytes();
 
     /**
-     * <code>optional bytes chat_id = 9;</code>
+     * <code>optional string chat_id = 7;</code>
      * @return Whether the chatId field is set.
      */
     boolean hasChatId();
     /**
-     * <code>optional bytes chat_id = 9;</code>
+     * <code>optional string chat_id = 7;</code>
      * @return The chatId.
      */
-    com.google.protobuf.ByteString getChatId();
+    java.lang.String getChatId();
+    /**
+     * <code>optional string chat_id = 7;</code>
+     * @return The bytes for chatId.
+     */
+    com.google.protobuf.ByteString
+        getChatIdBytes();
 
     /**
-     * <code>optional bytes ephemeral_key = 7;</code>
+     * <code>optional bytes ephemeral_key = 8;</code>
      * @return Whether the ephemeralKey field is set.
      */
     boolean hasEphemeralKey();
     /**
-     * <code>optional bytes ephemeral_key = 7;</code>
+     * <code>optional bytes ephemeral_key = 8;</code>
      * @return The ephemeralKey.
      */
     com.google.protobuf.ByteString getEphemeralKey();
 
     /**
-     * <code>optional bytes one_time_prekey = 8;</code>
+     * <code>optional bytes one_time_prekey = 9;</code>
      * @return Whether the oneTimePrekey field is set.
      */
     boolean hasOneTimePrekey();
     /**
-     * <code>optional bytes one_time_prekey = 8;</code>
+     * <code>optional bytes one_time_prekey = 9;</code>
      * @return The oneTimePrekey.
      */
     com.google.protobuf.ByteString getOneTimePrekey();
@@ -3424,7 +5080,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       dhPublicKey_ = com.google.protobuf.ByteString.EMPTY;
       messageIv_ = com.google.protobuf.ByteString.EMPTY;
       senderId_ = "";
-      chatId_ = com.google.protobuf.ByteString.EMPTY;
+      chatId_ = "";
       ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
       oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
     }
@@ -3552,10 +5208,11 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       }
     }
 
-    public static final int CHAT_ID_FIELD_NUMBER = 9;
-    private com.google.protobuf.ByteString chatId_ = com.google.protobuf.ByteString.EMPTY;
+    public static final int CHAT_ID_FIELD_NUMBER = 7;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object chatId_ = "";
     /**
-     * <code>optional bytes chat_id = 9;</code>
+     * <code>optional string chat_id = 7;</code>
      * @return Whether the chatId field is set.
      */
     @java.lang.Override
@@ -3563,18 +5220,45 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return ((bitField0_ & 0x00000002) != 0);
     }
     /**
-     * <code>optional bytes chat_id = 9;</code>
+     * <code>optional string chat_id = 7;</code>
      * @return The chatId.
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString getChatId() {
-      return chatId_;
+    public java.lang.String getChatId() {
+      java.lang.Object ref = chatId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        chatId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>optional string chat_id = 7;</code>
+     * @return The bytes for chatId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getChatIdBytes() {
+      java.lang.Object ref = chatId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        chatId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
-    public static final int EPHEMERAL_KEY_FIELD_NUMBER = 7;
+    public static final int EPHEMERAL_KEY_FIELD_NUMBER = 8;
     private com.google.protobuf.ByteString ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>optional bytes ephemeral_key = 7;</code>
+     * <code>optional bytes ephemeral_key = 8;</code>
      * @return Whether the ephemeralKey field is set.
      */
     @java.lang.Override
@@ -3582,7 +5266,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>optional bytes ephemeral_key = 7;</code>
+     * <code>optional bytes ephemeral_key = 8;</code>
      * @return The ephemeralKey.
      */
     @java.lang.Override
@@ -3590,10 +5274,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return ephemeralKey_;
     }
 
-    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 8;
+    public static final int ONE_TIME_PREKEY_FIELD_NUMBER = 9;
     private com.google.protobuf.ByteString oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>optional bytes one_time_prekey = 8;</code>
+     * <code>optional bytes one_time_prekey = 9;</code>
      * @return Whether the oneTimePrekey field is set.
      */
     @java.lang.Override
@@ -3601,7 +5285,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return ((bitField0_ & 0x00000008) != 0);
     }
     /**
-     * <code>optional bytes one_time_prekey = 8;</code>
+     * <code>optional bytes one_time_prekey = 9;</code>
      * @return The oneTimePrekey.
      */
     @java.lang.Override
@@ -3641,14 +5325,14 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (((bitField0_ & 0x00000001) != 0)) {
         com.google.protobuf.GeneratedMessage.writeString(output, 6, senderId_);
       }
+      if (((bitField0_ & 0x00000002) != 0)) {
+        com.google.protobuf.GeneratedMessage.writeString(output, 7, chatId_);
+      }
       if (((bitField0_ & 0x00000004) != 0)) {
-        output.writeBytes(7, ephemeralKey_);
+        output.writeBytes(8, ephemeralKey_);
       }
       if (((bitField0_ & 0x00000008) != 0)) {
-        output.writeBytes(8, oneTimePrekey_);
-      }
-      if (((bitField0_ & 0x00000002) != 0)) {
-        output.writeBytes(9, chatId_);
+        output.writeBytes(9, oneTimePrekey_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3682,17 +5366,16 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.GeneratedMessage.computeStringSize(6, senderId_);
       }
+      if (((bitField0_ & 0x00000002) != 0)) {
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(7, chatId_);
+      }
       if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, ephemeralKey_);
+          .computeBytesSize(8, ephemeralKey_);
       }
       if (((bitField0_ & 0x00000008) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, oneTimePrekey_);
-      }
-      if (((bitField0_ & 0x00000002) != 0)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(9, chatId_);
+          .computeBytesSize(9, oneTimePrekey_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -3912,7 +5595,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         previousLength_ = 0;
         messageIv_ = com.google.protobuf.ByteString.EMPTY;
         senderId_ = "";
-        chatId_ = com.google.protobuf.ByteString.EMPTY;
+        chatId_ = "";
         ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
         oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
         return this;
@@ -4016,7 +5699,9 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           onChanged();
         }
         if (other.hasChatId()) {
-          setChatId(other.getChatId());
+          chatId_ = other.chatId_;
+          bitField0_ |= 0x00000040;
+          onChanged();
         }
         if (other.hasEphemeralKey()) {
           setEphemeralKey(other.getEphemeralKey());
@@ -4081,18 +5766,18 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
                 break;
               } // case 50
               case 58: {
-                ephemeralKey_ = input.readBytes();
-                bitField0_ |= 0x00000080;
+                chatId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000040;
                 break;
               } // case 58
               case 66: {
-                oneTimePrekey_ = input.readBytes();
-                bitField0_ |= 0x00000100;
+                ephemeralKey_ = input.readBytes();
+                bitField0_ |= 0x00000080;
                 break;
               } // case 66
               case 74: {
-                chatId_ = input.readBytes();
-                bitField0_ |= 0x00000040;
+                oneTimePrekey_ = input.readBytes();
+                bitField0_ |= 0x00000100;
                 break;
               } // case 74
               default: {
@@ -4370,29 +6055,54 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
 
-      private com.google.protobuf.ByteString chatId_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object chatId_ = "";
       /**
-       * <code>optional bytes chat_id = 9;</code>
+       * <code>optional string chat_id = 7;</code>
        * @return Whether the chatId field is set.
        */
-      @java.lang.Override
       public boolean hasChatId() {
         return ((bitField0_ & 0x00000040) != 0);
       }
       /**
-       * <code>optional bytes chat_id = 9;</code>
+       * <code>optional string chat_id = 7;</code>
        * @return The chatId.
        */
-      @java.lang.Override
-      public com.google.protobuf.ByteString getChatId() {
-        return chatId_;
+      public java.lang.String getChatId() {
+        java.lang.Object ref = chatId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          chatId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>optional bytes chat_id = 9;</code>
+       * <code>optional string chat_id = 7;</code>
+       * @return The bytes for chatId.
+       */
+      public com.google.protobuf.ByteString
+          getChatIdBytes() {
+        java.lang.Object ref = chatId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          chatId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string chat_id = 7;</code>
        * @param value The chatId to set.
        * @return This builder for chaining.
        */
-      public Builder setChatId(com.google.protobuf.ByteString value) {
+      public Builder setChatId(
+          java.lang.String value) {
         if (value == null) { throw new NullPointerException(); }
         chatId_ = value;
         bitField0_ |= 0x00000040;
@@ -4400,19 +6110,33 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional bytes chat_id = 9;</code>
+       * <code>optional string chat_id = 7;</code>
        * @return This builder for chaining.
        */
       public Builder clearChatId() {
-        bitField0_ = (bitField0_ & ~0x00000040);
         chatId_ = getDefaultInstance().getChatId();
+        bitField0_ = (bitField0_ & ~0x00000040);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string chat_id = 7;</code>
+       * @param value The bytes for chatId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setChatIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        chatId_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
 
       private com.google.protobuf.ByteString ephemeralKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes ephemeral_key = 7;</code>
+       * <code>optional bytes ephemeral_key = 8;</code>
        * @return Whether the ephemeralKey field is set.
        */
       @java.lang.Override
@@ -4420,7 +6144,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return ((bitField0_ & 0x00000080) != 0);
       }
       /**
-       * <code>optional bytes ephemeral_key = 7;</code>
+       * <code>optional bytes ephemeral_key = 8;</code>
        * @return The ephemeralKey.
        */
       @java.lang.Override
@@ -4428,7 +6152,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return ephemeralKey_;
       }
       /**
-       * <code>optional bytes ephemeral_key = 7;</code>
+       * <code>optional bytes ephemeral_key = 8;</code>
        * @param value The ephemeralKey to set.
        * @return This builder for chaining.
        */
@@ -4440,7 +6164,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional bytes ephemeral_key = 7;</code>
+       * <code>optional bytes ephemeral_key = 8;</code>
        * @return This builder for chaining.
        */
       public Builder clearEphemeralKey() {
@@ -4452,7 +6176,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
 
       private com.google.protobuf.ByteString oneTimePrekey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes one_time_prekey = 8;</code>
+       * <code>optional bytes one_time_prekey = 9;</code>
        * @return Whether the oneTimePrekey field is set.
        */
       @java.lang.Override
@@ -4460,7 +6184,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return ((bitField0_ & 0x00000100) != 0);
       }
       /**
-       * <code>optional bytes one_time_prekey = 8;</code>
+       * <code>optional bytes one_time_prekey = 9;</code>
        * @return The oneTimePrekey.
        */
       @java.lang.Override
@@ -4468,7 +6192,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return oneTimePrekey_;
       }
       /**
-       * <code>optional bytes one_time_prekey = 8;</code>
+       * <code>optional bytes one_time_prekey = 9;</code>
        * @param value The oneTimePrekey to set.
        * @return This builder for chaining.
        */
@@ -4480,7 +6204,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional bytes one_time_prekey = 8;</code>
+       * <code>optional bytes one_time_prekey = 9;</code>
        * @return This builder for chaining.
        */
       public Builder clearOneTimePrekey() {
@@ -4546,50 +6270,50 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional .MessageHeader message_header = 3;</code>
+     * <code>optional .MessageHeader message_header = 1;</code>
      * @return Whether the messageHeader field is set.
      */
     boolean hasMessageHeader();
     /**
-     * <code>optional .MessageHeader message_header = 3;</code>
+     * <code>optional .MessageHeader message_header = 1;</code>
      * @return The messageHeader.
      */
     com.hsj.messagingdemo.dto.Messages.MessageHeader getMessageHeader();
     /**
-     * <code>optional .MessageHeader message_header = 3;</code>
+     * <code>optional .MessageHeader message_header = 1;</code>
      */
     com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder getMessageHeaderOrBuilder();
 
     /**
-     * <code>optional bytes message_header_encrypted = 8;</code>
+     * <code>optional bytes message_header_encrypted = 2;</code>
      * @return Whether the messageHeaderEncrypted field is set.
      */
     boolean hasMessageHeaderEncrypted();
     /**
-     * <code>optional bytes message_header_encrypted = 8;</code>
+     * <code>optional bytes message_header_encrypted = 2;</code>
      * @return The messageHeaderEncrypted.
      */
     com.google.protobuf.ByteString getMessageHeaderEncrypted();
 
     /**
-     * <code>bytes message_contents_encrypted = 4;</code>
+     * <code>bytes message_contents_encrypted = 3;</code>
      * @return The messageContentsEncrypted.
      */
     com.google.protobuf.ByteString getMessageContentsEncrypted();
 
     /**
-     * <code>uint64 timestamp = 5;</code>
+     * <code>uint64 timestamp = 4;</code>
      * @return The timestamp.
      */
     long getTimestamp();
 
     /**
-     * <code>optional bytes header_iv = 6;</code>
+     * <code>optional bytes header_iv = 5;</code>
      * @return Whether the headerIv field is set.
      */
     boolean hasHeaderIv();
     /**
-     * <code>optional bytes header_iv = 6;</code>
+     * <code>optional bytes header_iv = 5;</code>
      * @return The headerIv.
      */
     com.google.protobuf.ByteString getHeaderIv();
@@ -4635,10 +6359,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     }
 
     private int bitField0_;
-    public static final int MESSAGE_HEADER_FIELD_NUMBER = 3;
+    public static final int MESSAGE_HEADER_FIELD_NUMBER = 1;
     private com.hsj.messagingdemo.dto.Messages.MessageHeader messageHeader_;
     /**
-     * <code>optional .MessageHeader message_header = 3;</code>
+     * <code>optional .MessageHeader message_header = 1;</code>
      * @return Whether the messageHeader field is set.
      */
     @java.lang.Override
@@ -4646,7 +6370,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return ((bitField0_ & 0x00000001) != 0);
     }
     /**
-     * <code>optional .MessageHeader message_header = 3;</code>
+     * <code>optional .MessageHeader message_header = 1;</code>
      * @return The messageHeader.
      */
     @java.lang.Override
@@ -4654,17 +6378,17 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return messageHeader_ == null ? com.hsj.messagingdemo.dto.Messages.MessageHeader.getDefaultInstance() : messageHeader_;
     }
     /**
-     * <code>optional .MessageHeader message_header = 3;</code>
+     * <code>optional .MessageHeader message_header = 1;</code>
      */
     @java.lang.Override
     public com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder getMessageHeaderOrBuilder() {
       return messageHeader_ == null ? com.hsj.messagingdemo.dto.Messages.MessageHeader.getDefaultInstance() : messageHeader_;
     }
 
-    public static final int MESSAGE_HEADER_ENCRYPTED_FIELD_NUMBER = 8;
+    public static final int MESSAGE_HEADER_ENCRYPTED_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString messageHeaderEncrypted_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>optional bytes message_header_encrypted = 8;</code>
+     * <code>optional bytes message_header_encrypted = 2;</code>
      * @return Whether the messageHeaderEncrypted field is set.
      */
     @java.lang.Override
@@ -4672,7 +6396,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return ((bitField0_ & 0x00000002) != 0);
     }
     /**
-     * <code>optional bytes message_header_encrypted = 8;</code>
+     * <code>optional bytes message_header_encrypted = 2;</code>
      * @return The messageHeaderEncrypted.
      */
     @java.lang.Override
@@ -4680,10 +6404,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return messageHeaderEncrypted_;
     }
 
-    public static final int MESSAGE_CONTENTS_ENCRYPTED_FIELD_NUMBER = 4;
+    public static final int MESSAGE_CONTENTS_ENCRYPTED_FIELD_NUMBER = 3;
     private com.google.protobuf.ByteString messageContentsEncrypted_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>bytes message_contents_encrypted = 4;</code>
+     * <code>bytes message_contents_encrypted = 3;</code>
      * @return The messageContentsEncrypted.
      */
     @java.lang.Override
@@ -4691,10 +6415,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return messageContentsEncrypted_;
     }
 
-    public static final int TIMESTAMP_FIELD_NUMBER = 5;
+    public static final int TIMESTAMP_FIELD_NUMBER = 4;
     private long timestamp_ = 0L;
     /**
-     * <code>uint64 timestamp = 5;</code>
+     * <code>uint64 timestamp = 4;</code>
      * @return The timestamp.
      */
     @java.lang.Override
@@ -4702,10 +6426,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return timestamp_;
     }
 
-    public static final int HEADER_IV_FIELD_NUMBER = 6;
+    public static final int HEADER_IV_FIELD_NUMBER = 5;
     private com.google.protobuf.ByteString headerIv_ = com.google.protobuf.ByteString.EMPTY;
     /**
-     * <code>optional bytes header_iv = 6;</code>
+     * <code>optional bytes header_iv = 5;</code>
      * @return Whether the headerIv field is set.
      */
     @java.lang.Override
@@ -4713,7 +6437,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>optional bytes header_iv = 6;</code>
+     * <code>optional bytes header_iv = 5;</code>
      * @return The headerIv.
      */
     @java.lang.Override
@@ -4736,19 +6460,19 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (((bitField0_ & 0x00000001) != 0)) {
-        output.writeMessage(3, getMessageHeader());
-      }
-      if (!messageContentsEncrypted_.isEmpty()) {
-        output.writeBytes(4, messageContentsEncrypted_);
-      }
-      if (timestamp_ != 0L) {
-        output.writeUInt64(5, timestamp_);
-      }
-      if (((bitField0_ & 0x00000004) != 0)) {
-        output.writeBytes(6, headerIv_);
+        output.writeMessage(1, getMessageHeader());
       }
       if (((bitField0_ & 0x00000002) != 0)) {
-        output.writeBytes(8, messageHeaderEncrypted_);
+        output.writeBytes(2, messageHeaderEncrypted_);
+      }
+      if (!messageContentsEncrypted_.isEmpty()) {
+        output.writeBytes(3, messageContentsEncrypted_);
+      }
+      if (timestamp_ != 0L) {
+        output.writeUInt64(4, timestamp_);
+      }
+      if (((bitField0_ & 0x00000004) != 0)) {
+        output.writeBytes(5, headerIv_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4761,23 +6485,23 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       size = 0;
       if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getMessageHeader());
-      }
-      if (!messageContentsEncrypted_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, messageContentsEncrypted_);
-      }
-      if (timestamp_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(5, timestamp_);
-      }
-      if (((bitField0_ & 0x00000004) != 0)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, headerIv_);
+          .computeMessageSize(1, getMessageHeader());
       }
       if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, messageHeaderEncrypted_);
+          .computeBytesSize(2, messageHeaderEncrypted_);
+      }
+      if (!messageContentsEncrypted_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, messageContentsEncrypted_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, timestamp_);
+      }
+      if (((bitField0_ & 0x00000004) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, headerIv_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -5097,33 +6821,33 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
               case 0:
                 done = true;
                 break;
-              case 26: {
+              case 10: {
                 input.readMessage(
                     internalGetMessageHeaderFieldBuilder().getBuilder(),
                     extensionRegistry);
                 bitField0_ |= 0x00000001;
                 break;
-              } // case 26
-              case 34: {
-                messageContentsEncrypted_ = input.readBytes();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 34
-              case 40: {
-                timestamp_ = input.readUInt64();
-                bitField0_ |= 0x00000008;
-                break;
-              } // case 40
-              case 50: {
-                headerIv_ = input.readBytes();
-                bitField0_ |= 0x00000010;
-                break;
-              } // case 50
-              case 66: {
+              } // case 10
+              case 18: {
                 messageHeaderEncrypted_ = input.readBytes();
                 bitField0_ |= 0x00000002;
                 break;
-              } // case 66
+              } // case 18
+              case 26: {
+                messageContentsEncrypted_ = input.readBytes();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 32: {
+                timestamp_ = input.readUInt64();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 32
+              case 42: {
+                headerIv_ = input.readBytes();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5145,14 +6869,14 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       private com.google.protobuf.SingleFieldBuilder<
           com.hsj.messagingdemo.dto.Messages.MessageHeader, com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder, com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder> messageHeaderBuilder_;
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        * @return Whether the messageHeader field is set.
        */
       public boolean hasMessageHeader() {
         return ((bitField0_ & 0x00000001) != 0);
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        * @return The messageHeader.
        */
       public com.hsj.messagingdemo.dto.Messages.MessageHeader getMessageHeader() {
@@ -5163,7 +6887,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         }
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        */
       public Builder setMessageHeader(com.hsj.messagingdemo.dto.Messages.MessageHeader value) {
         if (messageHeaderBuilder_ == null) {
@@ -5179,7 +6903,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        */
       public Builder setMessageHeader(
           com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder builderForValue) {
@@ -5193,7 +6917,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        */
       public Builder mergeMessageHeader(com.hsj.messagingdemo.dto.Messages.MessageHeader value) {
         if (messageHeaderBuilder_ == null) {
@@ -5214,7 +6938,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        */
       public Builder clearMessageHeader() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -5227,7 +6951,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder getMessageHeaderBuilder() {
         bitField0_ |= 0x00000001;
@@ -5235,7 +6959,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return internalGetMessageHeaderFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        */
       public com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder getMessageHeaderOrBuilder() {
         if (messageHeaderBuilder_ != null) {
@@ -5246,7 +6970,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         }
       }
       /**
-       * <code>optional .MessageHeader message_header = 3;</code>
+       * <code>optional .MessageHeader message_header = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.hsj.messagingdemo.dto.Messages.MessageHeader, com.hsj.messagingdemo.dto.Messages.MessageHeader.Builder, com.hsj.messagingdemo.dto.Messages.MessageHeaderOrBuilder> 
@@ -5264,7 +6988,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
 
       private com.google.protobuf.ByteString messageHeaderEncrypted_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes message_header_encrypted = 8;</code>
+       * <code>optional bytes message_header_encrypted = 2;</code>
        * @return Whether the messageHeaderEncrypted field is set.
        */
       @java.lang.Override
@@ -5272,7 +6996,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>optional bytes message_header_encrypted = 8;</code>
+       * <code>optional bytes message_header_encrypted = 2;</code>
        * @return The messageHeaderEncrypted.
        */
       @java.lang.Override
@@ -5280,7 +7004,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return messageHeaderEncrypted_;
       }
       /**
-       * <code>optional bytes message_header_encrypted = 8;</code>
+       * <code>optional bytes message_header_encrypted = 2;</code>
        * @param value The messageHeaderEncrypted to set.
        * @return This builder for chaining.
        */
@@ -5292,7 +7016,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional bytes message_header_encrypted = 8;</code>
+       * <code>optional bytes message_header_encrypted = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearMessageHeaderEncrypted() {
@@ -5304,7 +7028,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
 
       private com.google.protobuf.ByteString messageContentsEncrypted_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes message_contents_encrypted = 4;</code>
+       * <code>bytes message_contents_encrypted = 3;</code>
        * @return The messageContentsEncrypted.
        */
       @java.lang.Override
@@ -5312,7 +7036,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return messageContentsEncrypted_;
       }
       /**
-       * <code>bytes message_contents_encrypted = 4;</code>
+       * <code>bytes message_contents_encrypted = 3;</code>
        * @param value The messageContentsEncrypted to set.
        * @return This builder for chaining.
        */
@@ -5324,7 +7048,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>bytes message_contents_encrypted = 4;</code>
+       * <code>bytes message_contents_encrypted = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearMessageContentsEncrypted() {
@@ -5336,7 +7060,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
 
       private long timestamp_ ;
       /**
-       * <code>uint64 timestamp = 5;</code>
+       * <code>uint64 timestamp = 4;</code>
        * @return The timestamp.
        */
       @java.lang.Override
@@ -5344,7 +7068,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return timestamp_;
       }
       /**
-       * <code>uint64 timestamp = 5;</code>
+       * <code>uint64 timestamp = 4;</code>
        * @param value The timestamp to set.
        * @return This builder for chaining.
        */
@@ -5356,7 +7080,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>uint64 timestamp = 5;</code>
+       * <code>uint64 timestamp = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
@@ -5368,7 +7092,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
 
       private com.google.protobuf.ByteString headerIv_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes header_iv = 6;</code>
+       * <code>optional bytes header_iv = 5;</code>
        * @return Whether the headerIv field is set.
        */
       @java.lang.Override
@@ -5376,7 +7100,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return ((bitField0_ & 0x00000010) != 0);
       }
       /**
-       * <code>optional bytes header_iv = 6;</code>
+       * <code>optional bytes header_iv = 5;</code>
        * @return The headerIv.
        */
       @java.lang.Override
@@ -5384,7 +7108,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return headerIv_;
       }
       /**
-       * <code>optional bytes header_iv = 6;</code>
+       * <code>optional bytes header_iv = 5;</code>
        * @param value The headerIv to set.
        * @return This builder for chaining.
        */
@@ -5396,7 +7120,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         return this;
       }
       /**
-       * <code>optional bytes header_iv = 6;</code>
+       * <code>optional bytes header_iv = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearHeaderIv() {
@@ -8553,10 +10277,20 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_MessageContents_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_GroupChatInvite_descriptor;
+    internal_static_GroupInvite_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_GroupChatInvite_fieldAccessorTable;
+      internal_static_GroupInvite_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_GroupMembership_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_GroupMembership_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_UserGroupChange_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_UserGroupChange_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MessageHeader_descriptor;
   private static final 
@@ -8594,40 +10328,48 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       "\n\016messages.proto\"R\n\013MessageFile\022\017\n\007file_" +
       "id\030\001 \001(\t\022\014\n\004data\030\002 \001(\014\022\021\n\tmime_type\030\003 \001(" +
       "\t\022\021\n\tfile_name\030\004 \001(\t\",\n\010FileInfo\022\017\n\007file" +
-      "_id\030\001 \001(\t\022\017\n\007file_iv\030\002 \001(\014\"\246\001\n\017MessageCo" +
+      "_id\030\001 \001(\t\022\017\n\007file_iv\030\002 \001(\014\"\246\002\n\017MessageCo" +
       "ntents\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022!\n\tfile_info\030\002" +
-      " \001(\0132\t.FileInfoH\001\210\001\001\0220\n\021group_chat_invit" +
-      "e\030\003 \001(\0132\020.GroupChatInviteH\002\210\001\001B\007\n\005_textB" +
-      "\014\n\n_file_infoB\024\n\022_group_chat_invite\":\n\017G" +
-      "roupChatInvite\022\025\n\rgroup_chat_id\030\001 \001(\t\022\020\n" +
-      "\010user_ids\030\002 \003(\t\"\255\002\n\rMessageHeader\022\032\n\004typ" +
-      "e\030\001 \001(\0162\014.MessageType\022\025\n\rdh_public_key\030\002" +
-      " \001(\014\022\024\n\014chain_length\030\003 \001(\r\022\027\n\017previous_l" +
-      "ength\030\004 \001(\r\022\022\n\nmessage_iv\030\005 \001(\014\022\026\n\tsende" +
-      "r_id\030\006 \001(\tH\000\210\001\001\022\024\n\007chat_id\030\t \001(\014H\001\210\001\001\022\032\n" +
-      "\rephemeral_key\030\007 \001(\014H\002\210\001\001\022\034\n\017one_time_pr" +
-      "ekey\030\010 \001(\014H\003\210\001\001B\014\n\n_sender_idB\n\n\010_chat_i" +
-      "dB\020\n\016_ephemeral_keyB\022\n\020_one_time_prekey\"" +
-      "\356\001\n\013ChatMessage\022+\n\016message_header\030\003 \001(\0132" +
-      "\016.MessageHeaderH\000\210\001\001\022%\n\030message_header_e" +
-      "ncrypted\030\010 \001(\014H\001\210\001\001\022\"\n\032message_contents_" +
-      "encrypted\030\004 \001(\014\022\021\n\ttimestamp\030\005 \001(\004\022\026\n\the" +
-      "ader_iv\030\006 \001(\014H\002\210\001\001B\021\n\017_message_headerB\033\n" +
-      "\031_message_header_encryptedB\014\n\n_header_iv" +
-      "\"\234\001\n\014PreKeyBundle\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014id" +
-      "entity_key\030\002 \001(\014\022\024\n\014verifier_key\030\003 \001(\014\022\025" +
-      "\n\rsigned_prekey\030\004 \001(\014\022\030\n\020prekey_signatur" +
-      "e\030\005 \001(\014\022\027\n\017one_time_prekey\030\006 \003(\014B\005\n\003_id\"" +
-      "2\n\007KeyPair\022\022\n\npublic_key\030\001 \001(\014\022\023\n\013privat" +
-      "e_key\030\002 \001(\014\"\301\001\n\010Identity\022\017\n\007user_id\030\001 \001(" +
-      "\t\022\036\n\014identity_key\030\002 \001(\0132\010.KeyPair\022\036\n\014ver" +
-      "ifier_key\030\003 \001(\0132\010.KeyPair\022\037\n\rsigned_prek" +
-      "ey\030\004 \001(\0132\010.KeyPair\022 \n\030signed_prekey_expi" +
-      "ration\030\005 \001(\004\022!\n\017one_time_prekey\030\006 \003(\0132\010." +
-      "KeyPair*V\n\013MessageType\022\010\n\004X3DH\020\000\022\n\n\006DIRE" +
-      "CT\020\001\022\020\n\014GROUP_INVITE\020\002\022\t\n\005GROUP\020\003\022\n\n\006JOI" +
-      "NED\020\004\022\010\n\004LEFT\020\005B\033\n\031com.hsj.messagingdemo" +
-      ".dtob\006proto3"
+      " \001(\0132\t.FileInfoH\001\210\001\001\0220\n\021user_group_chang" +
+      "e\030\003 \001(\0132\020.UserGroupChangeH\002\210\001\001\022\'\n\014group_" +
+      "invite\030\004 \001(\0132\014.GroupInviteH\003\210\001\001\022/\n\020group" +
+      "_membership\030\005 \001(\0132\020.GroupMembershipH\004\210\001\001" +
+      "B\007\n\005_textB\014\n\n_file_infoB\024\n\022_user_group_c" +
+      "hangeB\017\n\r_group_inviteB\023\n\021_group_members" +
+      "hip\"\205\001\n\013GroupInvite\022\025\n\rgroup_chat_id\030\001 \001" +
+      "(\t\022\027\n\017group_chat_name\030\002 \001(\t\022\021\n\tgroup_key" +
+      "\030\003 \001(\014\022#\n\013group_image\030\004 \001(\0132\t.FileInfoH\000" +
+      "\210\001\001B\016\n\014_group_image\"$\n\017GroupMembership\022\021" +
+      "\n\tgroup_key\030\001 \001(\014\"9\n\017UserGroupChange\022\017\n\007" +
+      "user_id\030\001 \001(\t\022\025\n\rnew_group_key\030\002 \001(\014\"\255\002\n" +
+      "\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.MessageTy" +
+      "pe\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n\014chain_lengt" +
+      "h\030\003 \001(\r\022\027\n\017previous_length\030\004 \001(\r\022\022\n\nmess" +
+      "age_iv\030\005 \001(\014\022\026\n\tsender_id\030\006 \001(\tH\000\210\001\001\022\024\n\007" +
+      "chat_id\030\007 \001(\tH\001\210\001\001\022\032\n\rephemeral_key\030\010 \001(" +
+      "\014H\002\210\001\001\022\034\n\017one_time_prekey\030\t \001(\014H\003\210\001\001B\014\n\n" +
+      "_sender_idB\n\n\010_chat_idB\020\n\016_ephemeral_key" +
+      "B\022\n\020_one_time_prekey\"\356\001\n\013ChatMessage\022+\n\016" +
+      "message_header\030\001 \001(\0132\016.MessageHeaderH\000\210\001" +
+      "\001\022%\n\030message_header_encrypted\030\002 \001(\014H\001\210\001\001" +
+      "\022\"\n\032message_contents_encrypted\030\003 \001(\014\022\021\n\t" +
+      "timestamp\030\004 \001(\004\022\026\n\theader_iv\030\005 \001(\014H\002\210\001\001B" +
+      "\021\n\017_message_headerB\033\n\031_message_header_en" +
+      "cryptedB\014\n\n_header_iv\"\234\001\n\014PreKeyBundle\022\017" +
+      "\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014identity_key\030\002 \001(\014\022\024\n" +
+      "\014verifier_key\030\003 \001(\014\022\025\n\rsigned_prekey\030\004 \001" +
+      "(\014\022\030\n\020prekey_signature\030\005 \001(\014\022\027\n\017one_time" +
+      "_prekey\030\006 \003(\014B\005\n\003_id\"2\n\007KeyPair\022\022\n\npubli" +
+      "c_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\301\001\n\010Ide" +
+      "ntity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_key\030\002" +
+      " \001(\0132\010.KeyPair\022\036\n\014verifier_key\030\003 \001(\0132\010.K" +
+      "eyPair\022\037\n\rsigned_prekey\030\004 \001(\0132\010.KeyPair\022" +
+      " \n\030signed_prekey_expiration\030\005 \001(\004\022!\n\017one" +
+      "_time_prekey\030\006 \003(\0132\010.KeyPair*x\n\013MessageT" +
+      "ype\022\010\n\004X3DH\020\000\022\n\n\006DIRECT\020\001\022\t\n\005GROUP\020\002\022\016\n\n" +
+      "USER_ADDED\020\003\022\020\n\014USER_REMOVED\020\004\022\020\n\014GROUP_" +
+      "INVITE\020\005\022\024\n\020GROUP_MEMBERSHIP\020\006B\033\n\031com.hs" +
+      "j.messagingdemo.dtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -8650,39 +10392,51 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     internal_static_MessageContents_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageContents_descriptor,
-        new java.lang.String[] { "Text", "FileInfo", "GroupChatInvite", });
-    internal_static_GroupChatInvite_descriptor =
+        new java.lang.String[] { "Text", "FileInfo", "UserGroupChange", "GroupInvite", "GroupMembership", });
+    internal_static_GroupInvite_descriptor =
       getDescriptor().getMessageTypes().get(3);
-    internal_static_GroupChatInvite_fieldAccessorTable = new
+    internal_static_GroupInvite_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_GroupChatInvite_descriptor,
-        new java.lang.String[] { "GroupChatId", "UserIds", });
-    internal_static_MessageHeader_descriptor =
+        internal_static_GroupInvite_descriptor,
+        new java.lang.String[] { "GroupChatId", "GroupChatName", "GroupKey", "GroupImage", });
+    internal_static_GroupMembership_descriptor =
       getDescriptor().getMessageTypes().get(4);
+    internal_static_GroupMembership_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_GroupMembership_descriptor,
+        new java.lang.String[] { "GroupKey", });
+    internal_static_UserGroupChange_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_UserGroupChange_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_UserGroupChange_descriptor,
+        new java.lang.String[] { "UserId", "NewGroupKey", });
+    internal_static_MessageHeader_descriptor =
+      getDescriptor().getMessageTypes().get(6);
     internal_static_MessageHeader_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageHeader_descriptor,
         new java.lang.String[] { "Type", "DhPublicKey", "ChainLength", "PreviousLength", "MessageIv", "SenderId", "ChatId", "EphemeralKey", "OneTimePrekey", });
     internal_static_ChatMessage_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_ChatMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_ChatMessage_descriptor,
         new java.lang.String[] { "MessageHeader", "MessageHeaderEncrypted", "MessageContentsEncrypted", "Timestamp", "HeaderIv", });
     internal_static_PreKeyBundle_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_PreKeyBundle_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_PreKeyBundle_descriptor,
         new java.lang.String[] { "Id", "IdentityKey", "VerifierKey", "SignedPrekey", "PrekeySignature", "OneTimePrekey", });
     internal_static_KeyPair_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_KeyPair_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_KeyPair_descriptor,
         new java.lang.String[] { "PublicKey", "PrivateKey", });
     internal_static_Identity_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_Identity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Identity_descriptor,

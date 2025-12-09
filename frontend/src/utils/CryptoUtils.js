@@ -1,11 +1,18 @@
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer } from "./EncodingUtils";
 import {Identity,MessageFile, MessageHeader,MessageContents} from "../utils/protocol/messages"
-import { v4 } from 'uuid'
 
 export const signed_prekey_lifetime_ms = 5*24*60*60*1000 
 
 export function generateChallengeBuffer() {
     return crypto.getRandomValues(new Uint8Array(new ArrayBuffer(200))).buffer
+}
+
+export async function generateAESkey() {
+    return await crypto.subtle.generateKey({"name":"AES-GCM", length:256}, true, ["encrypt", "decrypt" ])
+}
+
+export async function exportAESKey(aes_key){
+    return new Uint8Array( await crypto.subtle.exportKey("raw",aes_key ))
 }
 
 export async function generate25519KeyExchangePair() {
@@ -16,7 +23,7 @@ export async function generate25519SignaturePair() {
 }
 
 export async function extractC25519ExchangePublicKey(publicKey) {
-    return await crypto.subtle.importKey("raw", publicKey, {name:"X25519"}, true,  ["deriveBits" ,"deriveKey" ]);
+    return await crypto.subtle.importKey("raw", publicKey, {name:"X25519"}, true,  [ ]);
 }
 export async function extractC25519SignaturePublicKey(publicKey) {
     return await crypto.subtle.importKey("raw", publicKey, {name:"Ed25519"}, true, [ "verify" ]);

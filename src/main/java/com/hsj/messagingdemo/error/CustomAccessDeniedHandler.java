@@ -12,6 +12,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler{
     @Autowired
@@ -22,7 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler{
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        resolver.resolveException(request, response, response, accessDeniedException);
+        resolver.resolveException(request, response, null, accessDeniedException);
     }
     
 }

@@ -23,7 +23,7 @@ function ProfilePage() {
             URL.revokeObjectURL(profileBlobURL)
     }
     let updateBlobURL = (profileImage) => {
-        setProfileBlobURL(URL.createObjectURL(new Blob([convertBase64StringToArrayBuffer(profileImage.datab64)]), { type: profileImage.mimeType }))
+        setProfileBlobURL(URL.createObjectURL(new Blob([convertBase64StringToArrayBuffer(profileImage.data)]), { type: profileImage.mimeType }))
     }
     useEffect(
         () => {
@@ -58,7 +58,7 @@ function ProfilePage() {
             const fileReader = new FileReader()
             fileReader.onload = (ev) => {
                 let bytes = fileReader.result
-                let newProfile = { "datab64": convertArrayBufferToBase64(bytes), mimeType: newFile.type }
+                let newProfile = { "data": convertArrayBufferToBase64(bytes), mimeType: newFile.type }
                 updateBlobURL(newProfile)
                 console.log("uploaded profile image")
                 submit(newProfile)
@@ -69,7 +69,7 @@ function ProfilePage() {
         }
 
     }} className="profile-form">
-        <Link to={"/"} className="btn btn-primary"> HomePage</Link>
+        <Link to={"/chat"} className="btn btn-primary"> HomePage</Link>
         <FormGroup className="profile-image">
             <FormLabel className="profile-image" htmlFor="set-profile-input">
                 <Image  alt="Profile Image" src={profileBlobURL || undefined} roundedCircle />

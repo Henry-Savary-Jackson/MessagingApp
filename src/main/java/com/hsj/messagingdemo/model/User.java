@@ -43,7 +43,7 @@ public class User implements UserDetails {
     }
     @Override
     public String getPassword() {
-        return prekeyBundle.toString(); 
+        return username; // passwords are not used actually, this is just to fit with spring security 
     }
 
 }

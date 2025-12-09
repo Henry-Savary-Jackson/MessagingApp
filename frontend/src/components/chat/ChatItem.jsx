@@ -1,13 +1,13 @@
-import { useEffect,useState } from "react"
-import { Button, Image,Container, Stack } from "react-bootstrap"
+import { useEffect, useState } from "react"
+import { Button, Image, Container, Stack } from "react-bootstrap"
 import { convertBase64StringToArrayBuffer } from "../../utils/EncodingUtils"
-import { getUserProfile } from "../../utils/RequestUtils"
+import { getFile, getUserProfile } from "../../utils/RequestUtils"
 import { useIndexedDB } from "../../utils/StorageUtils"
 import "../../css/chats.scss"
 
 function ChatItem({ chat, onChatClick, onChatLeave }) {
 
-    let {db,loading} = useIndexedDB()
+    let { db, loading } = useIndexedDB()
 
     let [profileImage, setProfileImage] = useState(undefined)
 
@@ -18,7 +18,7 @@ function ChatItem({ chat, onChatClick, onChatLeave }) {
             URL.revokeObjectURL(profileBlobURL)
     }
     let updateBlobURL = (profileImage) => {
-        setProfileBlobURL(URL.createObjectURL(new Blob([convertBase64StringToArrayBuffer(profileImage.datab64)]), { type: profileImage.mimeType }))
+        setProfileBlobURL(URL.createObjectURL(new Blob([profileImage.data]), { type: profileImage.mimeType }))
     }
     useEffect(
         () => {
@@ -31,13 +31,21 @@ function ChatItem({ chat, onChatClick, onChatLeave }) {
 
     useEffect(() => {
         (async () => {
-            if (db)
-                setProfileImage(await getUserProfile(db,chat.user_id) || undefined)
+            if (db) {
+                if (chat.type === "DIRECT") {
+                    let profileImage = await getUserProfile(db, chat.chat_id) || undefined
+                    if (profileImage)
+                        profileImage.data = convertBase64StringToArrayBuffer(profileImage.data)
+                    setProfileImage(profileImage)
+                } else if (chat.type === "GROUP") {
+                    chat.group_image_file && setProfileImage(await getFile(db, chat.group_image_file.fileId, null, chat.group_image_file.fileIv))
+                }
+            }
         })()
     }, [db])
 
-    return <Stack  className="chat-item border" direction="horizontal" gap={1} key={chat.chat_id} >
-        <Image className="w-25" alt={chat.name} src={profileBlobURL|| undefined} roundedCircle />
+    return <Stack className="chat-item border" direction="horizontal" gap={1} key={chat.chat_id} >
+        <Image className="w-25" alt={chat.name} src={profileBlobURL || undefined} roundedCircle />
         <span onClick={(e) => { onChatClick(chat) }}> {chat.name || "No name to chat"} : {chat.new_message} new messages
         </span>
         <Button onClick={(e) => { onChatLeave(chat.chat_id) }} variant="danger">Leave</Button>

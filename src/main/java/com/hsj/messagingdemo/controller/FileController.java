@@ -3,17 +3,13 @@ package com.hsj.messagingdemo.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hsj.messagingdemo.dto.Messages.MessageFile;
-import com.hsj.messagingdemo.model.DBFile;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.FileService;
 
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,12 +33,5 @@ public class FileController {
         return fileService.getFileByUUID(id).getData();
     }
 
-    // @DeleteMapping("/{id}")
-    // public String deleteFile(@PathVariable UUID id) {
-    //     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    //     MessageFile file = fileService.getFileByUUID(id);
-    //     fileService.deleteFile(file);
-    //     return "Success";
-    // }
 
 }

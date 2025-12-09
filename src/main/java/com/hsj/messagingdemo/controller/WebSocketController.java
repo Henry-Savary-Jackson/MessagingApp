@@ -19,13 +19,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.hsj.messagingdemo.dto.RegistrationRequest;
-import com.hsj.messagingdemo.dto.UserChangeDTO;
 import com.hsj.messagingdemo.dto.Messages.ChatMessage;
 import com.hsj.messagingdemo.dto.Messages.MessageHeader;
-import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
 import com.hsj.messagingdemo.model.PrekeyBundleDB;
 import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;

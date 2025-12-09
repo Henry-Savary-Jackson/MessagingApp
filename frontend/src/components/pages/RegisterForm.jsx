@@ -1,19 +1,17 @@
-import { useEffect, useContext, useRef, useState } from "react";
+import { useEffect, useContext, useState } from "react";
 import { Link } from "react-router";
 import { Button, Form, FormLabel, FormControl, FormGroup } from "react-bootstrap";
-import { convertKeyPairToBase64, addHeaderFooterToKey, generatePrivatePublicKeyPair, convert_js_identity_to_protobuf_identity, create_new_identity, create_new_prekey_bundle, signBytes, signPreKey } from "../../utils/CryptoUtils"
-import { getCSRF, register, setAxiosCSRF } from "../../utils/RequestUtils"
+import { convert_js_identity_to_protobuf_identity, create_new_identity, create_new_prekey_bundle } from "../../utils/CryptoUtils"
+import { register } from "../../utils/RequestUtils"
 import { useLocation } from 'react-router'
-import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer, } from "../../utils/EncodingUtils";
+import { convertArrayBufferToBase64, } from "../../utils/EncodingUtils";
 import { performActionWithAlert } from "../../utils/UIUtils";
-import { storeUserData, useIndexedDB } from "../../utils/StorageUtils";
 import { Identity,PreKeyBundle } from "../../utils/protocol/messages";
 import { identity_context } from "../../globals";
 
-function RegisterForm() {
+function RegisterForm({setUserCallback}) {
 
     let location = useLocation()
-    let {db ,loading} = useIndexedDB()
 
     let [username, setUsername] = useState("")
     let [profileImageBlob, setProfileImageBlob] = useState(undefined)
@@ -56,15 +54,15 @@ function RegisterForm() {
                 let user_id = await register(registerRequest)
                 // now put it into indexeddb
                 await set_ident_info({...identity_data, username:username,user_id:user_id}) 
-                setAxiosCSRF(await getCSRF())
-                location.pathname = "/"
+                setUserCallback(username, user_id)
+                location.pathname = "/chat"
             });
         }
         if (profileImageBlob) {
             let reader = new FileReader();
             reader.onloadend = async (ev) => {
                 
-                profileImageData = { "datab64": reader.result.slice(reader.result.indexOf("base64," )+7), "mimeType": profileImageBlob.type }
+                profileImageData = { "data": reader.result.slice(reader.result.indexOf("base64," )+7), "mimeType": profileImageBlob.type }
                 await submit()
             }
             reader.readAsDataURL(profileImageBlob)

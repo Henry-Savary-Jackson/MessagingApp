@@ -1,8 +1,8 @@
 import axios from 'axios'
 
-import { PreKeyBundle } from "../utils/protocol/messages"
-import { get_file_local, get_user_info, store_file_local, store_user_info, storeUserData } from './StorageUtils'
-import { decrypt_file_contents } from './CryptoUtils'
+import { MessageFile, PreKeyBundle } from "../utils/protocol/messages"
+import { get_file_local, get_user_info, store_file_local,store_user_info, storeUserData } from './StorageUtils'
+import { decrypt_file_contents , concatenateUIntArray} from './CryptoUtils'
 
 const api_url = "http://localhost:8080"
 const username_cache = new Map()
@@ -22,28 +22,20 @@ export function setAxiosCSRF(csrf_data) {
 }
 
 export async function addOTP(otps){
-    return await performRequest(async () => (await axios.put(`${api_url}/otp`, concatenateUIntArray(...otps), { withCredentials: true , withXSRFToken:true})))
+    return await performRequestCSRFToken(async () => (await axios.put(`${api_url}/otp`, concatenateUIntArray(...otps), { withCredentials: true , withXSRFToken:true})))
 }
 
 export async function setSignedPrekey(new_signed_prekey, new_prekey_signature){
-    return await performRequest(async () => (await axios.put(`${api_url}/signed_prekey`, {b64NewSignedPrekey:new_signed_prekey, b64NewPrekeySignature:new_prekey_signature}, { withCredentials: true , withXSRFToken:true})))
+    return await performRequestCSRFToken(async () => (await axios.put(`${api_url}/signed_prekey`, {b64NewSignedPrekey:new_signed_prekey, b64NewPrekeySignature:new_prekey_signature}, { withCredentials: true , withXSRFToken:true})))
 }
 
 export async function getCSRF() {
     return await performRequest(async () => (await axios.get(`${api_url}/csrf`, { withCredentials: true })).data)
 }
 
-
-export async function getChats() {
-    return await performRequestCSRFToken(async () => (await axios.get(`${api_url}/chat/list`, { withCredentials: true, withXSRFToken: true })).data)
-}
-
-export async function join(chat_id) {
-    return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/chat/join`, chat_id, { headers: { "Content-Type": "text/plain" }, withCredentials: true, withXSRFToken: true })).data)
-}
-
 export async function logout() {
     return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/user/logout`, null, { withCredentials: true, withXSRFToken: true })).data)
+
 }
 
 async function performRequestCSRFToken(requestFunction) {
@@ -82,8 +74,8 @@ export async function register(data) {
     return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/user/register`, data, { withCredentials: true })).data);
 }
 
-export async function createChat(name) {
-    return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/chat/create`, name, { withCredentials: true, withXSRFToken: true })).data);
+export async function createChat(group_info) {
+    return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/chat/create`, group_info, { withCredentials: true, withXSRFToken: true })).data);
 }
 
 export async function leaveChatRequest(chat_id) {
@@ -126,10 +118,15 @@ export async function getFile(indexed_db, uuid, message_key, fileIv) {
         if (file_local) {
             return file_local
         }
-        let buffer_encrypted = (await axios.get(`${api_url}/file/${uuid}`, { responseType: 'arraybuffer', withCredentials: true, withXSRFToken: true })).data
+        let buffer_encrypted = new Uint8Array((await axios.get(`${api_url}/file/${uuid}`, { responseType: 'arraybuffer', withCredentials: true, withXSRFToken: true })).data)
         try {
 
-            let message_file_proto = await decrypt_file_contents(message_key, buffer_encrypted, fileIv)
+            let message_file_proto = {}
+            if (message_key){
+                message_file_proto = await decrypt_file_contents(message_key, buffer_encrypted, fileIv)
+            }else{
+                message_file_proto = MessageFile.decode(buffer_encrypted)  // group profile pictures
+            }
             await store_file_local(indexed_db, message_file_proto, uuid)
 
             return message_file_proto

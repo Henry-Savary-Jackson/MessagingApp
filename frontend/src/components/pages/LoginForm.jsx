@@ -1,18 +1,17 @@
 import { useContext, useState } from "react";
 import { Button, Form, FormControl, FormGroup, FormLabel } from "react-bootstrap";
-import { removeHeaderFooterToKey, signChallenge } from "../../utils/CryptoUtils";
-import { getCSRF, login , setAxiosCSRF} from "../../utils/RequestUtils";
+import { signChallenge } from "../../utils/CryptoUtils";
+import { login} from "../../utils/RequestUtils";
 import { Link, useLocation } from "react-router";
-import {  csrf_context, identity_context } from "../../globals";
-import { convertBase64StringToArrayBuffer, convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
+import {  identity_context, user_id_context } from "../../globals";
 import { performActionWithAlert } from "../../utils/UIUtils";
-import {convertProtoBufIdentityToObject, import_identity, storeUserData, useIndexedDB} from "../../utils/StorageUtils"
+import {convertProtoBufIdentityToObject, import_identity} from "../../utils/StorageUtils"
 
-function LoginForm() {
+function LoginForm({setUserCallback}) {
 
     let location = useLocation()
     let [ident_info, set_ident_info] = useContext(identity_context)
-    let [csrf, setCSRF]  = useContext(csrf_context)
+    let [user_id, set_user_id] = useContext(user_id_context)
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
 
@@ -33,12 +32,13 @@ function LoginForm() {
             const authenticationRequest = await signChallenge(identity_js_object.verifierKey.privateKey)
             authenticationRequest.username = username
             await performActionWithAlert(async () => {
-                let user_id = await login(authenticationRequest)
-                    await set_ident_info({...identity_js_object, username:username,user_id:user_id})
-
                 // Great, store user_id into idb
-                setCSRF(setAxiosCSRF(await getCSRF()))
-                location.pathname = "/"
+                let user_id = await login(authenticationRequest)
+
+                await set_ident_info({...identity_js_object, username:username,user_id:user_id})
+
+                setUserCallback(username, user_id)
+                location.pathname = "/chat"
             })
         }
         reader.readAsArrayBuffer(identityFile)

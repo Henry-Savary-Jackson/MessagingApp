@@ -3,16 +3,18 @@ import { getFile, getUsername } from "../../utils/RequestUtils"
 import { useState, useEffect, useContext, memo } from "react"
 import { useIndexedDB } from "../../utils/StorageUtils";
 import "../../css/chats.scss"
+import { user_id_context } from "../../globals";
 
-const ChatMessage = memo(({user_id, message_key, contents, sender }) => {
+const ChatMessage = memo(({ message_key, contents, sender }) => {
 
     let { db, loading } = useIndexedDB()
     let [file, setFile] = useState(undefined)
     let [fileBlobURL, setFileBlobURL] = useState(undefined)
+    let [user_id, set_user_id] = useContext(user_id_context)
 
     useEffect(() => {
         if (file) {
-            setFileBlobURL(URL.createObjectURL(new Blob([file.data], { type: file.mimeType})))
+            setFileBlobURL(URL.createObjectURL(new Blob([file.data], { type: file.mimeType })))
         }
     }, [file])
 
@@ -31,16 +33,23 @@ const ChatMessage = memo(({user_id, message_key, contents, sender }) => {
     useEffect(() => {
         (async () => {
             if (db) {
-                setUsername(await getUsername(db, sender))
+                try {
+                    setUsername(await getUsername(db, sender))
+                } catch (e) {
+                    if (e.code && e.code == 404)
+                    {
+                        setUsername(`(Unknown user)${sender && sender.slice(0,4)}`)
+                    }
+                }
             }
         })()
     }, [db])
-    return <Stack className={user_id === sender ? "chat-message-sender": "chat-message-other" }  >
-                <span className={user_id === sender ? "chat-text-sender": "chat-text-other" }  >{contents.text}</span>
-                <span className={user_id==sender?  "text-end":"text-start"} >{username}</span> 
-                {fileBlobURL && file.mimeType.startsWith("image/") && <Image thumbnail className={user_id === sender ? "align-self-end" : "align-self-start"} style={{ "maxHeight": "500px", "maxWidth": "500px", height: "auto", width: "auto" }} src={fileBlobURL} />}
-                {fileBlobURL && <Button  href={fileBlobURL} download={file.fileName}>Download file</Button>}
-            </Stack>
+    return <Stack className={user_id === sender ? "chat-message-sender" : "chat-message-other"}  >
+        <span className={user_id === sender ? "chat-text-sender" : "chat-text-other"}  >{contents.text}</span>
+        <span className={user_id == sender ? "text-end" : "text-start"} >{username}</span>
+        {fileBlobURL && file.mimeType.startsWith("image/") && <Image thumbnail className={user_id === sender ? "align-self-end" : "align-self-start"} style={{ "maxHeight": "500px", "maxWidth": "500px", height: "auto", width: "auto" }} src={fileBlobURL} />}
+        {fileBlobURL && <Button href={fileBlobURL} download={file.fileName}>Download file</Button>}
+    </Stack>
 })
 
 

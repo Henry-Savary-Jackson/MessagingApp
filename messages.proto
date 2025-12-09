@@ -4,10 +4,11 @@ option java_package = "com.hsj.messagingdemo.dto";
 enum MessageType {
   X3DH = 0;
   DIRECT = 1;
-  GROUP_INVITE =2;
-  GROUP = 3;
-  JOINED= 4;
-  LEFT = 5;
+  GROUP = 2;
+  USER_ADDED =3;
+  USER_REMOVED = 4;
+  GROUP_INVITE = 5;
+  GROUP_MEMBERSHIP = 6;
 }
 
 message MessageFile{
@@ -25,14 +26,26 @@ message FileInfo{
 message MessageContents{
   optional string text =1;
   optional FileInfo file_info = 2;
-  optional GroupChatInvite group_chat_invite =3;
+  optional UserGroupChange user_group_change =3;
+  optional GroupInvite group_invite=4;
+  optional GroupMembership group_membership=5;
 }
 
-message GroupChatInvite{
+message GroupInvite{
   string group_chat_id = 1;
   string group_chat_name = 2;
-  repeated string user_ids=3;
+  bytes group_key = 3;
+  optional FileInfo group_image= 4; 
+}
 
+message GroupMembership{
+  bytes group_key = 1;
+}
+
+// deleting or addition is given by the message type in the header
+message UserGroupChange{
+  string user_id = 1;
+  bytes new_group_key = 2;
 }
 
 message MessageHeader{
@@ -42,17 +55,17 @@ message MessageHeader{
   uint32 previous_length = 4;
   bytes message_iv = 5;
   optional string sender_id = 6;
-  optional bytes chat_id = 9;
-  optional bytes ephemeral_key = 7;
-  optional bytes one_time_prekey = 8;
+  optional string chat_id = 7;
+  optional bytes ephemeral_key = 8;
+  optional bytes one_time_prekey = 9;
 }
 
 message ChatMessage {
-  optional MessageHeader message_header = 3;
-  optional bytes message_header_encrypted= 8;
-  bytes message_contents_encrypted= 4;
-  uint64 timestamp = 5;
-  optional bytes header_iv = 6;
+  optional MessageHeader message_header = 1;
+  optional bytes message_header_encrypted= 2;
+  bytes message_contents_encrypted= 3;
+  uint64 timestamp = 4;
+  optional bytes header_iv = 5;
 }
 message PreKeyBundle {
   optional string id = 1;

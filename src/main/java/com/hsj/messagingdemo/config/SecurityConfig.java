@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
@@ -22,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.RememberMeTokenAlgorithm;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -55,6 +59,9 @@ public class SecurityConfig {
     @Autowired
     ExceptionHandlerFilter exceptionHandlerFilter;
 
+    @Autowired 
+    CustomAccessDeniedHandler customAccessDeniedHandler;
+
     @Autowired
     ObjectMapper mapper;
 
@@ -73,11 +80,13 @@ public class SecurityConfig {
                         .logoutUrl("/user/logout").invalidateHttpSession(true)
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()))
                 .csrf((csrf) -> csrf
-                        .csrfTokenRepository(httpSessionCsrfTokenRepository()))
+                        .csrfTokenRepository(httpSessionCsrfTokenRepository()).ignoringRequestMatchers("/ws/**", "/ws"))
                 .cors((c) -> c.configurationSource(corsConfigurationSource()))
-                .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedHandler(new CustomAccessDeniedHandler()));
+                .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler));
         return http.build();
     }
+
+
 
     @Bean
     HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository() {

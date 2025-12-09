@@ -11,16 +11,12 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hsj.messagingdemo.model.Chat;
 import com.hsj.messagingdemo.model.User;
-import com.hsj.messagingdemo.repo.ChatRepo;
 
 @Service
 public class MessageService {
 
 
-    @Autowired
-    ChatRepo chatRepo;
 
     private static final Map<String, Set<String>> userToKafkaListener = new HashMap<>();
 
@@ -32,10 +28,6 @@ public class MessageService {
             userToKafkaListener.put(userId, listener);
         }
         listener.add(listenerId);
-    }
-
-    public void deleteChat(Chat chat) {
-        chatRepo.delete(chat);
     }
 
     public void unLinkUserToKafkaEventListener(String userId, String listenerId) {
@@ -60,34 +52,7 @@ public class MessageService {
                 .anyMatch((listenerId) -> listenerId.equals(KafkaListenerCreator.generateListenerId( userId, sessionId)));
     }
 
-    public List<Chat> getChatByUserId(String userId) {
-        return chatRepo.findByUsers(userId);
-    }
 
-    public Optional<Chat> getChatById(UUID id) {
-        return chatRepo.findById(id);
-    }
-
-    public Chat createChat(User userInitial, String name) {
-        Chat chat = Chat.builder().chatId(UUID.randomUUID()).name(name).ownerId(userInitial.getId())
-                .users(List.of(userInitial.getId())).build();
-        chatRepo.save(chat);
-        return chat;
-    }
-
-    public void addUserToChat(Chat chat, User user) {
-        chat.getUsers().add(user.getId());
-        chatRepo.save(chat);
-
-    }
-
-    public void removeUserFromChat(Chat chat, User user) {
-        chat.getUsers().remove(user.getId());
-        if (chat.getUsers().isEmpty()) {
-            deleteChat(chat);
-        } else {
-            chatRepo.save(chat);
-        }
-    }
+    
 
 }

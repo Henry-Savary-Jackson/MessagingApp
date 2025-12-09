@@ -13,7 +13,7 @@ import lombok.Setter;
 @Builder
 public class ProfileImage {
 
-    String datab64;
+    String data;
     String mimeType;
     
 }
