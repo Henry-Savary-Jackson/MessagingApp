@@ -3,6 +3,7 @@ import axios from 'axios'
 import { MessageFile, PreKeyBundle } from "../utils/protocol/messages"
 import { get_file_local, get_user_info, store_file_local,store_user_info, storeUserData } from './StorageUtils'
 import { decrypt_file_contents , concatenateUIntArray} from './CryptoUtils'
+import { convertBase64StringToArrayBuffer } from './EncodingUtils'
 
 const api_url = "http://localhost:8080"
 const username_cache = new Map()
@@ -95,7 +96,7 @@ export async function getUserProfile(indexed_db, user_id) {
 
         let result = (await axios.get(`${api_url}/user/profile/${user_id}`, { withCredentials: true, withXSRFToken: true })).data
         user_info = user_info || { user_id: user_id }
-        user_info.profile = result
+        user_info.profile = new Blob([ convertBase64StringToArrayBuffer( result.data) ] , {mimetype:result.mimeType})
         await store_user_info(indexed_db, user_info)
         return result
     }
@@ -114,9 +115,9 @@ export async function deleteFile(uuid) {
 }
 export async function getFile(indexed_db, uuid, message_key, fileIv) {
     return await performRequestCSRFToken(async () => {
-        let file_local = await get_file_local(indexed_db, uuid)
-        if (file_local) {
-            return file_local
+        let file_local_blob = await get_file_local(indexed_db, uuid)
+        if (file_local_blob) {
+            return file_local_blob
         }
         let buffer_encrypted = new Uint8Array((await axios.get(`${api_url}/file/${uuid}`, { responseType: 'arraybuffer', withCredentials: true, withXSRFToken: true })).data)
         try {
@@ -127,9 +128,10 @@ export async function getFile(indexed_db, uuid, message_key, fileIv) {
             }else{
                 message_file_proto = MessageFile.decode(buffer_encrypted)  // group profile pictures
             }
-            await store_file_local(indexed_db, message_file_proto, uuid)
+            let blob = new Blob([message_file_proto.data], {name:message_file_proto.fileName,mimetype:message_file_proto.mimeType})
+            await store_file_local(indexed_db, blob, uuid)
 
-            return message_file_proto
+            return blob 
         } catch (e) {
             throw e;
         }

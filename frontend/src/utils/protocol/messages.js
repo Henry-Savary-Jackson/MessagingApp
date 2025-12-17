@@ -566,6 +566,7 @@ $root.MessageContents = (function() {
      * @property {IUserGroupChange|null} [userGroupChange] MessageContents userGroupChange
      * @property {IGroupInvite|null} [groupInvite] MessageContents groupInvite
      * @property {IGroupMembership|null} [groupMembership] MessageContents groupMembership
+     * @property {Uint8Array|null} [groupMessageIv] MessageContents groupMessageIv
      */
 
     /**
@@ -622,6 +623,14 @@ $root.MessageContents = (function() {
      * @instance
      */
     MessageContents.prototype.groupMembership = null;
+
+    /**
+     * MessageContents groupMessageIv.
+     * @member {Uint8Array|null|undefined} groupMessageIv
+     * @memberof MessageContents
+     * @instance
+     */
+    MessageContents.prototype.groupMessageIv = null;
 
     // OneOf field names bound to virtual getters and setters
     var $oneOfFields;
@@ -682,6 +691,17 @@ $root.MessageContents = (function() {
     });
 
     /**
+     * MessageContents _groupMessageIv.
+     * @member {"groupMessageIv"|undefined} _groupMessageIv
+     * @memberof MessageContents
+     * @instance
+     */
+    Object.defineProperty(MessageContents.prototype, "_groupMessageIv", {
+        get: $util.oneOfGetter($oneOfFields = ["groupMessageIv"]),
+        set: $util.oneOfSetter($oneOfFields)
+    });
+
+    /**
      * Creates a new MessageContents instance using the specified properties.
      * @function create
      * @memberof MessageContents
@@ -715,6 +735,8 @@ $root.MessageContents = (function() {
             $root.GroupInvite.encode(message.groupInvite, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
         if (message.groupMembership != null && Object.hasOwnProperty.call(message, "groupMembership"))
             $root.GroupMembership.encode(message.groupMembership, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+        if (message.groupMessageIv != null && Object.hasOwnProperty.call(message, "groupMessageIv"))
+            writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.groupMessageIv);
         return writer;
     };
 
@@ -769,6 +791,10 @@ $root.MessageContents = (function() {
                 }
             case 5: {
                     message.groupMembership = $root.GroupMembership.decode(reader, reader.uint32());
+                    break;
+                }
+            case 6: {
+                    message.groupMessageIv = reader.bytes();
                     break;
                 }
             default:
@@ -844,6 +870,11 @@ $root.MessageContents = (function() {
                     return "groupMembership." + error;
             }
         }
+        if (message.groupMessageIv != null && message.hasOwnProperty("groupMessageIv")) {
+            properties._groupMessageIv = 1;
+            if (!(message.groupMessageIv && typeof message.groupMessageIv.length === "number" || $util.isString(message.groupMessageIv)))
+                return "groupMessageIv: buffer expected";
+        }
         return null;
     };
 
@@ -881,6 +912,11 @@ $root.MessageContents = (function() {
                 throw TypeError(".MessageContents.groupMembership: object expected");
             message.groupMembership = $root.GroupMembership.fromObject(object.groupMembership);
         }
+        if (object.groupMessageIv != null)
+            if (typeof object.groupMessageIv === "string")
+                $util.base64.decode(object.groupMessageIv, message.groupMessageIv = $util.newBuffer($util.base64.length(object.groupMessageIv)), 0);
+            else if (object.groupMessageIv.length >= 0)
+                message.groupMessageIv = object.groupMessageIv;
         return message;
     };
 
@@ -921,6 +957,11 @@ $root.MessageContents = (function() {
             object.groupMembership = $root.GroupMembership.toObject(message.groupMembership, options);
             if (options.oneofs)
                 object._groupMembership = "groupMembership";
+        }
+        if (message.groupMessageIv != null && message.hasOwnProperty("groupMessageIv")) {
+            object.groupMessageIv = options.bytes === String ? $util.base64.encode(message.groupMessageIv, 0, message.groupMessageIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.groupMessageIv) : message.groupMessageIv;
+            if (options.oneofs)
+                object._groupMessageIv = "groupMessageIv";
         }
         return object;
     };

@@ -3,6 +3,8 @@ package com.hsj.messagingdemo.controller;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import com.hsj.messagingdemo.model.User;
 import com.hsj.messagingdemo.service.KafkaListenerCreator;
 import com.hsj.messagingdemo.service.MessageService;
 import com.hsj.messagingdemo.service.UserService;
+import com.hsj.messagingdemo.utils.CryptoUtils;
 
 @Controller
 public class WebSocketController {
@@ -59,12 +62,8 @@ public class WebSocketController {
                 MessageHeader messageHeader = newMessage.getMessageHeader();
                 if (messageHeader.hasOneTimePrekey()){
                     // delete this one time prekey from the prekey bundle
-
                     byte[] otp_user = messageHeader.getOneTimePrekey().toByteArray();
-                    User other = userService.getUserById(user_id);
-                    PrekeyBundleDB preKeyBundle = other.getPrekeyBundle();
-                    preKeyBundle.getOneTimePreKeys().removeIf((otp)->Arrays.equals(otp, otp_user));
-                    userService.setPreKeyBundle(user, preKeyBundle);
+                    userService.removeOtp(user_id, otp_user);
                 }
             }
             // set timestamp correctly

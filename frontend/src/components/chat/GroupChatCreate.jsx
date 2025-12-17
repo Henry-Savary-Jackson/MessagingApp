@@ -39,7 +39,7 @@ export default function GroupChatCreate({show, onChatCreate, onClose}) {
         if (group_image_file) {
             let image_file_protobuf = MessageFile.fromObject(group_image_file)
             let id = await uploadFile(MessageFile.encode(image_file_protobuf).finish())
-            group_image_file = { ...group_image_file, fileId: id, fileIv: new Uint8Array(12) }
+            group_image_file = {  fileId: id, fileIv: new Uint8Array(12) }
         }
 
         let chat_object = await create_chat_object(v4(), group_name, "GROUP", [user_id], group_image_file)

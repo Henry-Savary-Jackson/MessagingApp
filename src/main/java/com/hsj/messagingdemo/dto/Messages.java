@@ -1730,6 +1730,17 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
      * <code>optional .GroupMembership group_membership = 5;</code>
      */
     com.hsj.messagingdemo.dto.Messages.GroupMembershipOrBuilder getGroupMembershipOrBuilder();
+
+    /**
+     * <code>optional bytes group_message_iv = 6;</code>
+     * @return Whether the groupMessageIv field is set.
+     */
+    boolean hasGroupMessageIv();
+    /**
+     * <code>optional bytes group_message_iv = 6;</code>
+     * @return The groupMessageIv.
+     */
+    com.google.protobuf.ByteString getGroupMessageIv();
   }
   /**
    * Protobuf type {@code MessageContents}
@@ -1754,6 +1765,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     }
     private MessageContents() {
       text_ = "";
+      groupMessageIv_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
@@ -1921,6 +1933,25 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       return groupMembership_ == null ? com.hsj.messagingdemo.dto.Messages.GroupMembership.getDefaultInstance() : groupMembership_;
     }
 
+    public static final int GROUP_MESSAGE_IV_FIELD_NUMBER = 6;
+    private com.google.protobuf.ByteString groupMessageIv_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>optional bytes group_message_iv = 6;</code>
+     * @return Whether the groupMessageIv field is set.
+     */
+    @java.lang.Override
+    public boolean hasGroupMessageIv() {
+      return ((bitField0_ & 0x00000020) != 0);
+    }
+    /**
+     * <code>optional bytes group_message_iv = 6;</code>
+     * @return The groupMessageIv.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getGroupMessageIv() {
+      return groupMessageIv_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1950,6 +1981,9 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (((bitField0_ & 0x00000010) != 0)) {
         output.writeMessage(5, getGroupMembership());
       }
+      if (((bitField0_ & 0x00000020) != 0)) {
+        output.writeBytes(6, groupMessageIv_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1977,6 +2011,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (((bitField0_ & 0x00000010) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, getGroupMembership());
+      }
+      if (((bitField0_ & 0x00000020) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, groupMessageIv_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -2018,6 +2056,11 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         if (!getGroupMembership()
             .equals(other.getGroupMembership())) return false;
       }
+      if (hasGroupMessageIv() != other.hasGroupMessageIv()) return false;
+      if (hasGroupMessageIv()) {
+        if (!getGroupMessageIv()
+            .equals(other.getGroupMessageIv())) return false;
+      }
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -2048,6 +2091,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       if (hasGroupMembership()) {
         hash = (37 * hash) + GROUP_MEMBERSHIP_FIELD_NUMBER;
         hash = (53 * hash) + getGroupMembership().hashCode();
+      }
+      if (hasGroupMessageIv()) {
+        hash = (37 * hash) + GROUP_MESSAGE_IV_FIELD_NUMBER;
+        hash = (53 * hash) + getGroupMessageIv().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -2210,6 +2257,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           groupMembershipBuilder_.dispose();
           groupMembershipBuilder_ = null;
         }
+        groupMessageIv_ = com.google.protobuf.ByteString.EMPTY;
         return this;
       }
 
@@ -2272,6 +2320,10 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
               : groupMembershipBuilder_.build();
           to_bitField0_ |= 0x00000010;
         }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.groupMessageIv_ = groupMessageIv_;
+          to_bitField0_ |= 0x00000020;
+        }
         result.bitField0_ |= to_bitField0_;
       }
 
@@ -2303,6 +2355,9 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
         }
         if (other.hasGroupMembership()) {
           mergeGroupMembership(other.getGroupMembership());
+        }
+        if (other.hasGroupMessageIv()) {
+          setGroupMessageIv(other.getGroupMessageIv());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -2363,6 +2418,11 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
                 bitField0_ |= 0x00000010;
                 break;
               } // case 42
+              case 50: {
+                groupMessageIv_ = input.readBytes();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -2941,6 +3001,46 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
           groupMembership_ = null;
         }
         return groupMembershipBuilder_;
+      }
+
+      private com.google.protobuf.ByteString groupMessageIv_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>optional bytes group_message_iv = 6;</code>
+       * @return Whether the groupMessageIv field is set.
+       */
+      @java.lang.Override
+      public boolean hasGroupMessageIv() {
+        return ((bitField0_ & 0x00000020) != 0);
+      }
+      /**
+       * <code>optional bytes group_message_iv = 6;</code>
+       * @return The groupMessageIv.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getGroupMessageIv() {
+        return groupMessageIv_;
+      }
+      /**
+       * <code>optional bytes group_message_iv = 6;</code>
+       * @param value The groupMessageIv to set.
+       * @return This builder for chaining.
+       */
+      public Builder setGroupMessageIv(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        groupMessageIv_ = value;
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bytes group_message_iv = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearGroupMessageIv() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        groupMessageIv_ = getDefaultInstance().getGroupMessageIv();
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:MessageContents)
@@ -10328,48 +10428,49 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
       "\n\016messages.proto\"R\n\013MessageFile\022\017\n\007file_" +
       "id\030\001 \001(\t\022\014\n\004data\030\002 \001(\014\022\021\n\tmime_type\030\003 \001(" +
       "\t\022\021\n\tfile_name\030\004 \001(\t\",\n\010FileInfo\022\017\n\007file" +
-      "_id\030\001 \001(\t\022\017\n\007file_iv\030\002 \001(\014\"\246\002\n\017MessageCo" +
+      "_id\030\001 \001(\t\022\017\n\007file_iv\030\002 \001(\014\"\332\002\n\017MessageCo" +
       "ntents\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022!\n\tfile_info\030\002" +
       " \001(\0132\t.FileInfoH\001\210\001\001\0220\n\021user_group_chang" +
       "e\030\003 \001(\0132\020.UserGroupChangeH\002\210\001\001\022\'\n\014group_" +
       "invite\030\004 \001(\0132\014.GroupInviteH\003\210\001\001\022/\n\020group" +
       "_membership\030\005 \001(\0132\020.GroupMembershipH\004\210\001\001" +
-      "B\007\n\005_textB\014\n\n_file_infoB\024\n\022_user_group_c" +
-      "hangeB\017\n\r_group_inviteB\023\n\021_group_members" +
-      "hip\"\205\001\n\013GroupInvite\022\025\n\rgroup_chat_id\030\001 \001" +
-      "(\t\022\027\n\017group_chat_name\030\002 \001(\t\022\021\n\tgroup_key" +
-      "\030\003 \001(\014\022#\n\013group_image\030\004 \001(\0132\t.FileInfoH\000" +
-      "\210\001\001B\016\n\014_group_image\"$\n\017GroupMembership\022\021" +
-      "\n\tgroup_key\030\001 \001(\014\"9\n\017UserGroupChange\022\017\n\007" +
-      "user_id\030\001 \001(\t\022\025\n\rnew_group_key\030\002 \001(\014\"\255\002\n" +
-      "\rMessageHeader\022\032\n\004type\030\001 \001(\0162\014.MessageTy" +
-      "pe\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n\014chain_lengt" +
-      "h\030\003 \001(\r\022\027\n\017previous_length\030\004 \001(\r\022\022\n\nmess" +
-      "age_iv\030\005 \001(\014\022\026\n\tsender_id\030\006 \001(\tH\000\210\001\001\022\024\n\007" +
-      "chat_id\030\007 \001(\tH\001\210\001\001\022\032\n\rephemeral_key\030\010 \001(" +
-      "\014H\002\210\001\001\022\034\n\017one_time_prekey\030\t \001(\014H\003\210\001\001B\014\n\n" +
-      "_sender_idB\n\n\010_chat_idB\020\n\016_ephemeral_key" +
-      "B\022\n\020_one_time_prekey\"\356\001\n\013ChatMessage\022+\n\016" +
-      "message_header\030\001 \001(\0132\016.MessageHeaderH\000\210\001" +
-      "\001\022%\n\030message_header_encrypted\030\002 \001(\014H\001\210\001\001" +
-      "\022\"\n\032message_contents_encrypted\030\003 \001(\014\022\021\n\t" +
-      "timestamp\030\004 \001(\004\022\026\n\theader_iv\030\005 \001(\014H\002\210\001\001B" +
-      "\021\n\017_message_headerB\033\n\031_message_header_en" +
-      "cryptedB\014\n\n_header_iv\"\234\001\n\014PreKeyBundle\022\017" +
-      "\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014identity_key\030\002 \001(\014\022\024\n" +
-      "\014verifier_key\030\003 \001(\014\022\025\n\rsigned_prekey\030\004 \001" +
-      "(\014\022\030\n\020prekey_signature\030\005 \001(\014\022\027\n\017one_time" +
-      "_prekey\030\006 \003(\014B\005\n\003_id\"2\n\007KeyPair\022\022\n\npubli" +
-      "c_key\030\001 \001(\014\022\023\n\013private_key\030\002 \001(\014\"\301\001\n\010Ide" +
-      "ntity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014identity_key\030\002" +
-      " \001(\0132\010.KeyPair\022\036\n\014verifier_key\030\003 \001(\0132\010.K" +
-      "eyPair\022\037\n\rsigned_prekey\030\004 \001(\0132\010.KeyPair\022" +
-      " \n\030signed_prekey_expiration\030\005 \001(\004\022!\n\017one" +
-      "_time_prekey\030\006 \003(\0132\010.KeyPair*x\n\013MessageT" +
-      "ype\022\010\n\004X3DH\020\000\022\n\n\006DIRECT\020\001\022\t\n\005GROUP\020\002\022\016\n\n" +
-      "USER_ADDED\020\003\022\020\n\014USER_REMOVED\020\004\022\020\n\014GROUP_" +
-      "INVITE\020\005\022\024\n\020GROUP_MEMBERSHIP\020\006B\033\n\031com.hs" +
-      "j.messagingdemo.dtob\006proto3"
+      "\022\035\n\020group_message_iv\030\006 \001(\014H\005\210\001\001B\007\n\005_text" +
+      "B\014\n\n_file_infoB\024\n\022_user_group_changeB\017\n\r" +
+      "_group_inviteB\023\n\021_group_membershipB\023\n\021_g" +
+      "roup_message_iv\"\205\001\n\013GroupInvite\022\025\n\rgroup" +
+      "_chat_id\030\001 \001(\t\022\027\n\017group_chat_name\030\002 \001(\t\022" +
+      "\021\n\tgroup_key\030\003 \001(\014\022#\n\013group_image\030\004 \001(\0132" +
+      "\t.FileInfoH\000\210\001\001B\016\n\014_group_image\"$\n\017Group" +
+      "Membership\022\021\n\tgroup_key\030\001 \001(\014\"9\n\017UserGro" +
+      "upChange\022\017\n\007user_id\030\001 \001(\t\022\025\n\rnew_group_k" +
+      "ey\030\002 \001(\014\"\255\002\n\rMessageHeader\022\032\n\004type\030\001 \001(\016" +
+      "2\014.MessageType\022\025\n\rdh_public_key\030\002 \001(\014\022\024\n" +
+      "\014chain_length\030\003 \001(\r\022\027\n\017previous_length\030\004" +
+      " \001(\r\022\022\n\nmessage_iv\030\005 \001(\014\022\026\n\tsender_id\030\006 " +
+      "\001(\tH\000\210\001\001\022\024\n\007chat_id\030\007 \001(\tH\001\210\001\001\022\032\n\repheme" +
+      "ral_key\030\010 \001(\014H\002\210\001\001\022\034\n\017one_time_prekey\030\t " +
+      "\001(\014H\003\210\001\001B\014\n\n_sender_idB\n\n\010_chat_idB\020\n\016_e" +
+      "phemeral_keyB\022\n\020_one_time_prekey\"\356\001\n\013Cha" +
+      "tMessage\022+\n\016message_header\030\001 \001(\0132\016.Messa" +
+      "geHeaderH\000\210\001\001\022%\n\030message_header_encrypte" +
+      "d\030\002 \001(\014H\001\210\001\001\022\"\n\032message_contents_encrypt" +
+      "ed\030\003 \001(\014\022\021\n\ttimestamp\030\004 \001(\004\022\026\n\theader_iv" +
+      "\030\005 \001(\014H\002\210\001\001B\021\n\017_message_headerB\033\n\031_messa" +
+      "ge_header_encryptedB\014\n\n_header_iv\"\234\001\n\014Pr" +
+      "eKeyBundle\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\024\n\014identity_" +
+      "key\030\002 \001(\014\022\024\n\014verifier_key\030\003 \001(\014\022\025\n\rsigne" +
+      "d_prekey\030\004 \001(\014\022\030\n\020prekey_signature\030\005 \001(\014" +
+      "\022\027\n\017one_time_prekey\030\006 \003(\014B\005\n\003_id\"2\n\007KeyP" +
+      "air\022\022\n\npublic_key\030\001 \001(\014\022\023\n\013private_key\030\002" +
+      " \001(\014\"\301\001\n\010Identity\022\017\n\007user_id\030\001 \001(\t\022\036\n\014id" +
+      "entity_key\030\002 \001(\0132\010.KeyPair\022\036\n\014verifier_k" +
+      "ey\030\003 \001(\0132\010.KeyPair\022\037\n\rsigned_prekey\030\004 \001(" +
+      "\0132\010.KeyPair\022 \n\030signed_prekey_expiration\030" +
+      "\005 \001(\004\022!\n\017one_time_prekey\030\006 \003(\0132\010.KeyPair" +
+      "*x\n\013MessageType\022\010\n\004X3DH\020\000\022\n\n\006DIRECT\020\001\022\t\n" +
+      "\005GROUP\020\002\022\016\n\nUSER_ADDED\020\003\022\020\n\014USER_REMOVED" +
+      "\020\004\022\020\n\014GROUP_INVITE\020\005\022\024\n\020GROUP_MEMBERSHIP" +
+      "\020\006B\033\n\031com.hsj.messagingdemo.dtob\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -10392,7 +10493,7 @@ public final class Messages extends com.google.protobuf.GeneratedFile {
     internal_static_MessageContents_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_MessageContents_descriptor,
-        new java.lang.String[] { "Text", "FileInfo", "UserGroupChange", "GroupInvite", "GroupMembership", });
+        new java.lang.String[] { "Text", "FileInfo", "UserGroupChange", "GroupInvite", "GroupMembership", "GroupMessageIv", });
     internal_static_GroupInvite_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_GroupInvite_fieldAccessorTable = new

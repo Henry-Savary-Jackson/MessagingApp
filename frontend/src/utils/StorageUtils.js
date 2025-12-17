@@ -22,6 +22,7 @@ export const [ X3DH,  DIRECT, GROUP,USER_ADDED, USER_REMOVED , GROUP_INVITE, GRO
 export const convert_proto_chat_msg = (message_proto, message_contents, message_header, message_key) => {
         return {
             sender_id: message_header.senderId,
+            chat_id: message_header.chatId || message_header.senderId,
             message_contents: message_contents,
             timestamp: message_proto.timestamp,
             message_key: message_key,

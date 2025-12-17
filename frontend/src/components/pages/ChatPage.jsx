@@ -4,13 +4,13 @@ import { Link, useLocation } from 'react-router'
 import { createChat, getCSRF, getPrekeyBundle, getUsername, getUserProfile, logout, setAxiosCSRF } from '../../utils/RequestUtils'
 import ChatWindow from "./../chat/ChatWindow"
 import ChatListBar from "./../chat/ChatListBar"
-import { decrypt_chat_message, init_ratchet_root_receiver, init_ratchet_root_sender, test_all_skipped_messages_for_session } from '../../utils/RatchetUtils'
+import { decrypt_chat_message, init_ratchet_root_receiver, init_ratchet_root_sender, handle_all_skipped_messages_for_session } from '../../utils/RatchetUtils'
 import { handle_X3DH_message, send_X3DH_message } from '../../utils/X3DHUtils'
 import { handle_new_encrypted_message, send_new_encrypted_message } from '../../utils/MessagingUtils'
 import { ChatMessage } from '../../utils/protocol/messages'
 import { create_chat_object, create_double_ratchet_recipient, delete_chat, delete_skipped_message, get_all_chats, get_all_double_ratchet_sess, get_chat, get_double_ratchet_session, get_messages, getOneTimePrekeyWithPubKey, store_chat, store_double_ratchet_session, store_message, useIdentityInformation, useIndexedDB, USER_ADDED } from '../../utils/StorageUtils'
 import { useStompClient, useSubscription } from 'react-stomp-hooks'
-import { identity_context, user_id_context } from '../../globals'
+import { identity_context, user_id_context, username_context } from '../../globals'
 import GroupChatCreate from '../chat/GroupChatCreate'
 
 
@@ -82,24 +82,25 @@ function ChatPage({ logoutCallback }) {
 
     let [ident_info, set_ident_info] = useContext(identity_context)
     let [user_id, set_user_id] = useContext(user_id_context)
+    let [username, set_current_username] = useContext(username_context)
 
 
     let [show_chat_modal, set_chat_modal] = useState(false)
 
-    const onMessageNormal = async (chat_message, dr_session = null) => {
-        let { msg_obj, chat_object } = await handle_new_encrypted_message(db, client, chat_message, ident_info, dr_session)
+    const onMessageUI = async (msg_obj, chat_object) => {
 
         if (chat_object && !chatInUI(chat_object.chat_id))
             addNewChatUI(chat_object)
 
         if (msg_obj)
             addMessageUI(msg_obj)
+        
 
         if (currentChat && chat_object && chat_object.chat_id === currentChat.chat_id)
             readMessages(chat_object.chat_id)
 
         if (chat_object)
-            addMessageToChatCount(chat_object.chat_id, chat_message.timestamp)
+            addMessageToChatCount(chat_object.chat_id, msg_obj.timestamp || (new Date()).getTime())
 
     }
 
@@ -110,15 +111,20 @@ function ChatPage({ logoutCallback }) {
             // X3DH message
             let new_dr_session = await handle_X3DH_message(db, ident_info.identityKey, ident_info.signedPrekey, chat_message)
 
-            let found_skipped_messages = await test_all_skipped_messages_for_session(db, new_dr_session)
+            let found_skipped_messages = await handle_all_skipped_messages_for_session(db, client, ident_info, new_dr_session)
+
             found_skipped_messages.forEach(
                 async (skipped_msg) => {
-                    await onMessageNormal(skipped_msg, new_dr_session);
-                    await delete_skipped_message(db, skipped_msg)
+                    let {msg_obj, chat_object} = skipped_msg
+                    console.log("Handling skipped message on UI!")
+                    console.log(skipped_msg)
+                    await onMessageUI(msg_obj, chat_object);
                 })
         } else {
             // nortmal message, decrypt with double ratchet algo
-            await onMessageNormal(chat_message)
+
+            let { msg_obj, chat_object } = await handle_new_encrypted_message(db, client, chat_message, ident_info)
+            await onMessageUI(msg_obj, chat_object)
         }
 
     } // PUT notification symbol on chat
@@ -127,8 +133,8 @@ function ChatPage({ logoutCallback }) {
 
     const sendMessage = async (chat_id, text, file_object) => {
         let chat_object = await get_chat(db, chat_id)
-        let { message_contents,type, message_key, timestamp } = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, chat_object.type )
-        const message = { type:type, message_contents: message_contents, sender_id: user_id, timestamp: timestamp, message_key: message_key}
+        let { message_contents, type, message_key, timestamp } = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info,chat_object.type)
+        const message = { type: type, message_contents: message_contents, sender_id: user_id, timestamp: timestamp, message_key: message_key }
         await store_message(db, message, chat_object)
         message.chat_id = chat_id
         readMessages(chat_id)
@@ -138,11 +144,11 @@ function ChatPage({ logoutCallback }) {
         messageReducer({ action: "init", chat_id: chat_id, messages: messages })
     }
 
-    const onInviteUser=async  (chat)=>{
+    const onInviteUser = async (chat) => {
         let other_username = prompt("Enter username")
         let prekey_bundle_other = await getPrekeyBundle(other_username)
         let other_id = prekey_bundle_other.id
-        let msg = await send_new_encrypted_message(client, db, chat.chat_id, {userId:other_id}, user_id,ident_info, USER_ADDED)
+        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
         addMessageUI(msg)
     }
 
@@ -166,16 +172,16 @@ function ChatPage({ logoutCallback }) {
             if (!(await get_double_ratchet_session(db, other_id))) {
                 await send_X3DH_message(db, client, user_id, other_id, other_name, ident_info.identityKey, ident_info.signedPreKey, ident_info.verifierKey, prekey_bundle_other)
             }
-            let  chat_object = await create_chat_object(other_id, other_name, "DIRECT")
+            let chat_object = await create_chat_object(other_id, other_name, "DIRECT")
             await store_chat(db, chat_object)
-           
+
             // for debugging
             if (!chat_object)
                 throw new Error("Cannot add empty chat in UI")
 
             addNewChatUI(chat_object)
         } catch (e) {
-            if (e.code && e.code==404) {
+            if (e.code && e.code == 404) {
                 alert("failed to get prekey bundle")
             } else {
                 throw e
@@ -202,6 +208,7 @@ function ChatPage({ logoutCallback }) {
     return <Container fluid><Row>
         <Col sm={2} >
             <Stack>
+                <span>{username}</span>
                 <Link className='btn btn-danger' to={"/login"} onClick={async (e) => {
                     await logout()
                     logoutCallback()
@@ -211,13 +218,13 @@ function ChatPage({ logoutCallback }) {
             </Stack>
         </Col>
         <Col sm={4} >
-            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={onChatToNewUser} onChatCreate={()=>{set_chat_modal(true)}} />
+            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={onChatToNewUser} onChatCreate={() => { set_chat_modal(true) }} />
         </Col>
         <Col sm={6}>
             {currentChat && <ChatWindow onInviteUser={onInviteUser} chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
         </Col>
     </Row>
-    <GroupChatCreate show={show_chat_modal} onChatCreate={(chat) => { addNewChatUI(chat); set_chat_modal(false) }} onClose={() => { set_chat_modal(false) }} />
+        <GroupChatCreate show={show_chat_modal} onChatCreate={(chat) => { addNewChatUI(chat); set_chat_modal(false) }} onClose={() => { set_chat_modal(false) }} />
     </Container>
 }
 

@@ -79,6 +79,7 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
 
     // derive root key
     let KM = await derive_root_key_recipient(identityCryptoKeyExchangePair, otherIdentityKeyExchange, signed_prekey_keypair_exchange, ephemeralKey, one_time_prekey )
+    console.log(KM)
     
     let SK = await create_shared_key(KM)
 
@@ -87,12 +88,11 @@ export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, 
     let bytesSenderIdentityPubKey = new Uint8Array(await crypto.subtle.exportKey("raw", otherIdentityKeyExchange))
     let AD_derived =concatenateUIntArray(bytesSenderIdentityPubKey,bytesRecipientIdentityPubKey) 
 
+    console.log(AD_derived)
     let AD_decrypted = new Uint8Array( await crypto.subtle.decrypt({"name":"AES-GCM", iv:AD_iv}, SK, AD_encrypted))
 
 
-    console.log(KM)
     console.log(AD_decrypted)
-    console.log(AD_derived)
     // verify the ad byte sequence is correct
     if (!AD_decrypted.slice(0,64).every( (a,index)=>a===AD_derived.at(index) )){
         throw new Error("The AD byte sequence does not match the one given")
@@ -165,6 +165,9 @@ export async function X3DH_send(identity, prekey_bundle){
     let bytesOtherIdentityPubKey = new Uint8Array(await crypto.subtle.exportKey("raw", otherIdentityKey))
 
     let AD =concatenateUIntArray(bytesYourIdentityPubKey,bytesOtherIdentityPubKey) 
+
+    console.log("Ad bytes seq")
+    console.log(AD)
     // concatenate chat id to ad byte sequence. 
 
     let AD_IV = crypto.getRandomValues(new Uint8Array(12)) 

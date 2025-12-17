@@ -29,6 +29,7 @@ message MessageContents{
   optional UserGroupChange user_group_change =3;
   optional GroupInvite group_invite=4;
   optional GroupMembership group_membership=5;
+  optional bytes group_message_iv =6;
 }
 
 message GroupInvite{

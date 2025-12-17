@@ -9,7 +9,7 @@ function ChatItem({ chat, onChatClick, onChatLeave }) {
 
     let { db, loading } = useIndexedDB()
 
-    let [profileImage, setProfileImage] = useState(undefined)
+    let [profile_image_blob, setProfileImageBlob] = useState(undefined)
 
     let [profileBlobURL, setProfileBlobURL] = useState("")
 
@@ -17,28 +17,27 @@ function ChatItem({ chat, onChatClick, onChatLeave }) {
         if (profileBlobURL)
             URL.revokeObjectURL(profileBlobURL)
     }
-    let updateBlobURL = (profileImage) => {
-        setProfileBlobURL(URL.createObjectURL(new Blob([profileImage.data]), { type: profileImage.mimeType }))
+    let updateBlobURL = (profile_image_blob) => {
+        setProfileBlobURL(URL.createObjectURL(profile_image_blob))
+
     }
     useEffect(
         () => {
-            if (profileImage) {
-                updateBlobURL(profileImage)
+            if (profile_image_blob) {
+                updateBlobURL(profile_image_blob)
             }
             return unsetBlobURL
         }
-        , [profileImage])
+        , [profile_image_blob])
 
     useEffect(() => {
         (async () => {
             if (db) {
                 if (chat.type === "DIRECT") {
                     let profileImage = await getUserProfile(db, chat.chat_id) || undefined
-                    if (profileImage)
-                        profileImage.data = convertBase64StringToArrayBuffer(profileImage.data)
-                    setProfileImage(profileImage)
+                    setProfileImageBlob(profileImage)
                 } else if (chat.type === "GROUP") {
-                    chat.group_image_file && setProfileImage(await getFile(db, chat.group_image_file.fileId, null, chat.group_image_file.fileIv))
+                    setProfileImageBlob(await getFile(db, chat.group_image_file.fileId, null, chat.group_image_file.fileIv))
                 }
             }
         })()

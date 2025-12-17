@@ -79,7 +79,11 @@ public class UserService {
     }
     public void setPreKeyBundle(User user, PrekeyBundleDB preKeyBundle){
         user.setPrekeyBundle(preKeyBundle);
-        userRepo.save(user);
+       userRepo.save(user);
+    }
+
+    public void removeOtp(String userId, byte[] otpb64){
+        userRepo.removeOtp(userId, otpb64);
     }
     public void setPreKeyBundle(User user, PreKeyBundle preKeyBundle){
         setPreKeyBundle(user,new PrekeyBundleDB(preKeyBundle));

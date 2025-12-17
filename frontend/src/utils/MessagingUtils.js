@@ -51,17 +51,17 @@ export async function send_group_membership_message(client, indexed_db, chat_id,
             groupKey: chat_object.group_secret_key,
         }
     }
-    return await send_direct_message(client, indexed_db, new_user_id, message_contents_to_new, sender_id,identity, GROUP_MEMBERSHIP)
+    return await send_direct_message(client, indexed_db, new_user_id, message_contents_to_new, sender_id, identity, GROUP_MEMBERSHIP, chat_id)
 }
 
-export async function send_user_add_message(client, indexed_db, chat_id, contents, sender_id,identity) {
+export async function send_user_add_message(client, indexed_db, chat_id, contents, sender_id, identity) {
     // make the contest
     let new_user_id = contents.userId
 
     let chat_object = await get_chat(indexed_db, chat_id)
     // send_direct_message
     let message_contents_to_new = {
-        groupChatInvite:
+        groupInvite:
         {
             groupChatId: chat_id,
             groupChatName: chat_object.name,
@@ -69,12 +69,17 @@ export async function send_user_add_message(client, indexed_db, chat_id, content
             groupImage: chat_object.group_image_file
         }
     }
-    await send_direct_message(client, indexed_db, new_user_id, message_contents_to_new, sender_id,identity, GROUP_INVITE)
 
-    return await send_group_message(client, indexed_db, chat_id, { userId: new_user_id, newGroupKey: chat_object.group_secret_key, }, sender_id,identity ,USER_ADDED)
+    await send_direct_message(client, indexed_db, new_user_id, message_contents_to_new, sender_id, identity, GROUP_INVITE)
+
+    let result = await send_group_message(client, indexed_db, chat_id, { userGroupChange:{ userId: new_user_id, newGroupKey: chat_object.group_secret_key, }}, sender_id, identity, USER_ADDED)
+
+    chat_object.users.push(new_user_id)
+    await store_chat(indexed_db, chat_object)
+    return result 
 }
 
-export async function send_group_message(client, indexed_db, chat_id, contents, sender_id, identity,type = GROUP) {
+export async function send_group_message(client, indexed_db, chat_id, contents, sender_id, identity, type = GROUP) {
 
     // get chat
     let chat_object = await get_chat(indexed_db, chat_id)
@@ -85,7 +90,7 @@ export async function send_group_message(client, indexed_db, chat_id, contents, 
 
     let message_contents_protobuf_obj = MessageContents.fromObject(contents)
     // encrypt using group key
-    let encrypted_bytes = await encrypt_message_contents(chat_object.group_secret_key, message_contents_protobuf_obj)
+    let [encrypted_bytes, message_iv] = await encrypt_message_contents(chat_object.group_secret_key, message_contents_protobuf_obj)
 
     // create message headers for
     let message_contents_text = convertArrayBufferToBase64(encrypted_bytes)
@@ -95,18 +100,19 @@ export async function send_group_message(client, indexed_db, chat_id, contents, 
         if (user === sender_id)
             continue
         // send this message using dourble ratchet algo
-        result = await send_direct_message(client, indexed_db, user, { text: message_contents_text }, sender_id, identity,type)
+        result = await send_direct_message(client, indexed_db, user, { text: message_contents_text, groupMessageIv:message_iv }, sender_id, identity, type, chat_id)
     }
 
     return { type: type, sender_id: sender_id, message_contents: contents, message_key: chat_object.group_secret_key, timestamp: new Date().getTime() }
 }
 
 
-export async function send_direct_message(client, indexed_db, recipient_id, contents, sender_id, identity,type = DIRECT) {
+export async function send_direct_message(client, indexed_db, recipient_id, contents, sender_id, identity, type = DIRECT, chat_id=null) {
     let dr_session = await get_double_ratchet_session(indexed_db, recipient_id)
     if (!dr_session) {
         // initiate  X3DH if a session is not already initiate
         let recipient_username = await getUsername(indexed_db, recipient_id)
+        console.log(recipient_username)
         let recipient_prekey_bundle = await getPrekeyBundle(recipient_username)
         dr_session = await send_X3DH_message(indexed_db, client, sender_id, recipient_id, recipient_username, identity.identityKey, identity.signedPrekey, identity.verifierKey, recipient_prekey_bundle)
     }
@@ -136,7 +142,10 @@ export async function send_direct_message(client, indexed_db, recipient_id, cont
         previousLength: dr_session.sending_chain.pn || 0, // put previous n
         dhPublicKey: await exportX25519PublicKey(dr_session.dh_keypair_private.publicKey)
     }
+    if (chat_id)
+        message_header_js_obj.chatId = chat_id
 
+    console.log(message_header_js_obj)
 
     let message_header_proto = MessageHeader.fromObject(message_header_js_obj)
     let [message_header_enc, header_iv] = await encrypt_header(message_header_proto, dr_session.sending_chain.header_key)
@@ -157,7 +166,7 @@ export async function send_direct_message(client, indexed_db, recipient_id, cont
 // if direct, using norm dr ratchet,
 // if it is a group chat, using the current group key
 
-export async function send_new_encrypted_message(client, indexed_db, chat_id, contents, sender_id, identity ,type = DIRECT) {
+export async function send_new_encrypted_message(client, indexed_db, chat_id, contents, sender_id, identity, type = DIRECT) {
     switch (type) {
         case DIRECT:
             return await send_direct_message(client, indexed_db, chat_id, contents, sender_id, identity)
@@ -166,7 +175,7 @@ export async function send_new_encrypted_message(client, indexed_db, chat_id, co
         case USER_ADDED:
             return await send_user_add_message(client, indexed_db, chat_id, contents, sender_id, identity)
         case USER_REMOVED:
-            return await send_user_removal_message(client, indexed_db, chat_id, contents, sender_id,  identity)
+            return await send_user_removal_message(client, indexed_db, chat_id, contents, sender_id, identity)
         case GROUP_MEMBERSHIP:
             return await send_group_membership_message(client, indexed_db, chat_id, contents, sender_id, identity)
 
@@ -175,11 +184,11 @@ export async function send_new_encrypted_message(client, indexed_db, chat_id, co
     }
 }
 
-export async function handle_group_invite_message(indexed_db, chat_message, message_contents, message_header, message_key) {
+export async function handle_group_invite_message(indexed_db,user_id, chat_message, message_contents, message_header, message_key) {
 
-    let { groupChatId, groupChatName, groupKey, groupImage } = message_contents.groupChatInvite.chatId
+    let { groupChatId, groupChatName, groupKey, groupImage } = message_contents.groupInvite
 
-    let new_chat_object = await create_chat_object(groupChatId, groupChatName, "GROUP", [message_header.senderId], groupImage, groupKey)
+    let new_chat_object = await create_chat_object(groupChatId, groupChatName, "GROUP", [message_header.senderId, user_id], groupImage, groupKey)
 
     return await store_message_object_chat(indexed_db, chat_message, message_contents, message_header, message_key, new_chat_object)
 }
@@ -187,7 +196,8 @@ export async function handle_group_invite_message(indexed_db, chat_message, mess
 export async function convertGroupMessage(chat_object, contents) {
     let secret_group_key = chat_object.group_secret_key
     let bytes = convertBase64StringToArrayBuffer(contents.text)
-    return await decrypt_message_contents(secret_group_key, bytes)
+    let iv = contents.groupMessageIv
+    return await decrypt_message_contents(secret_group_key, bytes, iv)
 }
 
 export async function handle_user_removed_message(indexed_db, client, chat_message, message_contents, message_header, message_key) {
@@ -217,11 +227,11 @@ export async function store_message_object_chat(indexed_db, chat_message, messag
 
 export async function handle_user_added_message(indexed_db, client, user_id, chat_message, message_contents, message_header, message_key, identity) {
 
+    let chat_object = await get_chat(indexed_db, message_header.chatId)
     let decrypted_contents = await convertGroupMessage(chat_object, message_contents)
 
     let user_group_change = decrypted_contents.userGroupChange
     // look for double ratchet session with new user
-    let chat_object = await get_chat(indexed_db, message_header.chatId)
 
     let new_user_id = user_group_change.userId
     let new_group_key = user_group_change.newGroupKey
@@ -229,16 +239,32 @@ export async function handle_user_added_message(indexed_db, client, user_id, cha
     chat_object.group_secret_key = new_group_key
 
     // look for double ratchet session and initiate if doesnt exist
-    
+
     // send membership message
-    await send_direct_message(client, indexed_db, new_user_id, { groupMembership: { groupKey: new_group_key } }, user_id, identity,GROUP_MEMBERSHIP)
+    await send_direct_message(client, indexed_db, new_user_id, { groupMembership: { groupKey: new_group_key } }, user_id, identity, GROUP_MEMBERSHIP, chat_object.chat_id)
 
     return await store_message_object_chat(indexed_db, chat_message, message_contents, message_header, message_key, chat_object)
 }
 
+export async function handle_group_membership_message(indexed_db, message_contents, message_header) {
+    let chat_object = await get_chat(indexed_db, message_header.chatId)
+    let sender_id = message_header.senderId
+    let secret_group_key = message_contents.groupMembership.groupKey
+    if (!chat_object){
+        // received a group memebership before the invite message
+        chat_object =await create_chat_object(message_header.chatId, "", "GROUP", [sender_id], null, secret_group_key)
+    }else{
+        chat_object.users.push(sender_id)
+    }
+
+    await store_chat(indexed_db, chat_object)
+    return {msg_obj: null, chat_object:chat_object}
+}
+
 export async function handle_group_message(indexed_db, chat_message, message_contents, message_header, message_key) {
     let chat_object = await get_chat(indexed_db, message_header.chatId)
-    return store_message_object_chat(indexed_db, chat_message, message_contents, message_header, message_key, chat_object)
+    let decrypted_msg_contents = await convertGroupMessage(chat_object, message_contents)
+    return store_message_object_chat(indexed_db, chat_message, decrypted_msg_contents, message_header, message_key, chat_object)
 }
 
 export async function handle_direct_message(indexed_db, chat_message, message_contents, message_header, message_key) {
@@ -247,30 +273,37 @@ export async function handle_direct_message(indexed_db, chat_message, message_co
 
 }
 
-export async function handle_new_encrypted_message(indexed_db, client, chat_message, identity, dr_session = null) {
-
-    let { message_contents, message_header, message_key } = await decrypt_chat_message(indexed_db, chat_message, dr_session)
-    // handle messages not found
-    if (!(message_contents && message_header && message_key)) {
-        console.log("skipped message")
-        await store_skipped_message(indexed_db, chat_message)
-        return {msg_obj:null, chat_object:null};
-    }
+export async function handle_new_decrypted_message(indexed_db, client, chat_message, identity, message_contents, message_header, message_key) {
 
     switch (MessageType[message_header.type]) {
         case DIRECT:
             return await handle_direct_message(indexed_db, chat_message, message_contents, message_header, message_key)
         case GROUP:
-            return await handle_group_message(indexed_db, client, chat_message, message_contents, message_header, message_key)
+            return await handle_group_message(indexed_db,  chat_message, message_contents, message_header, message_key)
         case USER_ADDED:
             return await handle_user_added_message(indexed_db, client, identity.user_id, chat_message, message_contents, message_header, message_key, identity)
         case USER_REMOVED:
             return await handle_user_removed_message(indexed_db, client, chat_message, message_contents, message_header, message_key)
         case GROUP_INVITE:
-            return await handle_group_invite_message(indexed_db, chat_message, message_contents, message_header, message_key)
+            return await handle_group_invite_message(indexed_db, identity.user_id,chat_message, message_contents, message_header, message_key)
+        case GROUP_MEMBERSHIP:
+            return await handle_group_membership_message(indexed_db, message_contents, message_header)
         default:
             throw new Error("Invalid message type in header.")
     }
+}
+
+export async function handle_new_encrypted_message(indexed_db, client, chat_message, identity) {
+
+    let { message_contents, message_header, message_key } = await decrypt_chat_message(indexed_db, chat_message)
+    // handle messages not found
+    if (!(message_contents && message_header && message_key)) {
+        console.log("skipped message")
+        await store_skipped_message(indexed_db, chat_message)
+        return { msg_obj: null, chat_object: null };
+    }
+    return await handle_new_decrypted_message(indexed_db, client, chat_message, identity, message_contents, message_header, message_key)
+
 }
 
 
