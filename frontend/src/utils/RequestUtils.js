@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 import { MessageFile, PreKeyBundle } from "../utils/protocol/messages"
-import { get_file_local, get_user_info, store_file_local,store_user_info, storeUserData } from './StorageUtils'
+import { get_file_local, get_user_info, get_user_info_username, store_file_local,store_user_info, storeUserData } from './StorageUtils'
 import { decrypt_file_contents , concatenateUIntArray} from './CryptoUtils'
 import { convertBase64StringToArrayBuffer } from './EncodingUtils'
 
@@ -86,23 +86,39 @@ export async function deleteChatRequest(chat_id) {
     return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { withCredentials: true, withXSRFToken: true })).data);
 }
 
+export async function getUserProfileByUsername(indexed_db, username){
 
-export async function getUserProfile(indexed_db, user_id) {
     return await performRequestCSRFToken(async () => {
-        let user_info = await get_user_info(indexed_db, user_id)
-        if (user_info && user_info.profile) {
-            return user_info.profile
+        let user_info = await get_user_info_username(indexed_db, username)
+        if (user_info) {
+            return user_info
         }
-
-        let result = (await axios.get(`${api_url}/user/profile/${user_id}`, { withCredentials: true, withXSRFToken: true })).data
-        user_info = user_info || { user_id: user_id }
-        user_info.profile = new Blob([ convertBase64StringToArrayBuffer( result.data) ] , {mimetype:result.mimeType})
+        let result = (await axios.get(`${api_url}/user/profile/username/${username}`, { withCredentials: true, withXSRFToken: true })).data
+        const profile_data = result.profileImage
+        user_info = {username:result.username, user_id:result.userId}
+        user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:username,type:profile_data.mimeType})
         await store_user_info(indexed_db, user_info)
-        return result
-    }
-    );
-
+    })
 }
+
+export async function getUserProfileById(indexed_db, user_id){
+    return await performRequestCSRFToken(async () => {
+        let user_info = await get_user_info(indexed_db,user_id)
+        if (user_info) {
+            return user_info
+        }
+        let result = (await axios.get(`${api_url}/user/profile/user_id/${user_id}`, { withCredentials: true, withXSRFToken: true })).data
+        const profile_data = result.profileImage
+        user_info = {username:result.username, user_id:result.userId}
+        user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:username,type:profile_data.mimeType})
+        await store_user_info(indexed_db, user_info)
+    })
+}
+
+export async function getUserProfileImage(indexed_db, user_id) {
+   return (await getUserProfileById(indexed_db, user_id)).profile 
+}
+
 export async function putUserProfile(data) {
     return await performRequestCSRFToken(async () => (await axios.put(`${api_url}/user/profile`, data, { withCredentials: true, withXSRFToken: true })).data);
 }
@@ -128,7 +144,7 @@ export async function getFile(indexed_db, uuid, message_key, fileIv) {
             }else{
                 message_file_proto = MessageFile.decode(buffer_encrypted)  // group profile pictures
             }
-            let blob = new Blob([message_file_proto.data], {name:message_file_proto.fileName,mimetype:message_file_proto.mimeType})
+            let blob = new File([message_file_proto.data], message_file_proto.fileName,{type:message_file_proto.mimeType})
             await store_file_local(indexed_db, blob, uuid)
 
             return blob 
@@ -151,14 +167,10 @@ export async function getPrekeyBundle(username) {
 }
 
 
+export async function getUserId(indexed_db, username){
+    return (await getUserProfileByUsername(indexed_db, username)).user_id
+}
 
 export async function getUsername(indexed_db, user_id) {
-    let user_info = await get_user_info(indexed_db, user_id)
-    if (user_info && user_info.name) {
-        return user_info.name;
-    }
-    let username = await performRequestCSRFToken(async () => (await axios.get(`${api_url}/user/username/${user_id}`, { withCredentials: true })).data)
-    user_info = { name: username, user_id: user_id }
-    await store_user_info(indexed_db, user_info)
-    return username;
+    return (await getUserProfileById(indexed_db, user_id)).username
 }

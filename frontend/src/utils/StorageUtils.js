@@ -14,6 +14,7 @@ const dh_keystore_name = "dh_keys_prev"
 const skipped_messages_store_name = "skipped_messages"
 const file_store_name = "message_files"
 const user_info_store_name = "user_cache"
+const username_index_name = "username_index"
 const current_version = 2
 const max_otp = 100;
 
@@ -48,6 +49,7 @@ export function useIndexedDB() {
                     const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "header_key_bytes" })
                     const file_store = db_obj.createObjectStore(file_store_name)
                     const user_info_cache = db_obj.createObjectStore(user_info_store_name, { keyPath: "user_id" })
+                    user_info_cache.createIndex(username_index_name, "username")
                     const skipped_message_store = db_obj.createObjectStore(skipped_messages_store_name, { keyPath: "message_id" })
                 }
             })
@@ -198,7 +200,9 @@ export async function store_file_local(indexed_db, file_object, uuid) {
     await indexed_db.put(file_store_name, file_object, uuid)
 }
 
-
+export async function get_user_info_username(indexed_db, username) {
+    return await indexed_db.getFromIndex(user_info_store_name, username_index_name, username)
+}
 
 export async function get_user_info(indexed_db, user_id) {
     return await indexed_db.get(user_info_store_name, user_id)
@@ -253,12 +257,16 @@ export async function get_all_double_ratchet_sess(indexed_db) {
     return await indexed_db.getAll(double_ratchet_store_name)
 }
 
-export async function create_chat_object(chat_id, name, type, users=[], group_image_file=undefined, group_secret_key) {
+export async function create_chat_object(chat_id, name, type, users=[], group_image_file=undefined, group_secret_key, initiator="") {
     let chat_object = {
         chat_id: chat_id, name: name, messages: [], type: type,
         timestamp: new Date().getTime(),
     }
+    // add initiator
+    
     if (type==="GROUP"){
+        if (initiator)
+            chat_object.initiator = initiator
         chat_object.users = users
         chat_object.group_secret_key =group_secret_key ? group_secret_key:await exportAESKey( await generateAESkey() )
         chat_object.group_image_file = group_image_file

@@ -1,16 +1,23 @@
 import { Stack, Card, CardBody, CardFooter, CardHeader, Button } from "react-bootstrap";
 import ChatMessage from "./ChatMessage";
 import ChatKeyboard from "./ChatKeyboard";
+import { useContext, useState } from "react";
+import { user_id_context } from "../../globals";
+import GroupUserList from "./GroupUserList";
 
 
-function ChatWindow({ chat_object, messages, onMessageSend, onInviteUser, onDeleteUser }) {
-    return <Card fluid="true" className="border position-relative vh-100">
-        <CardBody className="overflow-y-scroll" >
-            {chat_object.type === "GROUP" && <CardHeader>
-                <Button variant="primary" onClick={(e) => onInviteUser(chat_object)}>Invite user</Button>
-            </CardHeader>}
-            <Stack style={{ paddingBottom: "15%" }} className="border h-100 mh-100 overflow-y-scroll gap-2 " >
-                {messages && messages.sort((a, b) => a.timestamp - b.timestamp).map((message, index) => <ChatMessage type={message.type} key={index} message_key={message.message_key} contents={message.message_contents} sender={message.sender_id} />)}
+function ChatWindow({  chat_object, messages, onMessageSend, onInviteUser, onDeleteUser }) {
+    let [user_id, set_user_id] = useContext(user_id_context) 
+    let [disp_modal, set_disp_modal] = useState(false)
+
+    return <Card className="h-100 mh-100 border">
+        {chat_object.type === "GROUP" &&chat_object.initiator && chat_object.initiator === user_id && <CardHeader>
+           { disp_modal && <GroupUserList show={disp_modal} onAddUser={onInviteUser} onRemoveUser={onDeleteUser} onClose={()=>{set_disp_modal(false)}} /> }
+            <Button variant="primary" onClick={(e) => set_disp_modal(true)}>Manage Users</Button>
+        </CardHeader>}
+        <CardBody className="overflow-y-scroll border">
+            <Stack style={{paddingBottom:"15%"}} gap={2}  >
+                {messages && messages.sort((a, b) => a.timestamp - b.timestamp).map((message, index) => <ChatMessage  type={message.type} key={index} message_key={message.message_key} contents={message.message_contents} sender={message.sender_id} />)}
             </Stack>
         </CardBody>
         <CardFooter className="position-absolute w-100  bg-white bottom-0">

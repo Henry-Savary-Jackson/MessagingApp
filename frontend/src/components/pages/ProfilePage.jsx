@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Form, Image, Button, FormLabel, FormControl, FormGroup } from "react-bootstrap";
 import { identity_context} from "../../globals";
-import { getUserProfile, putUserProfile } from "../../utils/RequestUtils";
+import { getUserProfileImage, putUserProfile } from "../../utils/RequestUtils";
 import { Link } from "react-router";
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer } from "../../utils/EncodingUtils";
 import { useIndexedDB } from "../../utils/StorageUtils";
@@ -13,7 +13,7 @@ function ProfilePage() {
     let [identity , set_ident_info] = useContext(identity_context)
 
     let [newUsername, setNewUsername] = useState(identity.username)
-    let [profileImage, setProfileImage] = useState(undefined)
+    let [profileImageBlob, setProfileImageBlob] = useState(undefined)
 
     let [profileBlobURL, setProfileBlobURL] = useState("")
     let [newFile, setNewFile] = useState(undefined)
@@ -23,23 +23,23 @@ function ProfilePage() {
             URL.revokeObjectURL(profileBlobURL)
     }
     let updateBlobURL = (profileImage) => {
-        setProfileBlobURL(URL.createObjectURL(new Blob([convertBase64StringToArrayBuffer(profileImage.data)]), { type: profileImage.mimeType }))
+        setProfileBlobURL(URL.createObjectURL(profileImage))
     }
     useEffect(
         () => {
-            if (profileImage) {
-                updateBlobURL(profileImage)
+            if (profileImageBlob) {
+                updateBlobURL(profileImageBlob)
             }
             return unsetBlobURL
         }
-        , [profileImage])
+        , [profileImageBlob])
 
     // gcreate a blob url and display it using an image component
     useEffect(() => {
 
         (async () => {
             if (db)
-                setProfileImage(await getUserProfile(db, identity.user_id) || undefined)
+                setProfileImageBlob(await getUserProfileImage(db, identity.user_id) || undefined)
         })()
 
     }, [db])
@@ -59,7 +59,7 @@ function ProfilePage() {
             fileReader.onload = (ev) => {
                 let bytes = fileReader.result
                 let newProfile = { "data": convertArrayBufferToBase64(bytes), mimeType: newFile.type }
-                updateBlobURL(newProfile)
+                updateBlobURL(new File([bytes]), {type:newFile.type, name:newFile.name})
                 console.log("uploaded profile image")
                 submit(newProfile)
             }

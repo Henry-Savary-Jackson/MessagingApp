@@ -290,7 +290,8 @@ export async function create_new_identity(){
     for (let i=0 ; i< n_otp; i++){
         oneTimePrekey.push(await generate25519KeyExchangePair())
     }
-    return {identityKey,verifierKey, signedPrekey, expiration, oneTimePrekey}
+    let last_msg_timestamp = current_date.getTime()
+    return {identityKey,verifierKey, signedPrekey, expiration, oneTimePrekey, last_msg_timestamp}
 }
 
 export async function create_new_prekey_bundle(js_identity){

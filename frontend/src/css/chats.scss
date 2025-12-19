@@ -35,6 +35,17 @@
     @extend %chat-text;
     border-bottom-right-radius: 0px
 }
+.chat-text-other img{
+    max-width: 500px;
+    max-height: 500px;
+}
+
+.chat-text-sender img{
+    max-width: 500px;
+    max-height: 500px;
+}
+
+
 
 .chat-item{
     height: 100px;
@@ -64,4 +75,14 @@
 .group-icon-upload img{
     width: 40px;
     height: 40px;
+}
+
+.msg-profile-image {
+    width: 30px;
+    height: 30px;
+}
+
+.download-file-icon{
+    width: 30px;
+    height: 30px;
 }

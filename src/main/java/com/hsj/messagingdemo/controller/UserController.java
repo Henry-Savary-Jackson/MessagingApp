@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hsj.messagingdemo.dto.RegistrationRequest;
 import com.hsj.messagingdemo.dto.SignedPrekeyUpdate;
 import com.hsj.messagingdemo.dto.UserChangeDTO;
+import com.hsj.messagingdemo.dto.UserProfileDTO;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.hsj.messagingdemo.dto.Messages.PreKeyBundle;
@@ -35,7 +36,6 @@ import com.hsj.messagingdemo.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 
 @RestController
 @RequestMapping("/user")
@@ -55,60 +55,59 @@ public class UserController {
             @RequestBody RegistrationRequest request)
             throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
 
-        User user =userService.saveUser(request);
+        User user = userService.saveUser(request);
         rememberMeServices.loginSuccess(servletRequest, response,
                 userService.getSpingSecurityAuthentication(user));
         return user.getId();
     }
 
     @PutMapping("/profile")
-    public String putUser( @RequestBody UserChangeDTO userChangeDTO) {
+    public String putUser(@RequestBody UserChangeDTO userChangeDTO) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (currentUser == null){
+        if (currentUser == null) {
             throw new AuthenticationServiceException("User is not logged in.");
         }
-       userService.modifyUser(currentUser, userChangeDTO);
+        userService.modifyUser(currentUser, userChangeDTO);
         return "Success";
     }
 
-    @GetMapping("/profile/{id}")
-    public ProfileImage getUserProfile(@PathVariable String id) {
-        return userService.getUserById(id).getProfilePicture();
+    @GetMapping("/profile/user_id/{id}")
+    public UserProfileDTO getUserProfile(@PathVariable String id) {
+        return UserProfileDTO.createFromUser(userService.getUserById(id));
+    }
+    
+    @GetMapping("/profile/username/{username}")
+    public UserProfileDTO getUserProfileName(@PathVariable String username) {
+        return UserProfileDTO.createFromUser(userService.getUserByUsername(username).orElseThrow());
     }
 
-    @GetMapping("/username/{id}")
-    public String userProfile(@PathVariable String id) {
-        return userService.getUserById(id).getUsername();
-    }
-
-    @GetMapping(value="/prekeybundle/{username}",produces="application/octet-stream")
+    @GetMapping(value = "/prekeybundle/{username}", produces = "application/octet-stream")
     public byte[] fetchPrekeyBundle(@PathVariable String username) throws InvalidProtocolBufferException {
         User user = userService.getUserByUsername(username).orElseThrow();
         PreKeyBundle pk = user.getPrekeyBundle().convertToProtobufPrekeyBundle();
-        return pk.toBuilder().setId(user.getId()).build().toByteArray(); 
+        return pk.toBuilder().setId(user.getId()).build().toByteArray();
     }
-    
-    @PutMapping(value="/signed_prekey")
-    public String setSignedPrekey(@RequestBody SignedPrekeyUpdate newSignedPreKeyRequest) throws InvalidProtocolBufferException {
+
+    @PutMapping(value = "/signed_prekey")
+    public String setSignedPrekey(@RequestBody SignedPrekeyUpdate newSignedPreKeyRequest)
+            throws InvalidProtocolBufferException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.setSignedPrekey(currentUser, newSignedPreKeyRequest);
         return "Success";
     }
-    
-    @PutMapping(value="/otps")
+
+    @PutMapping(value = "/otps")
     public String setOtps(@RequestBody byte[] otps) throws InvalidProtocolBufferException {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         PrekeyBundleDB prekeyBundleDB = currentUser.getPrekeyBundle();
         int i = 0;
-        while (i < otps.length){
-            int next_i = i +32;
+        while (i < otps.length) {
+            int next_i = i + 32;
             prekeyBundleDB.getOneTimePreKeys().add(Arrays.copyOfRange(otps, i, next_i));
             i = next_i;
         }
-        userService.setPreKeyBundle(currentUser,prekeyBundleDB);
+        userService.setPreKeyBundle(currentUser, prekeyBundleDB);
         return "Success";
     }
-    
-
 
 }

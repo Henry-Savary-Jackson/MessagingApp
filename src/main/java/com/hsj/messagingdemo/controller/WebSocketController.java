@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -81,9 +82,10 @@ public class WebSocketController {
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
+        int timestamp =(int)headerAccessor.getMessageHeaders().getOrDefault("last_timestamp", Instant.now().toEpochMilli());
 
         KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(
-                user.getId(), user.getUsername(), headerAccessor.getSessionId(), 0);
+                user.getId(), user.getUsername(), headerAccessor.getSessionId(),timestamp);
 
         messageService.linkUserToKafkaEventListener(user.getId(), endpoint.getId());
 

@@ -1,33 +1,31 @@
 import { useState } from "react"
-import { Image,Form, Button, FormControl, Stack, FormLabel } from "react-bootstrap"
+import { Image, Form, Button, FormControl, Stack, FormLabel } from "react-bootstrap"
 import "../../css/chats.scss"
 
-function ChatKeyboard({chat_id, onMessageSend }) {
+function ChatKeyboard({ chat_id, onMessageSend }) {
 
     let [message, setMessage] = useState("")
     let [file, setFile] = useState(undefined)
 
     return <Form className={"position-sticky start-0 w-100 bottom-0"} onSubmit={async (e) => {
         e.preventDefault();
-        if (message) {
 
-            async function submitMessage(file_js_obj=undefined) {
-                onMessageSend(chat_id,message, file_js_obj)
-                setMessage("")
-                setFile(undefined)
-            }
-            if (file) {
-                let reader = new FileReader();
-                reader.onloadend = async (e) => {
-                    let file_obj = { data: new Uint8Array(reader.result), mimeType: file.type, fileName:file.name }
+        async function submitMessage(file_js_obj = undefined) {
+            onMessageSend(chat_id, message, file_js_obj)
+            setMessage("")
+            setFile(undefined)
+        }
+        if (file) {
+            let reader = new FileReader();
+            reader.onloadend = async (e) => {
+                let file_obj = { data: new Uint8Array(reader.result), mimeType: file.type, fileName: file.name }
 
-                    document.getElementById("input-file-chat").value =null 
-                    await submitMessage(file_obj)
-                }
-                reader.readAsArrayBuffer(file)
-            } else {
-                await submitMessage()
+                document.getElementById("input-file-chat").value = null
+                await submitMessage(file_obj)
             }
+            reader.readAsArrayBuffer(file)
+        } else {
+            await submitMessage()
         }
 
     }}>
@@ -41,9 +39,9 @@ function ChatKeyboard({chat_id, onMessageSend }) {
                     setFile(e.target.files[0])
                 }
             }} />
-            <Button onClick={(e)=>{document.getElementById("input-file-chat").value  = null}} >Clear file input</Button>
+            <Button onClick={(e) => { document.getElementById("input-file-chat").value = null }} >Clear file input</Button>
 
-            <FormControl type="text"  value={message} onChange={(e) => setMessage(e.target.value)} />
+            <FormControl type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
         </Stack>
     </Form>
 }

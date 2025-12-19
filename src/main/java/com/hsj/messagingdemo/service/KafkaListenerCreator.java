@@ -27,9 +27,9 @@ public class KafkaListenerCreator {
     private KafkaListenerContainerFactory kafkaListenerContainerFactory;
 
     private KafkaListenerEndpoint createKafkaListenerEndpoint( String userId, String username, String sessionId,
-            int offset) {
+            int timestamp) {
         MethodKafkaListenerEndpoint<String, byte[]> kafkaListenerEndpoint = createDefaultMethodKafkaListenerEndpoint(
-                 userId, sessionId, offset);
+                 userId, sessionId, timestamp);
         kafkaListenerEndpoint.setBean(new KafkaEventListener(username, sessionId, template));
 
         try {
@@ -41,16 +41,15 @@ public class KafkaListenerCreator {
     }
 
     private MethodKafkaListenerEndpoint<String, byte[]> createDefaultMethodKafkaListenerEndpoint(
-            String userId,String sessionId, int offset) {
+            String userId,String sessionId, int timestamp) {
 
         MethodKafkaListenerEndpoint<String, byte[]> kafkaListenerEndpoint = new MethodKafkaListenerEndpoint<>();
         String listenerId = generateListenerId( userId, sessionId);
         kafkaListenerEndpoint.setId(listenerId);
         kafkaListenerEndpoint.setGroupId(listenerId);
         kafkaListenerEndpoint.setAutoStartup(true);
-        TopicPartitionOffset partionOffset = new TopicPartitionOffset(userId, 0, TopicPartitionOffset.SeekPosition.END);
+        TopicPartitionOffset partionOffset = new TopicPartitionOffset(userId, 0, (long)timestamp- 60*1000, TopicPartitionOffset.SeekPosition.TIMESTAMP);
         kafkaListenerEndpoint.setTopicPartitions(partionOffset);
-
         kafkaListenerEndpoint.setMessageHandlerMethodFactory(new DefaultMessageHandlerMethodFactory());
         return kafkaListenerEndpoint;
     }
@@ -59,8 +58,8 @@ public class KafkaListenerCreator {
         return "%s : %s".formatted(userId, sessionId);
     }
 
-    public KafkaListenerEndpoint createAndRegisterListener( String userId, String username, String sessionId, int offset) {
-        KafkaListenerEndpoint listener = createKafkaListenerEndpoint( userId, username, sessionId,offset);
+    public KafkaListenerEndpoint createAndRegisterListener( String userId, String username, String sessionId, int timestamp) {
+        KafkaListenerEndpoint listener = createKafkaListenerEndpoint( userId, username, sessionId,timestamp);
         kafkaListenerEndpointRegistry.registerListenerContainer(listener, kafkaListenerContainerFactory, true);
         return listener;
     }

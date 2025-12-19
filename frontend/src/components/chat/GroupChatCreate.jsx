@@ -51,7 +51,7 @@ export default function GroupChatCreate({show, onChatCreate, onClose}) {
         <ModalHeader><ModalTitle>Create new group chat</ModalTitle></ModalHeader>
         <ModalBody >
             <Stack>
-                <FormLabel className="group-icon-upload" htmlFor="chat-upload-pic">Upload Icon<Image src="/chat-profile-input.svg" /></FormLabel>
+                <FormLabel className="group-icon-upload" htmlFor="chat-upload-pic">Upload Icon<Image src="/chat-profile-input.svg" />{group_image ? group_image.name :""}</FormLabel>
                 <FormControl className="disappear" id="chat-upload-pic" type="file" onChange={(e) => {
                     if (e.target.files)
                         set_group_image(e.target.files[0])

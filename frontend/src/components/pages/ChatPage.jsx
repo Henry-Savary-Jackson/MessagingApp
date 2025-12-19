@@ -1,16 +1,16 @@
 import { useContext, useEffect, useReducer, useState } from 'react'
 import { Stack, Col, Container, Row } from 'react-bootstrap'
 import { Link, useLocation } from 'react-router'
-import { createChat, getCSRF, getPrekeyBundle, getUsername, getUserProfile, logout, setAxiosCSRF } from '../../utils/RequestUtils'
+import { createChat, getCSRF, getPrekeyBundle, getUsername, getUserProfileImage, logout, setAxiosCSRF } from '../../utils/RequestUtils'
 import ChatWindow from "./../chat/ChatWindow"
 import ChatListBar from "./../chat/ChatListBar"
 import { decrypt_chat_message, init_ratchet_root_receiver, init_ratchet_root_sender, handle_all_skipped_messages_for_session } from '../../utils/RatchetUtils'
 import { handle_X3DH_message, send_X3DH_message } from '../../utils/X3DHUtils'
 import { handle_new_encrypted_message, send_new_encrypted_message } from '../../utils/MessagingUtils'
 import { ChatMessage } from '../../utils/protocol/messages'
-import { create_chat_object, create_double_ratchet_recipient, delete_chat, delete_skipped_message, get_all_chats, get_all_double_ratchet_sess, get_chat, get_double_ratchet_session, get_messages, getOneTimePrekeyWithPubKey, store_chat, store_double_ratchet_session, store_message, useIdentityInformation, useIndexedDB, USER_ADDED } from '../../utils/StorageUtils'
+import { create_chat_object, create_double_ratchet_recipient, delete_chat, delete_skipped_message, get_all_chats, get_all_double_ratchet_sess, get_chat, get_double_ratchet_session, get_messages, getOneTimePrekeyWithPubKey, store_chat, store_double_ratchet_session, store_message, useIdentityInformation, useIndexedDB, USER_ADDED, USER_REMOVED } from '../../utils/StorageUtils'
 import { useStompClient, useSubscription } from 'react-stomp-hooks'
-import { identity_context, user_id_context, username_context } from '../../globals'
+import { blob_context, identity_context, user_id_context, username_context } from '../../globals'
 import GroupChatCreate from '../chat/GroupChatCreate'
 
 
@@ -18,6 +18,21 @@ function ChatPage({ logoutCallback }) {
 
     let location = useLocation()
     let [currentChat, setCurrentChat] = useState(undefined)
+
+    let [blobs, blobsReducer] = useReducer((prev, action) => {
+        switch (action.action) {
+            case "add":
+                return { ...prev, [action.fileId]: URL.createObjectURL(action.blob) }
+            case "remove":
+                URL.revokeObjectURL(prev[action.fileId])
+                delete prev[action.fileId]
+                return { ...prev }
+        }
+    }, {})
+
+    const add_blob = (fileId, blob) => { blob && blobsReducer({ action: "add", fileId: fileId, blob: blob }) }
+    const remove_blob = (fileId) => { blobsReducer({ action: "remove", fileId: fileId }) }
+    const get_blob = (fileId) => blobs[fileId]
 
     let [chats, chatsReducer] = useReducer((prev, action) => {
         switch (action.action) {
@@ -94,7 +109,7 @@ function ChatPage({ logoutCallback }) {
 
         if (msg_obj)
             addMessageUI(msg_obj)
-        
+
 
         if (currentChat && chat_object && chat_object.chat_id === currentChat.chat_id)
             readMessages(chat_object.chat_id)
@@ -102,6 +117,9 @@ function ChatPage({ logoutCallback }) {
         if (chat_object)
             addMessageToChatCount(chat_object.chat_id, msg_obj.timestamp || (new Date()).getTime())
 
+        // is there not a cleaner way to do this????
+        // why should i update the whole object
+        set_ident_info({...ident_info, last_msg_timestamp:new Date().getTime()})
     }
 
     const onMessage = async (message) => {
@@ -115,7 +133,7 @@ function ChatPage({ logoutCallback }) {
 
             found_skipped_messages.forEach(
                 async (skipped_msg) => {
-                    let {msg_obj, chat_object} = skipped_msg
+                    let { msg_obj, chat_object } = skipped_msg
                     console.log("Handling skipped message on UI!")
                     console.log(skipped_msg)
                     await onMessageUI(msg_obj, chat_object);
@@ -128,12 +146,13 @@ function ChatPage({ logoutCallback }) {
         }
 
     } // PUT notification symbol on chat
-    useSubscription("/user/messages", onMessage)
+    ident_info && useSubscription("/user/messages", onMessage,  { last_timestamp:ident_info.last_msg_timestamp || new Date().getTime()})
+
     const client = useStompClient()
 
-    const sendMessage = async (chat_id, text, file_object) => {
+    const sendMessage = async (chat_id, text, file_object = null) => {
         let chat_object = await get_chat(db, chat_id)
-        let { message_contents, type, message_key, timestamp } = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info,chat_object.type)
+        let { message_contents, type, message_key, timestamp } = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info, chat_object.type, file_object)
         const message = { type: type, message_contents: message_contents, sender_id: user_id, timestamp: timestamp, message_key: message_key }
         await store_message(db, message, chat_object)
         message.chat_id = chat_id
@@ -144,11 +163,13 @@ function ChatPage({ logoutCallback }) {
         messageReducer({ action: "init", chat_id: chat_id, messages: messages })
     }
 
-    const onInviteUser = async (chat) => {
-        let other_username = prompt("Enter username")
-        let prekey_bundle_other = await getPrekeyBundle(other_username)
-        let other_id = prekey_bundle_other.id
-        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
+    const onInviteUser = async (chat, user_id) => {
+        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: user_id }, user_id, ident_info, USER_ADDED)
+        addMessageUI(msg)
+    }
+
+    const onDeleteUser = async (chat, user_id)=>{
+        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: user_id }, user_id, ident_info, USER_REMOVED)
         addMessageUI(msg)
     }
 
@@ -189,6 +210,7 @@ function ChatPage({ logoutCallback }) {
         }
     }
     const leaveChat = async (chat_id) => {
+        await send_new_encrypted_message(client, db, chat_id, {userId:user_id}, user_id, ident_info, USER_REMOVED)
         await delete_chat(db, chat_id);
         delChatUI(chat_id);
         if (currentChat && chat_id === currentChat.chat_id)
@@ -205,27 +227,28 @@ function ChatPage({ logoutCallback }) {
         readMessages(chat_id)
     }
 
-    return <Container fluid><Row>
+    return <blob_context.Provider value={[add_blob, remove_blob, get_blob]} > <Container fluid><Row>
         <Col sm={2} >
-            <Stack>
+            <Stack gap={2}>
                 <span>{username}</span>
+                <Link className='btn btn-primary' to={"/profile"} >Edit Profile</Link>
                 <Link className='btn btn-danger' to={"/login"} onClick={async (e) => {
                     await logout()
                     logoutCallback()
                     location.pathname = "/login"
                 }} >Logout</Link>
-                <Link className='btn btn-primary' to={"/profile"} >Edit Profile</Link>
             </Stack>
         </Col>
         <Col sm={4} >
-            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={onChatToNewUser} onChatCreate={() => { set_chat_modal(true) }} />
+            <ChatListBar  chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={onChatToNewUser} onChatCreate={() => { set_chat_modal(true) }} />
         </Col>
-        <Col sm={6}>
-            {currentChat && <ChatWindow onInviteUser={onInviteUser} chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
+        <Col className='vh-100' sm={6}>
+            {currentChat && <ChatWindow onDeleteUser={onDeleteUser}  onInviteUser={onInviteUser} chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
         </Col>
     </Row>
         <GroupChatCreate show={show_chat_modal} onChatCreate={(chat) => { addNewChatUI(chat); set_chat_modal(false) }} onClose={() => { set_chat_modal(false) }} />
     </Container>
+    </blob_context.Provider>
 }
 
 export default ChatPage

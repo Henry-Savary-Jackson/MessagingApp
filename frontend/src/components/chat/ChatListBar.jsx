@@ -9,8 +9,8 @@ function ChatListBar({ chats, onChatClick, onChatCreate, onMessageUser, onChatLe
     return <Stack className="border vh-100 " gap={3}>
         <Button onClick={(e) => { onMessageUser() }} >Message user</Button>
         <Button onClick={(e) => { onChatCreate() }} >Create your chat</Button>
-        <Stack className="overflow-y-scroll mh-100" gap={2}>
-            {chats.map((chat) => <ChatItem key={chat.chat_id} chat={chat} onChatClick={onChatClick} onChatLeave={onChatLeave} />)}
+        <Stack  className="overflow-y-scroll mh-100" gap={2}>
+            {chats.map((chat) => <ChatItem  key={chat.chat_id} chat={chat} onChatClick={onChatClick} onChatLeave={onChatLeave} />)}
         </Stack>
     </Stack>
 }
