@@ -5,6 +5,9 @@ import { get_all_double_ratchet_sess, get_previous_messages_keys, get_recieving_
 
 
 export async function ratchet_turn_until_match(chain, index) {
+    if (index <= -1){
+        return chain.chain_key
+    }
     if (chain.message_keys.length <= index) {
         for (let i = chain.message_keys.length; i < index + 1; i++) {
             chain.message_keys.push(chain.chain_key)
@@ -106,9 +109,9 @@ export async function turn_ratchet_root_sender(dr_session) {
 
 
     dr_session.sending_chain.chain_key = new_sending_key
-    dr_session.sending_chain.messages_keys = []
+    dr_session.sending_chain.message_keys = []
     dr_session.receiving_chain.chain_key = new_recieving_key
-    dr_session.receiving_chain.messages_keys = []
+    dr_session.receiving_chain.message_keys = []
 }
 
 export async function root_ratchet_turn_recieve(dr_session, other_dh) {
@@ -130,9 +133,9 @@ export async function root_ratchet_turn_recieve(dr_session, other_dh) {
     dr_session.receiving_chain.next_header_key = next_header_key_recv
 
     dr_session.sending_chain.chain_key = new_sending_key
-    dr_session.sending_chain.messages_keys = []
+    dr_session.sending_chain.message_keys = []
     dr_session.receiving_chain.chain_key = new_recieving_key
-    dr_session.receiving_chain.messages_keys = []
+    dr_session.receiving_chain.message_keys = []
 
 
 }

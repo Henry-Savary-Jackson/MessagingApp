@@ -257,7 +257,7 @@ export async function get_all_double_ratchet_sess(indexed_db) {
     return await indexed_db.getAll(double_ratchet_store_name)
 }
 
-export async function create_chat_object(chat_id, name, type, users=[], group_image_file=undefined, group_secret_key, initiator="") {
+export async function create_chat_object(chat_id, name, type, users=[], group_image_file=undefined, initiator="", group_secret_key=null) {
     let chat_object = {
         chat_id: chat_id, name: name, messages: [], type: type,
         timestamp: new Date().getTime(),

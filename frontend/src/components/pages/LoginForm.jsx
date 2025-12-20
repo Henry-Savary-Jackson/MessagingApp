@@ -11,7 +11,6 @@ function LoginForm({setUserCallback}) {
 
     let location = useLocation()
     let [ident_info, set_ident_info] = useContext(identity_context)
-    let [user_id, set_user_id] = useContext(user_id_context)
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
 
@@ -35,7 +34,9 @@ function LoginForm({setUserCallback}) {
                 // Great, store user_id into idb
                 let user_id = await login(authenticationRequest)
 
-                await set_ident_info({...identity_js_object, username:username,user_id:user_id})
+                // if not last msg timestamp, update
+                
+                await set_ident_info({...identity_js_object, username:username,user_id:user_id, last_msg_timestamp:new Date().getTime()})
 
                 setUserCallback(username, user_id)
                 location.pathname = "/chat"

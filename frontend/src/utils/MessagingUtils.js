@@ -1,5 +1,5 @@
 import { ChatMessage, MessageType, MessageHeader, MessageFile, MessageContents } from "./protocol/messages"
-import { decrypt_message_contents, encrypt_file_contents, encrypt_header, encrypt_message_contents, exportX25519PublicKey, signed_prekey_lifetime_ms } from './CryptoUtils'
+import { decrypt_message_contents, encrypt_file_contents, encrypt_header, encrypt_message_contents, exportAESKey, exportX25519PublicKey, generateAESkey, signed_prekey_lifetime_ms } from './CryptoUtils'
 import { store_message, convert_proto_chat_msg, DIRECT, get_chat, get_double_ratchet_session, GROUP, GROUP_MEMBERSHIP, GROUP_INVITE, store_chat, store_double_ratchet_session, USER_ADDED, USER_REMOVED, delete_chat, create_chat_object, store_skipped_message } from './StorageUtils'
 import { decrypt_chat_message, ratchet_turn_send } from "./RatchetUtils"
 import { getPrekeyBundle, getUsername, uploadFile } from "./RequestUtils"
@@ -25,23 +25,36 @@ export function parseMessage(message_bytes) {
     return chatMessage;
 }
 
-export async function send_user_removal_message(client, indexed_db, chat_id, contents, sender_id) {
+export async function MessageContentsIntoGroup(message_contents, chat_object) {
+    // encrypt using group key
+    let msg_contents_profobuf = MessageContents.fromObject(message_contents)
+    let [bytes_enc, iv] = await encrypt_message_contents(chat_object.group_secret_key, msg_contents_profobuf)
+    let b64_txt = convertArrayBufferToBase64(bytes_enc)
+    return { text: b64_txt, groupMessageIv: iv }
+}
+
+export async function send_user_removal_message(client, indexed_db, chat_id, contents, sender_id, identity) {
     // make the contest
     let removed_user_id = contents.userId
 
     let chat_object = await get_chat(indexed_db, chat_id)
-    chat_object.users = chat_object.users.filter((user) => user === removed_user_id)
-    await store_chat(indexed_db, chat_object)
+    chat_object.users = chat_object.users.filter((user) => user !== removed_user_id)
     // send_direct_message
     if (removed_user_id !== sender_id) {
-        let message_contents_to_removed = {
-        }
         // if empty the user will delete their group chat client side. In any case htey wont recieve the new group key
-        await send_direct_message(client, indexed_db, removed_user_id, message_contents_to_removed, sender_id, USER_REMOVED)
+        let msg_contents = await MessageContentsIntoGroup({}, chat_object)
+        await send_direct_message(client, indexed_db, removed_user_id, msg_contents, sender_id, identity, USER_REMOVED, chat_id)
     }
+
     let group_chat_msg_contents = { userGroupChange: { userId: removed_user_id, newGroupKey: chat_object.group_secret_key, } }
 
-    return await send_group_message(client, indexed_db, chat_id, group_chat_msg_contents, sender_id, USER_REMOVED)
+    // create new group key to keep new comms secret to removed user
+
+    let result = await send_group_message(client, indexed_db, chat_id, group_chat_msg_contents, sender_id, identity,USER_REMOVED)
+
+    chat_object.group_secret_key = await exportAESKey(await generateAESkey())
+    await store_chat(indexed_db, chat_object)
+    return result
 }
 export async function send_group_membership_message(client, indexed_db, chat_id, contents, sender_id, identity) {
     let new_user_id = contents.userId
@@ -97,20 +110,15 @@ export async function send_group_message(client, indexed_db, chat_id, contents, 
         // upload file encrypted with group key and remove it so there isn't an upload for each individal participant
     }
 
-    let message_contents_protobuf_obj = MessageContents.fromObject(contents)
-    // encrypt using group key
-    let [encrypted_bytes, message_iv] = await encrypt_message_contents(chat_object.group_secret_key, message_contents_protobuf_obj)
 
-    // create message headers for
-    let message_contents_text = convertArrayBufferToBase64(encrypted_bytes)
+    let msg_contents = await MessageContentsIntoGroup(contents, chat_object)
 
-    let result = {}
     for (let user of users) {
         // for each user
         if (user === sender_id)
             continue
         // send this message using dourble ratchet algo
-        result = await send_direct_message(client, indexed_db, user, { text: message_contents_text, groupMessageIv: message_iv }, sender_id, identity, type, chat_id)
+        await send_direct_message(client, indexed_db, user, msg_contents, sender_id, identity, type, chat_id)
     }
 
     // convert file data into fileblob and store it locally
@@ -128,12 +136,12 @@ export async function send_direct_message(client, indexed_db, recipient_id, cont
         dr_session = await send_X3DH_message(indexed_db, client, sender_id, recipient_id, recipient_username, identity.identityKey, identity.signedPrekey, identity.verifierKey, recipient_prekey_bundle)
     }
     // ratchet turn, if you have not send any messages on the sending chain, you should do a ratchet turn for the root key
-    let message_keys = dr_session.sending_chain.message_keys
     await ratchet_turn_send(dr_session, dr_session.receiving_chain.message_keys.length > 0)
+    let message_keys = dr_session.sending_chain.message_keys
     // save changes
     await store_double_ratchet_session(indexed_db, dr_session)
     // get the message key for the message
-    let message_key = message_keys[message_keys.length - 1]
+    let message_key = message_keys[message_keys.length - 1] 
 
     if (contents.file) {
         let file_contents_protobuf_obj = MessageFile.fromObject(contents.file)
@@ -198,7 +206,7 @@ export async function handle_group_invite_message(indexed_db, user_id, chat_mess
 
     let { groupChatId, groupChatName, groupKey, groupImage } = message_contents.groupInvite
 
-    let new_chat_object = await create_chat_object(groupChatId, groupChatName, "GROUP", [message_header.senderId, user_id], groupImage, groupKey, message_header.senderId)
+    let new_chat_object = await create_chat_object(groupChatId, groupChatName, "GROUP", [message_header.senderId, user_id], groupImage, message_header.senderId, groupKey)
     // store 
 
     return await store_message_object_chat(indexed_db, chat_message, message_contents, message_header, message_key, new_chat_object)
@@ -215,22 +223,25 @@ export async function handle_user_removed_message(indexed_db, client, chat_messa
     let chat_object = await get_chat(indexed_db, message_header.chatId)
     let decrypted_contents = await convertGroupMessage(chat_object, message_contents)
 
-    let removed_user_id = decrypted_contents.userGroupChange.userId
+    let removed_user_id = decrypted_contents.userGroupChange && decrypted_contents.userGroupChange.userId
     if (chat_object.initiator && message_header.senderId !== chat_object.initiator) {
-        if (message_header.senderId !== removed_user_id) {
+        if (!removed_user_id || message_header.senderId !== removed_user_id) {
             console.error("Rejected user removal message. Not from intiator or removed user.")
             return { msg_obj: null, chat_object: null }
         }
     }
+
     // check if empty
     if (!decrypted_contents.userGroupChange) {
         // remove yourself from the group 
         await delete_chat(indexed_db, message_header.chatId)
-        return { msg_obj: null, chat_object: null }
+        return{ msg_obj: convert_proto_chat_msg(chat_message, decrypted_contents, message_header, message_key) , chat_object:chat_object}
     }
+
+
     // only accept if initiator or user in question is the sender
     // update user list and new group key
-    chat_object.users = chat_object.users.filter((user) => user === removed_user_id)
+    chat_object.users = chat_object.users.filter((user) => user !== removed_user_id)
     chat_object.group_secret_key = decrypted_contents.userGroupChange.newGroupKey
 
     return await store_message_object_chat(indexed_db, chat_message, decrypted_contents, message_header, message_key, chat_object)
@@ -327,8 +338,13 @@ export async function handle_new_encrypted_message(indexed_db, client, chat_mess
         await store_skipped_message(indexed_db, chat_message)
         return { msg_obj: null, chat_object: null };
     }
-    return await handle_new_decrypted_message(indexed_db, client, chat_message, identity, message_contents, message_header, message_key)
-
+    try {
+        return await handle_new_decrypted_message(indexed_db, client, chat_message, identity, message_contents, message_header, message_key)
+    } catch (e) {
+        console.error("message gave error when handled")
+        console.error(e)
+        return { msg_obj: null, chat_object: null };
+    }
 }
 
 

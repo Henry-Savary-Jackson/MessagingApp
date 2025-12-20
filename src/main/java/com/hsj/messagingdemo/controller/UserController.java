@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.bouncycastle.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hsj.messagingdemo.dto.RegistrationRequest;
@@ -36,6 +38,7 @@ import com.hsj.messagingdemo.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/user")
@@ -79,6 +82,11 @@ public class UserController {
     @GetMapping("/profile/username/{username}")
     public UserProfileDTO getUserProfileName(@PathVariable String username) {
         return UserProfileDTO.createFromUser(userService.getUserByUsername(username).orElseThrow());
+    }
+
+    @GetMapping("/profile/search")
+    public List<String> getUserIdsFroSearch(@RequestParam(value = "q") String query) {
+        return userService.searchByUsersname(query);
     }
 
     @GetMapping(value = "/prekeybundle/{username}", produces = "application/octet-stream")

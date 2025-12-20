@@ -75,7 +75,7 @@ function App() {
               <Route element={<PrivateRoute auth={user_id && ident_info} redirect_route="/" />}>
                 <Route element={user_id && ident_info && < StompSessionProvider
                   url={broker_url} >
-                  <ChatPage logoutCallback={logoutCallback} />
+                  <ChatPage  ident_info={ident_info} set_ident_info={set_ident_info} logoutCallback={logoutCallback} />
                 </StompSessionProvider >} path='/chat' />
               </Route>
               <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />

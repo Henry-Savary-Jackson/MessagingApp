@@ -2,6 +2,7 @@ package com.hsj.messagingdemo.service;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,10 @@ public class UserService {
         } catch (CertificateException e) {
             throw new AuthenticationServiceException("Certificate Exception.");
         }
+    }
+
+    public List<String> searchByUsersname(String username){
+        return userRepo.findByUsernameStartsWith(username).stream().map((user)-> user.getId()).toList();
     }
 
     public User getUserById(String userId){

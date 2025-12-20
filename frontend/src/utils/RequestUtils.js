@@ -86,6 +86,13 @@ export async function deleteChatRequest(chat_id) {
     return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { withCredentials: true, withXSRFToken: true })).data);
 }
 
+export async function searchUserIdsByUsername(indexed_db, search_query){
+
+    return await performRequestCSRFToken(async () => {
+        return (await axios.get(`${api_url}/user/profile/search`, { params:{q:search_query}, withCredentials: true, withXSRFToken: true })).data
+    })
+}
+
 export async function getUserProfileByUsername(indexed_db, username){
 
     return await performRequestCSRFToken(async () => {
@@ -98,6 +105,7 @@ export async function getUserProfileByUsername(indexed_db, username){
         user_info = {username:result.username, user_id:result.userId}
         user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:username,type:profile_data.mimeType})
         await store_user_info(indexed_db, user_info)
+        return user_info
     })
 }
 
@@ -110,8 +118,9 @@ export async function getUserProfileById(indexed_db, user_id){
         let result = (await axios.get(`${api_url}/user/profile/user_id/${user_id}`, { withCredentials: true, withXSRFToken: true })).data
         const profile_data = result.profileImage
         user_info = {username:result.username, user_id:result.userId}
-        user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:username,type:profile_data.mimeType})
+        user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:result.username,type:profile_data.mimeType})
         await store_user_info(indexed_db, user_info)
+        return user_info
     })
 }
 

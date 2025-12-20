@@ -4,6 +4,7 @@ import ChatKeyboard from "./ChatKeyboard";
 import { useContext, useState } from "react";
 import { user_id_context } from "../../globals";
 import GroupUserList from "./GroupUserList";
+import { useIndexedDB } from "../../utils/StorageUtils";
 
 
 function ChatWindow({  chat_object, messages, onMessageSend, onInviteUser, onDeleteUser }) {
@@ -12,7 +13,7 @@ function ChatWindow({  chat_object, messages, onMessageSend, onInviteUser, onDel
 
     return <Card className="h-100 mh-100 border">
         {chat_object.type === "GROUP" &&chat_object.initiator && chat_object.initiator === user_id && <CardHeader>
-           { disp_modal && <GroupUserList show={disp_modal} onAddUser={onInviteUser} onRemoveUser={onDeleteUser} onClose={()=>{set_disp_modal(false)}} /> }
+           { disp_modal &&  chat_object && <GroupUserList  show={disp_modal} chat_id={chat_object.chat_id} onAddUser={onInviteUser} onRemoveUser={onDeleteUser} onClose={()=>{set_disp_modal(false)}} /> }
             <Button variant="primary" onClick={(e) => set_disp_modal(true)}>Manage Users</Button>
         </CardHeader>}
         <CardBody className="overflow-y-scroll border">

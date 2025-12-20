@@ -42,7 +42,7 @@ export default function GroupChatCreate({show, onChatCreate, onClose}) {
             group_image_file = {  fileId: id, fileIv: new Uint8Array(12) }
         }
 
-        let chat_object = await create_chat_object(v4(), group_name, "GROUP", [user_id], group_image_file)
+        let chat_object = await create_chat_object(v4(), group_name, "GROUP", [user_id], group_image_file, user_id)
         await store_chat(db, chat_object)
         return  chat_object
     }

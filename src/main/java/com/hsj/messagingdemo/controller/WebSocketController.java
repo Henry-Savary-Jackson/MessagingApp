@@ -82,7 +82,7 @@ public class WebSocketController {
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
-        int timestamp =(int)headerAccessor.getMessageHeaders().getOrDefault("last_timestamp", Instant.now().toEpochMilli());
+        long timestamp =(long) headerAccessor.getMessageHeaders().getOrDefault("last_timestamp", Instant.now().toEpochMilli());
 
         KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(
                 user.getId(), user.getUsername(), headerAccessor.getSessionId(),timestamp);

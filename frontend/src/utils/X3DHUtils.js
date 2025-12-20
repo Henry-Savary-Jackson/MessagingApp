@@ -4,7 +4,7 @@ import { v4 } from 'uuid'
 import { init_ratchet_root_receiver,init_ratchet_root_sender } from './RatchetUtils'
 import { generate25519KeyExchangePair, exportX25519PublicKey, X3DH_send, X3DH_accept } from './CryptoUtils'
 import { addOTP, getPrekeyBundle, getUsername } from './RequestUtils'
-import { create_double_ratchet_recipient,store_chat, delete_one_time_prekey,create_double_ratchet_sender, getOneTimePrekeyWithPubKey, refill_otp, create_chat_object, store_double_ratchet_session } from './StorageUtils'
+import { create_double_ratchet_recipient,store_chat, delete_one_time_prekey,create_double_ratchet_sender, getOneTimePrekeyWithPubKey, refill_otp,  store_double_ratchet_session } from './StorageUtils'
 
 export async function handle_X3DH_message(indexed_db, identity, signed_prekey, chat_message) {
     let one_time_prekey = chat_message.messageHeader.oneTimePrekey 

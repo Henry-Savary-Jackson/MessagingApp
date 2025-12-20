@@ -14,6 +14,11 @@ export default function LoadingLogin({ setUserCallback }) {
     async function log_in() {
         const authenticationRequest = await signChallenge(ident_info.verifierKey.privateKey)
         authenticationRequest.username = ident_info.username
+        if (!ident_info.last_msg_timestamp){
+            let new_ident = {...ident_info, last_msg_timestamp:new Date().getTime()}
+            set_ident_info(new_ident)
+        }
+
         const user_id = await login(authenticationRequest)
         setUserCallback( ident_info.username, user_id)
         location.pathname = "/chat"

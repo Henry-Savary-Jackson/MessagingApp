@@ -14,7 +14,7 @@ import { blob_context, identity_context, user_id_context, username_context } fro
 import GroupChatCreate from '../chat/GroupChatCreate'
 
 
-function ChatPage({ logoutCallback }) {
+function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     let location = useLocation()
     let [currentChat, setCurrentChat] = useState(undefined)
@@ -95,7 +95,6 @@ function ChatPage({ logoutCallback }) {
     }, [db])
 
 
-    let [ident_info, set_ident_info] = useContext(identity_context)
     let [user_id, set_user_id] = useContext(user_id_context)
     let [username, set_current_username] = useContext(username_context)
 
@@ -103,6 +102,11 @@ function ChatPage({ logoutCallback }) {
     let [show_chat_modal, set_chat_modal] = useState(false)
 
     const onMessageUI = async (msg_obj, chat_object) => {
+
+        if (msg_obj && msg_obj.type === USER_REMOVED && !msg_obj.message_contents.userGroupChange) {
+            leaveChatUI(chat_object.chat_id)
+            return;
+        }
 
         if (chat_object && !chatInUI(chat_object.chat_id))
             addNewChatUI(chat_object)
@@ -119,7 +123,7 @@ function ChatPage({ logoutCallback }) {
 
         // is there not a cleaner way to do this????
         // why should i update the whole object
-        set_ident_info({...ident_info, last_msg_timestamp:new Date().getTime()})
+        set_ident_info({ ...ident_info, last_msg_timestamp: new Date().getTime() })
     }
 
     const onMessage = async (message) => {
@@ -146,8 +150,7 @@ function ChatPage({ logoutCallback }) {
         }
 
     } // PUT notification symbol on chat
-    ident_info && useSubscription("/user/messages", onMessage,  { last_timestamp:ident_info.last_msg_timestamp || new Date().getTime()})
-
+    useSubscription("/user/messages", onMessage, { last_timestamp: ident_info.last_msg_timestamp })
     const client = useStompClient()
 
     const sendMessage = async (chat_id, text, file_object = null) => {
@@ -163,13 +166,16 @@ function ChatPage({ logoutCallback }) {
         messageReducer({ action: "init", chat_id: chat_id, messages: messages })
     }
 
-    const onInviteUser = async (chat, user_id) => {
-        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: user_id }, user_id, ident_info, USER_ADDED)
+    const onInviteUser = async (chat, other_id) => {
+        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
+        // handle this please
+        readMessages(chat.chat_id)
         addMessageUI(msg)
     }
 
-    const onDeleteUser = async (chat, user_id)=>{
-        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: user_id }, user_id, ident_info, USER_REMOVED)
+    const onDeleteUser = async (chat, other_id) => {
+        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
+        readMessages(chat.chat_id)
         addMessageUI(msg)
     }
 
@@ -209,12 +215,17 @@ function ChatPage({ logoutCallback }) {
             }
         }
     }
-    const leaveChat = async (chat_id) => {
-        await send_new_encrypted_message(client, db, chat_id, {userId:user_id}, user_id, ident_info, USER_REMOVED)
-        await delete_chat(db, chat_id);
+    const leaveChatUI = async (chat_id)=>{
         delChatUI(chat_id);
         if (currentChat && chat_id === currentChat.chat_id)
             setCurrentChat(undefined)
+    }
+    const leaveChat = async (chat_id) => {
+        let chat_object = await get_chat(db, chat_id)
+        if (chat_object.type === "GROUP")
+            await send_new_encrypted_message(client, db, chat_id, { userId: user_id }, user_id, ident_info, USER_REMOVED)
+        await delete_chat(db, chat_id);
+        leaveChatUI(chat_id)
     }
 
     const onChatClick = async (chat_object) => {
@@ -240,10 +251,10 @@ function ChatPage({ logoutCallback }) {
             </Stack>
         </Col>
         <Col sm={4} >
-            <ChatListBar  chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={onChatToNewUser} onChatCreate={() => { set_chat_modal(true) }} />
+            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={onChatToNewUser} onChatCreate={() => { set_chat_modal(true) }} />
         </Col>
         <Col className='vh-100' sm={6}>
-            {currentChat && <ChatWindow onDeleteUser={onDeleteUser}  onInviteUser={onInviteUser} chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
+            {currentChat && <ChatWindow onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
         </Col>
     </Row>
         <GroupChatCreate show={show_chat_modal} onChatCreate={(chat) => { addNewChatUI(chat); set_chat_modal(false) }} onClose={() => { set_chat_modal(false) }} />
