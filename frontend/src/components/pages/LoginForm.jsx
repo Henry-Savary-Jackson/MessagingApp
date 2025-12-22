@@ -5,6 +5,7 @@ import { login} from "../../utils/RequestUtils";
 import { Link, useLocation } from "react-router";
 import {  identity_context, user_id_context } from "../../globals";
 import { performActionWithAlert } from "../../utils/UIUtils";
+import "../../css/auth.scss"
 import {convertProtoBufIdentityToObject, import_identity} from "../../utils/StorageUtils"
 
 function LoginForm({setUserCallback}) {
@@ -14,7 +15,7 @@ function LoginForm({setUserCallback}) {
     let [username, setUsername] = useState("")
     let [file, setFile] = useState(null)
 
-    return <Form onSubmit={async (e) => {
+    return <Form className="auth-form" onSubmit={async (e) => {
         e.preventDefault()
 
         let identityFile = file ? file : null

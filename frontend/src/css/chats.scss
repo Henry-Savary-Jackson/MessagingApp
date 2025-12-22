@@ -8,6 +8,11 @@
     width: 35%;
 }
 
+.chat-message-info{
+    @extend %chat-message;
+    align-self: center !important;
+}
+
 .chat-message-other{
     @extend %chat-message;
     align-self: flex-start !important;
@@ -25,6 +30,7 @@
     background-color: rgba(57, 192, 237,.2);
     color:black;
 }
+
 
 .chat-text-other{
     @extend %chat-text;

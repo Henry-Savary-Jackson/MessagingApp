@@ -24,22 +24,26 @@ function ChatKeyboard({ chat_id, onMessageSend }) {
                 await submitMessage(file_obj)
             }
             reader.readAsArrayBuffer(file)
-        } else {
+        } else if (message){
             await submitMessage()
         }
 
     }}>
         <Stack gap={2} direction="horizontal">
             <Button type="submit"> &gt; </Button>
-            <FormLabel htmlFor="input-file-chat" className="chat-file-upload">
-                <Image src="/file-input-svg.svg" />
-            </FormLabel>
-            <FormControl type="file" id="input-file-chat" onChange={(e) => {
-                if (e.target.files) {
-                    setFile(e.target.files[0])
-                }
-            }} />
-            <Button onClick={(e) => { document.getElementById("input-file-chat").value = null }} >Clear file input</Button>
+
+            <Stack className="align-items-center justify-items-center">
+                <FormLabel htmlFor="input-file-chat" className="chat-file-upload">
+                    <Image src="/file-input-svg.svg" />
+                </FormLabel>
+                <FormControl type="file" id="input-file-chat" onChange={(e) => {
+                    if (e.target.files) {
+                        setFile(e.target.files[0])
+                    }
+                }} />
+                {file && <span>{file.name}</span>}
+            </Stack>
+            <Button onClick={(e) => { document.getElementById("input-file-chat").value = null;setFile(null) }} >Clear file input</Button>
 
             <FormControl type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
         </Stack>

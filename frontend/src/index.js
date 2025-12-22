@@ -4,15 +4,18 @@ import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { CookiesProvider } from 'react-cookie';
+import { StrictMode } from 'react';
 {
   /* The following line can be included in your src/index.js or App.js file */
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  <StrictMode>
     <CookiesProvider>
       <App />
     </CookiesProvider>
+  </StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

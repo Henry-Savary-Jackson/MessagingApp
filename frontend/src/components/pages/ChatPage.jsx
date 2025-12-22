@@ -1,5 +1,5 @@
 import { useContext, useEffect, useReducer, useState } from 'react'
-import { Stack, Col, Container, Row } from 'react-bootstrap'
+import { Stack, Col, Container, Row, Modal, ModalTitle, ModalBody, ModalFooter, CloseButton } from 'react-bootstrap'
 import { Link, useLocation } from 'react-router'
 import { createChat, getCSRF, getPrekeyBundle, getUsername, getUserProfileImage, logout, setAxiosCSRF } from '../../utils/RequestUtils'
 import ChatWindow from "./../chat/ChatWindow"
@@ -8,16 +8,22 @@ import { decrypt_chat_message, init_ratchet_root_receiver, init_ratchet_root_sen
 import { handle_X3DH_message, send_X3DH_message } from '../../utils/X3DHUtils'
 import { handle_new_encrypted_message, send_new_encrypted_message } from '../../utils/MessagingUtils'
 import { ChatMessage } from '../../utils/protocol/messages'
-import { create_chat_object, create_double_ratchet_recipient, delete_chat, delete_skipped_message, get_all_chats, get_all_double_ratchet_sess, get_chat, get_double_ratchet_session, get_messages, getOneTimePrekeyWithPubKey, store_chat, store_double_ratchet_session, store_message, useIdentityInformation, useIndexedDB, USER_ADDED, USER_REMOVED } from '../../utils/StorageUtils'
+import { create_chat_object, create_double_ratchet_recipient, delete_chat, delete_skipped_message, get_all_chats, get_all_double_ratchet_sess, get_chat, get_double_ratchet_session, get_messages, get_metadata, getOneTimePrekeyWithPubKey, set_metadata, store_chat, store_double_ratchet_session, store_message, useIdentityInformation, useIndexedDB, USER_ADDED, USER_REMOVED } from '../../utils/StorageUtils'
 import { useStompClient, useSubscription } from 'react-stomp-hooks'
 import { blob_context, identity_context, user_id_context, username_context } from '../../globals'
 import GroupChatCreate from '../chat/GroupChatCreate'
+import UserSearch from '../chat/UserSearch'
 
 
 function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     let location = useLocation()
-    let [currentChat, setCurrentChat] = useState(undefined)
+
+    let [show_user_search, set_show_user_search] = useState(false)
+
+
+
+    let [currentChatId, setCurrentChat] = useState("")
 
     let [blobs, blobsReducer] = useReducer((prev, action) => {
         switch (action.action) {
@@ -42,42 +48,35 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
                 return [...prev, { ...action.new, "new_message": 0, "last_timestamp": 0 }].sort((a, b) => b.last_timestamp - a.last_timestamp)
             case "del":
                 return prev.filter((chat) => chat.chat_id !== action.chat_id);
-            case "mod":
+            case "read_message":
                 return prev.map((chat) => {
                     if (chat.chat_id !== action.chat_id)
                         return { ...chat }
-                    return { ...chat, new_message: action.read ? 0 : chat.new_message + 1, "last_timestamp": action.last_timestamp || chat.last_timestamp }
+                    return { ...chat, new_message: 0 }
                 }).sort((a, b) => b.last_timestamp - a.last_timestamp)
+            case "add_message":
+                return prev.map((chat) => {
+                    if (chat.chat_id !== action.chat_id)
+                        return chat
+                    return { ...chat, messages: [...chat.messages, action.message], new_message: chat.new_message + 1, "last_timestamp": new Date().getTime() }
+                })
+
+
         }
     }, [])
 
-    let [messages, messageReducer] = useReducer((prev, action) => {
-        let chat_id = action.chat_id
-        let chatMessages = prev[chat_id] || []
-        switch (action.action) {
-            case "pop":
-                return { ...prev, [chat_id]: [...chatMessages.slice(0, -1)] }
-            case "add":
-                return { ...prev, [chat_id]: [...chatMessages, action.new].sort((a, b) => a.timestamp - b.timestamp) }
-            case "init":
-                prev[chat_id] = [...action.messages]
-                return { ...prev }
-        }
-    }, {})
+
+    const getChatById = (chat_id) => chats.find((chat) => chat.chat_id === chat_id)
 
 
+    const addMessageUI = (newMessage) => { chatsReducer({ action: "add_message", message: newMessage, chat_id: newMessage.chat_id }) }
 
-    const addMessageUI = (newMessage) => { messageReducer({ action: "add", new: newMessage, chat_id: newMessage.chat_id }) }
-    const popMessageUI = () => { messageReducer({ action: "pop" }) }
-
-
-    const readMessages = (chat_id) => { chatsReducer({ chat_id: chat_id, "action": "mod", "read": true }) }
-    const addMessageToChatCount = (chat_id, timestamp) => { chatsReducer({ chat_id: chat_id, "action": "mod", "read": false, "last_timestamp": timestamp }) }
+    const readMessages = (chat_id) => { chatsReducer({ chat_id: chat_id, "action": "read_message" }) }
     const addNewChatUI = async (chat) => {
         chatsReducer({ "action": "add", "new": chat })
     }
     const setNewChats = (newChats) => { chatsReducer({ "action": "init", "data": newChats }) }
-    const delChatUI = (chat_id) => { chatsReducer({ "action": "del", chat_id: chat_id }) }
+    const delChatUI = (chat_id) => { chatsReducer({ "action": "del", chat_id: chat_id }) } // TODO: make it so that the message
     const chatInUI = (chat_id) => chats.find((chat) => chat.chat_id === chat_id)
 
 
@@ -93,7 +92,23 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
         get_chats_callback()
 
     }, [db])
+    let [user_metadata, set_user_metadata] = useState({})
 
+    async function update_metadata(new_metadata) {
+        set_user_metadata(new_metadata)
+        await set_metadata(db, new_metadata, user_id)
+    }
+
+    useEffect(() => {
+        (async () => {
+            if (!db || !user_id)
+                return
+            let metadata = await get_metadata(db, user_id) || { last_msg_timestamp: new Date().getTime() }
+            metadata && update_metadata(metadata)
+        })()
+    }
+
+        , [db])
 
     let [user_id, set_user_id] = useContext(user_id_context)
     let [username, set_current_username] = useContext(username_context)
@@ -102,95 +117,83 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     let [show_chat_modal, set_chat_modal] = useState(false)
 
     const onMessageUI = async (msg_obj, chat_object) => {
-
         if (msg_obj && msg_obj.type === USER_REMOVED && !msg_obj.message_contents.userGroupChange) {
             leaveChatUI(chat_object.chat_id)
             return;
         }
-
         if (chat_object && !chatInUI(chat_object.chat_id))
             addNewChatUI(chat_object)
 
         if (msg_obj)
             addMessageUI(msg_obj)
 
-
-        if (currentChat && chat_object && chat_object.chat_id === currentChat.chat_id)
+        if (currentChatId && chat_object && chat_object.chat_id === currentChatId)
             readMessages(chat_object.chat_id)
 
-        if (chat_object)
-            addMessageToChatCount(chat_object.chat_id, msg_obj.timestamp || (new Date()).getTime())
-
-        // is there not a cleaner way to do this????
-        // why should i update the whole object
-        set_ident_info({ ...ident_info, last_msg_timestamp: new Date().getTime() })
     }
 
     const onMessage = async (message) => {
         console.log("New STOMP message!")
-        let chat_message = ChatMessage.decode(message.binaryBody)
-        if (chat_message.messageHeader) {
-            // X3DH message
-            let new_dr_session = await handle_X3DH_message(db, ident_info.identityKey, ident_info.signedPrekey, chat_message)
+        try {
+            let chat_message = ChatMessage.decode(message.binaryBody)
+            if (chat_message.messageHeader) {
+                // X3DH message
+                let new_dr_session = await handle_X3DH_message(db, ident_info.identityKey, ident_info.signedPrekey, chat_message)
 
-            let found_skipped_messages = await handle_all_skipped_messages_for_session(db, client, ident_info, new_dr_session)
+                let found_skipped_messages = await handle_all_skipped_messages_for_session(db, client, ident_info, new_dr_session)
 
-            found_skipped_messages.forEach(
-                async (skipped_msg) => {
-                    let { msg_obj, chat_object } = skipped_msg
-                    console.log("Handling skipped message on UI!")
-                    console.log(skipped_msg)
-                    await onMessageUI(msg_obj, chat_object);
-                })
-        } else {
-            // nortmal message, decrypt with double ratchet algo
+                found_skipped_messages.forEach(
+                    async (skipped_msg) => {
+                        let { msg_obj, chat_object } = skipped_msg
+                        console.log("Handling skipped message on UI!")
+                        console.log(skipped_msg)
+                        await onMessageUI(msg_obj, chat_object);
+                    })
+            } else {
+                // nortmal message, decrypt with double ratchet algo
 
-            let { msg_obj, chat_object } = await handle_new_encrypted_message(db, client, chat_message, ident_info)
-            await onMessageUI(msg_obj, chat_object)
+                let { msg_obj, chat_object } = await handle_new_encrypted_message(db, client, chat_message, ident_info)
+                await onMessageUI(msg_obj, chat_object)
+            }
+        } finally {
+            // is there not a cleaner way to do this????
+            // why should i update the whole object
+            // doing this causes re_renders which causes unnecesarry unsub adnd subcribe calls
+            const new_metadata = { ...user_metadata, last_msg_timestamp: new Date().getTime() }
+            set_user_metadata(new_metadata)
+            db && await set_metadata(db, new_metadata, user_id)
         }
+    }
 
-    } // PUT notification symbol on chat
-    useSubscription("/user/messages", onMessage, { last_timestamp: ident_info.last_msg_timestamp })
+
+    useSubscription("/user/messages", onMessage, { last_timestamp: (user_metadata && user_metadata.last_msg_timestamp) || new Date().getTime() })
     const client = useStompClient()
 
     const sendMessage = async (chat_id, text, file_object = null) => {
-        let chat_object = await get_chat(db, chat_id)
-        let { message_contents, type, message_key, timestamp } = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info, chat_object.type, file_object)
-        const message = { type: type, message_contents: message_contents, sender_id: user_id, timestamp: timestamp, message_key: message_key }
-        await store_message(db, message, chat_object)
-        message.chat_id = chat_id
+        let inital_chat_obj = await get_chat(db, chat_id)
+        let {msg_obj, chat_object} = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info, inital_chat_obj.type, file_object)
+        await store_message(db, msg_obj, chat_object)
+        addMessageUI(msg_obj)
         readMessages(chat_id)
-        addMessageUI(message)
     }
-    const setMessages = (chat_id, messages) => {
-        messageReducer({ action: "init", chat_id: chat_id, messages: messages })
-    }
-
     const onInviteUser = async (chat, other_id) => {
-        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
-        // handle this please
+        let {msg_obj,chat_object} = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
+        await store_message(db, msg_obj, chat_object)
+        addMessageUI(msg_obj)
         readMessages(chat.chat_id)
-        addMessageUI(msg)
     }
 
     const onDeleteUser = async (chat, other_id) => {
-        let msg = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
+        let {msg_obj,chat_object} = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
+        await store_message(db, msg_obj, chat_object)
+        addMessageUI(msg_obj)
         readMessages(chat.chat_id)
-        addMessageUI(msg)
     }
 
-    const onChatToNewUser = async () => {
-        if (!ident_info) {
-            alert("No identity loaded");
-            return
-        }
-        let other_name = prompt("Enter Username:");
-        if (!other_name) {
-            return
-        }
+    const onChatToNewUser = async (other_id) => {
         try {
+            let other_name = await getUsername(db, other_id)
             let prekey_bundle_other = await getPrekeyBundle(other_name)
-            let other_id = prekey_bundle_other.id
             // if chat is already in ui, dont bother
             if (chatInUI(other_id)) {
                 return
@@ -207,6 +210,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
                 throw new Error("Cannot add empty chat in UI")
 
             addNewChatUI(chat_object)
+            set_show_user_search(false)
         } catch (e) {
             if (e.code && e.code == 404) {
                 alert("failed to get prekey bundle")
@@ -215,9 +219,9 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             }
         }
     }
-    const leaveChatUI = async (chat_id)=>{
+    const leaveChatUI = async (chat_id) => {
         delChatUI(chat_id);
-        if (currentChat && chat_id === currentChat.chat_id)
+        if (currentChatId && chat_id === currentChatId.chat_id)
             setCurrentChat(undefined)
     }
     const leaveChat = async (chat_id) => {
@@ -229,14 +233,13 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     }
 
     const onChatClick = async (chat_object) => {
-        if (currentChat && currentChat.chat_id === chat_object.chat_id)
-            return
-        let chat_messages = messages[chat_object.chat_id] || await get_messages(db, chat_object.chat_id)
         const chat_id = chat_object.chat_id
-        setMessages(chat_id, chat_messages)
-        setCurrentChat({ ...chat_object })
+        setCurrentChat(chat_id)
         readMessages(chat_id)
     }
+
+    let currentChat = currentChatId && getChatById(currentChatId)
+
 
     return <blob_context.Provider value={[add_blob, remove_blob, get_blob]} > <Container fluid><Row>
         <Col sm={2} >
@@ -251,12 +254,21 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             </Stack>
         </Col>
         <Col sm={4} >
-            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={onChatToNewUser} onChatCreate={() => { set_chat_modal(true) }} />
+            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={() => { set_show_user_search(true) }} onChatCreate={() => { set_chat_modal(true) }} />
         </Col>
         <Col className='vh-100' sm={6}>
-            {currentChat && <ChatWindow onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} messages={(messages && messages[currentChat.chat_id]) || []} onMessageSend={sendMessage} />}
+            {currentChat && <ChatWindow onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} onMessageSend={sendMessage} />}
         </Col>
     </Row>
+        <Modal show={show_user_search}>
+            <ModalTitle>Search for user</ModalTitle>
+            <ModalBody>
+                <UserSearch selectUserCallback={onChatToNewUser} />
+            </ModalBody>
+            <ModalFooter>
+                <CloseButton variant='danger' onClick={(e) => set_show_user_search(false)} />
+            </ModalFooter>
+        </Modal>
         <GroupChatCreate show={show_chat_modal} onChatCreate={(chat) => { addNewChatUI(chat); set_chat_modal(false) }} onClose={() => { set_chat_modal(false) }} />
     </Container>
     </blob_context.Provider>

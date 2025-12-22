@@ -21,6 +21,7 @@ message MessageFile{
 message FileInfo{
   string file_id =1;
    bytes file_iv = 2;
+  optional bytes file_key=3; // only really used in group messages so that memebers can share
 }
 
 message MessageContents{
@@ -35,18 +36,16 @@ message MessageContents{
 message GroupInvite{
   string group_chat_id = 1;
   string group_chat_name = 2;
-  bytes group_key = 3;
   optional FileInfo group_image= 4; 
 }
 
 message GroupMembership{
-  bytes group_key = 1;
+  string initiator = 1;
 }
 
 // deleting or addition is given by the message type in the header
 message UserGroupChange{
   string user_id = 1;
-  bytes new_group_key = 2;
 }
 
 message MessageHeader{

@@ -8,6 +8,7 @@ import { convertArrayBufferToBase64, } from "../../utils/EncodingUtils";
 import { performActionWithAlert } from "../../utils/UIUtils";
 import { Identity,PreKeyBundle } from "../../utils/protocol/messages";
 import { identity_context } from "../../globals";
+import "../../css/auth.scss"
 
 function RegisterForm({setUserCallback}) {
 
@@ -39,7 +40,7 @@ function RegisterForm({setUserCallback}) {
     }, [identity_data])
 
 
-    return <Form onSubmit={async (e) => {
+    return <Form className="auth-form" onSubmit={async (e) => {
         e.preventDefault()
         let profileImageData = undefined;
         async function submit() {

@@ -15,6 +15,7 @@ const skipped_messages_store_name = "skipped_messages"
 const file_store_name = "message_files"
 const user_info_store_name = "user_cache"
 const username_index_name = "username_index"
+const user_metadata_store_name = "user_metadata"
 const current_version = 2
 const max_otp = 100;
 
@@ -46,8 +47,9 @@ export function useIndexedDB() {
                     const dr_sess_store = db_obj.createObjectStore(double_ratchet_store_name, { keyPath: "user_id" });
                     const chat_store = db_obj.createObjectStore(chats_store_name, { keyPath: "chat_id" });
                     const otp_store = db_obj.createObjectStore(otp_store_name);
-                    const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "header_key_bytes" })
+                    const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "header_key" })
                     const file_store = db_obj.createObjectStore(file_store_name)
+                    const metadata_store = db_obj.createObjectStore(user_metadata_store_name)
                     const user_info_cache = db_obj.createObjectStore(user_info_store_name, { keyPath: "user_id" })
                     user_info_cache.createIndex(username_index_name, "username")
                     const skipped_message_store = db_obj.createObjectStore(skipped_messages_store_name, { keyPath: "message_id" })
@@ -244,13 +246,24 @@ export async function getIdentityDataFromDB(indexed_db) {
     return cursor ? cursor.value : "Not found" 
 }
 
+export async function get_metadata(indexed_db, user_id) {
+    // get from identity store
+    return await indexed_db.get(user_metadata_store_name, user_id)
+}
+
+export async function set_metadata(indexed_db, metadata, user_id) {
+    // get from identity store
+    await indexed_db.put(user_metadata_store_name, metadata, user_id)
+}
+
+
+
 export async function get_recieving_chains(indexed_db) {
     return await indexed_db.getAll(dh_keystore_name)
 }
 
-export async function store_recieving_chain(indexed_db, header_key, receiving_chain) {
-    let message_keys_dh = { ...receiving_chain, header_key_bytes: header_key }
-    await indexed_db.put(dh_keystore_name, message_keys_dh)
+export async function store_recieving_chain(indexed_db, receiving_chain) {
+    await indexed_db.put(dh_keystore_name, receiving_chain)
 }
 
 export async function get_all_double_ratchet_sess(indexed_db) {
@@ -268,7 +281,6 @@ export async function create_chat_object(chat_id, name, type, users=[], group_im
         if (initiator)
             chat_object.initiator = initiator
         chat_object.users = users
-        chat_object.group_secret_key =group_secret_key ? group_secret_key:await exportAESKey( await generateAESkey() )
         chat_object.group_image_file = group_image_file
     }
     return chat_object

@@ -76,7 +76,7 @@ public class UserService {
     }
 
     public List<String> searchByUsersname(String username){
-        return userRepo.findByUsernameStartsWith(username).stream().map((user)-> user.getId()).toList();
+        return userRepo.findByUsernameStartsWith("^%s".formatted(username)).stream().map((user)-> user.getId()).toList();
     }
 
     public User getUserById(String userId){

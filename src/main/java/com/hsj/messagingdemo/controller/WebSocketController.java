@@ -50,10 +50,6 @@ public class WebSocketController {
     @MessageMapping("/send/{user_id}")
     public void sendMessageMap(@DestinationVariable String user_id, @Payload byte[] message, Principal principal)
             throws Exception {
-        User user = (User) ((Authentication) principal).getPrincipal();
-        if (user == null) {
-            throw new NullPointerException("User not found!");
-        }
         try {
             ChatMessage newMessage = ChatMessage.parseFrom(message);
             ChatMessage.Builder builder = newMessage.toBuilder();
@@ -84,6 +80,8 @@ public class WebSocketController {
         }
         long timestamp =(long) headerAccessor.getMessageHeaders().getOrDefault("last_timestamp", Instant.now().toEpochMilli());
 
+        if (messageService.isUserListeningToChat(user.getId(), headerAccessor.getSessionId()))
+            return;
         KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(
                 user.getId(), user.getUsername(), headerAccessor.getSessionId(),timestamp);
 
@@ -119,12 +117,9 @@ public class WebSocketController {
 
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
 
-        String destination = headers.getDestination();
-        if (destination == null)
-            return;
         String listenerId = KafkaListenerCreator.generateListenerId(user.getId(), headers.getSessionId());
 
-        messageService.unLinkUserToKafkaEventListener(user.getId(), listenerId);
         kafkaListenerCreator.stopListener(listenerId);
+        messageService.unLinkUserToKafkaEventListener(user.getId(), listenerId);
     }
 }

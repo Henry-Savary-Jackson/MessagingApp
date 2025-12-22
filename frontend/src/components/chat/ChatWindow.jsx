@@ -7,9 +7,10 @@ import GroupUserList from "./GroupUserList";
 import { useIndexedDB } from "../../utils/StorageUtils";
 
 
-function ChatWindow({  chat_object, messages, onMessageSend, onInviteUser, onDeleteUser }) {
+function ChatWindow({  chat_object, onMessageSend, onInviteUser, onDeleteUser }) {
     let [user_id, set_user_id] = useContext(user_id_context) 
     let [disp_modal, set_disp_modal] = useState(false)
+    let messages = chat_object.messages || []
 
     return <Card className="h-100 mh-100 border">
         {chat_object.type === "GROUP" &&chat_object.initiator && chat_object.initiator === user_id && <CardHeader>
@@ -17,7 +18,7 @@ function ChatWindow({  chat_object, messages, onMessageSend, onInviteUser, onDel
             <Button variant="primary" onClick={(e) => set_disp_modal(true)}>Manage Users</Button>
         </CardHeader>}
         <CardBody className="overflow-y-scroll border">
-            <Stack style={{paddingBottom:"15%"}} gap={2}  >
+            <Stack style={{paddingBottom:"10vh"}} gap={2}  >
                 {messages && messages.sort((a, b) => a.timestamp - b.timestamp).map((message, index) => <ChatMessage  type={message.type} key={index} message_key={message.message_key} contents={message.message_contents} sender={message.sender_id} />)}
             </Stack>
         </CardBody>

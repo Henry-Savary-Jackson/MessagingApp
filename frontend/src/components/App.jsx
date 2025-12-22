@@ -18,14 +18,6 @@ function App() {
 
   let [csrf, setCSRF] = useState("")
   let [cookies, setCookies, removeCookies] = useCookies()
-
-  async function set_csrf() {
-    let new_token = setAxiosCSRF(await getCSRF());
-    setCSRF(new_token)
-    return new_token
-  }
-
-
   let { db, loading } = useIndexedDB()
   let [ident_info, set_ident_info] = useIdentityInformation(db)
   let [user_id, set_user_id] = useState(cookies.user_id || "")
@@ -34,11 +26,18 @@ function App() {
   async function do_signed_prekey_update() {
     let new_prekey_info = await updateSignedPrekey(db)
     await setSignedPrekey(...new_prekey_info)
-
   }
 
   useEffect(() => {
-    set_csrf()
+    let ignore = false
+    async function do_csrf_update() {
+      let new_csrf = await getCSRF();
+      if (!ignore) {
+        setCSRF(setAxiosCSRF(new_csrf))
+      }
+    }
+    do_csrf_update()
+    return () => { ignore = true }
   }, [user_id, ident_info])
 
   useEffect(() => {
@@ -64,7 +63,7 @@ function App() {
   return <identity_context.Provider value={[ident_info, set_ident_info]}>
     <username_context.Provider value={[username, set_username]}>
       <user_id_context.Provider value={[user_id, set_user_id]}>
-        <csrf_context.Provider value={[csrf, set_csrf]}>
+        <csrf_context.Provider value={[csrf, async ()=>{setCSRF(setAxiosCSRF(await getCSRF()))}]}>
           <MemoryRouter>
             <Routes>
               <Route element={<PrivateRoute auth={user_id && ident_info} redirect_route='/' />} >
@@ -75,7 +74,7 @@ function App() {
               <Route element={<PrivateRoute auth={user_id && ident_info} redirect_route="/" />}>
                 <Route element={user_id && ident_info && < StompSessionProvider
                   url={broker_url} >
-                  <ChatPage  ident_info={ident_info} set_ident_info={set_ident_info} logoutCallback={logoutCallback} />
+                  <ChatPage ident_info={ident_info} set_ident_info={set_ident_info} logoutCallback={logoutCallback} />
                 </StompSessionProvider >} path='/chat' />
               </Route>
               <Route element={<LoginForm setUserCallback={setUserCallback} />} path='/login' />
