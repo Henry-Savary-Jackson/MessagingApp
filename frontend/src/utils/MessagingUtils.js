@@ -21,17 +21,10 @@ export function send(client, recipient, chatMessage) {
 
 export function parseMessage(message_bytes) {
     let chatMessage = ChatMessage.decode(message_bytes);
-    // TODO handle verification errors
+    // TODO: handle verification errors
     return chatMessage;
 }
 
-// export async function MessageContentsIntoGroup(message_contents, chat_object) {
-//     // encrypt using group key
-//     let msg_contents_profobuf = MessageContents.fromObject(message_contents)
-//     let [bytes_enc, iv] = await encrypt_message_contents(chat_object.group_secret_key, msg_contents_profobuf)
-//     let b64_txt = convertArrayBufferToBase64(bytes_enc)
-//     return { text: b64_txt, groupMessageIv: iv }
-// }
 
 export async function send_user_removal_message(client, indexed_db, chat_id, contents, sender_id, identity) {
     // make the contest
@@ -50,8 +43,7 @@ export async function send_user_removal_message(client, indexed_db, chat_id, con
     // create new group key to keep new comms secret to removed user
 
     let result = await send_group_message(client, indexed_db, chat_id, group_chat_msg_contents, sender_id, identity, USER_REMOVED)
-
-    return result
+    return {...result, chat_object} 
 }
 export async function send_group_membership_message(client, indexed_db, chat_id, contents, sender_id, identity) {
     let new_user_id = contents.userId
@@ -86,10 +78,8 @@ export async function send_user_add_message(client, indexed_db, chat_id, content
     await send_direct_message(client, indexed_db, new_user_id, message_contents_to_new, sender_id, identity, GROUP_INVITE)
 
     let result = await send_group_message(client, indexed_db, chat_id, { userGroupChange: { userId: new_user_id, newGroupKey: chat_object.group_secret_key, } }, sender_id, identity, USER_ADDED)
-
     chat_object.users.push(new_user_id)
-    await store_chat(indexed_db, chat_object)
-    return result
+    return {...result, chat_object:chat_object} 
 }
 
 export async function send_group_message(client, indexed_db, chat_id, contents, sender_id, identity, type = GROUP) {

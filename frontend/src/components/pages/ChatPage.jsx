@@ -172,6 +172,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     const sendMessage = async (chat_id, text, file_object = null) => {
         let inital_chat_obj = await get_chat(db, chat_id)
         let {msg_obj, chat_object} = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info, inital_chat_obj.type, file_object)
+        msg_obj.chat_id = chat_object.chat_id
         await store_message(db, msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat_id)
