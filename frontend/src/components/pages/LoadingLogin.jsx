@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import {  identity_context, user_id_context } from "../../globals";
-import { Spinner, Stack } from "react-bootstrap";
+import { Container, Spinner, Stack } from "react-bootstrap";
 import { signChallenge } from "../../utils/CryptoUtils";
 import { useLocation } from "react-router";
 import { login } from "../../utils/RequestUtils";
@@ -38,9 +38,9 @@ export default function LoadingLogin({ setUserCallback }) {
     }, [ident_info, user_id])
 
 
-    return <Stack className="align-items-center justify-items-center">
-        <Spinner />
+    return <Container className="d-flex flex-column vh-100 align-items-center justify-items-center">
+        <Spinner  variant="primary" />
         <span>Logging in...</span>
-    </Stack >
+    </Container >
 
 }

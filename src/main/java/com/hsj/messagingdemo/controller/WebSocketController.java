@@ -17,8 +17,11 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
@@ -55,9 +58,9 @@ public class WebSocketController {
             ChatMessage.Builder builder = newMessage.toBuilder();
 
             // if X3DH message remove the relvant otp
-            if (newMessage.hasMessageHeader()){
+            if (newMessage.hasMessageHeader()) {
                 MessageHeader messageHeader = newMessage.getMessageHeader();
-                if (messageHeader.hasOneTimePrekey()){
+                if (messageHeader.hasOneTimePrekey()) {
                     // delete this one time prekey from the prekey bundle
                     byte[] otp_user = messageHeader.getOneTimePrekey().toByteArray();
                     userService.removeOtp(user_id, otp_user);
@@ -78,8 +81,14 @@ public class WebSocketController {
         if (user == null) {
             throw new NullPointerException("User not found!");
         }
-        long timestamp =(long) headerAccessor.getMessageHeaders().getOrDefault("last_timestamp", Instant.now().toEpochMilli());
-
+        // MultiValueMap<String, String> nativeHeader =  headerAccessor.getMessageHeaders().get(StompHeaderAccessor.NATIVE_HEADERS, MultiValueMap.class);
+        long timestamp = Instant.now().toEpochMilli();
+        MultiValueMap<String, String> stompheaders = headerAccessor.getMessageHeaders().get(StompHeaderAccessor.NATIVE_HEADERS,MultiValueMap.class);
+        if (stompheaders != null){
+            String timestampStr =   stompheaders.getFirst("last_timestamp");
+            if (timestampStr != null)
+                timestamp = Long.parseLong(timestampStr);
+        }
         if (messageService.isUserListeningToChat(user.getId(), headerAccessor.getSessionId()))
             return;
         KafkaListenerEndpoint endpoint = kafkaListenerCreator.createAndRegisterListener(

@@ -1,7 +1,7 @@
 import { useReducer  } from "react";
 import { blob_context } from "../../context/useBlobStore";
 
-export function BlobStoreProvider({children}){
+export default function BlobStoreProvider({children}){
 
     let [blobs, blobsReducer] = useReducer((prev, action) => {
         switch (action.action) {

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { v4 } from "uuid"
-import { Button, Image,Form,Stack, CloseButton, FormControl, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from "react-bootstrap";
+import { Button, Image, Form, Stack, CloseButton, FormControl, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from "react-bootstrap";
 import { user_id_context } from "../../globals";
 import { create_chat_object, store_chat, } from "../../utils/StorageUtils";
 import { createChat, uploadFile } from "../../utils/RequestUtils";
@@ -10,7 +10,7 @@ import "../../css/chats.scss"
 import useDBContext from "../../context/useDBContext";
 
 
-export default function GroupChatCreate({show, onChatCreate, onClose}) {
+export default function GroupChatCreate({ show, onChatCreate, onClose }) {
 
     let [user_id, set_user_id] = useContext(user_id_context)
     let { db, loading } = useDBContext()
@@ -40,20 +40,23 @@ export default function GroupChatCreate({show, onChatCreate, onClose}) {
         if (group_image_file) {
             let image_file_protobuf = MessageFile.fromObject(group_image_file)
             let id = await uploadFile(MessageFile.encode(image_file_protobuf).finish())
-            group_image_file = {  fileId: id, fileIv: new Uint8Array(12) }
+            group_image_file = { fileId: id, fileIv: new Uint8Array(12) }
         }
 
         let chat_object = await create_chat_object(v4(), group_name, "GROUP", [user_id], group_image_file, user_id)
         await store_chat(db, chat_object)
-        return  chat_object
+        return chat_object
     }
 
     return <Modal show={show}  >
         <ModalHeader><ModalTitle>Create new group chat</ModalTitle></ModalHeader>
         <ModalBody >
             <Stack>
-                {group_image_blob_url && <Image width={300} height={300} src={group_image_blob_url} />}
-                <FormLabel className="group-icon-upload" htmlFor="chat-upload-pic">Upload Icon<Image src="/chat-profile-input.svg" />{group_image ? group_image.name :""}</FormLabel>
+
+                <FormLabel className="group-icon-upload" htmlFor="chat-upload-pic">
+                    {group_image_blob_url && <Image width={300} height={300} src={group_image_blob_url} />}
+                    <span>Upload Group Icon</span>
+                    <Image src="/chat-profile-input.svg" />{group_image ? group_image.name : ""}</FormLabel>
                 <FormControl className="disappear" id="chat-upload-pic" type="file" onChange={(e) => {
                     if (e.target.files)
                         set_group_image(e.target.files[0])
@@ -77,7 +80,7 @@ export default function GroupChatCreate({show, onChatCreate, onClose}) {
                     submitGroup(group_name, undefined).then((chat) => { onChatCreate(chat) })
                 }
             }}>Save</Button>
-            <CloseButton variant="danger" onClick={(e) => onClose()}/>
+            <CloseButton variant="danger" onClick={(e) => onClose()} />
         </ModalFooter>
     </Modal>
 

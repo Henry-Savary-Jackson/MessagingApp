@@ -1,12 +1,10 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './components/App';
-import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { CookiesProvider } from 'react-cookie';
 import { StrictMode } from 'react';
-import { DBProvider } from './components/providers/DBProvider';
-import { BlobStoreProvider } from './components/providers/BlobStoreProvider';
+import DBProvider from './components/providers/DBProvider';
+import BlobStoreProvider from './components/providers/BlobStoreProvider';
 {
   /* The following line can be included in your src/index.js or App.js file */
 }

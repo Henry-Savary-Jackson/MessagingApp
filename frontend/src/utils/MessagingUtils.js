@@ -203,7 +203,7 @@ export async function handle_group_invite_message(indexed_db, user_id, chat_mess
 
     let new_chat_object = await create_chat_object(groupChatId, groupChatName, "GROUP", [message_header.senderId, user_id], groupImage, message_header.senderId)
     // store 
-    message_header.chat_id = groupChatId
+    message_header.chatId = groupChatId
 
     return await store_message_object_chat(indexed_db, chat_message, message_contents, message_header, message_key, new_chat_object)
 }

@@ -1,7 +1,7 @@
 import { useIndexedDB } from "../../hooks/useIndexedDB";
 import { db_context } from "../../context/useDBContext";
 
-export function DBProvider({children}){
+export default function DBProvider({children}){
     let {db, loading} = useIndexedDB()
     return <db_context.Provider value={{db, loading}}>
         {db && children}
