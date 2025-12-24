@@ -1,9 +1,11 @@
-import { Stack, Image, Button, Container } from "react-bootstrap"
+import { Stack, Image, Button } from "react-bootstrap"
 import { getFile, getUsername, getUserProfileImage } from "../../utils/RequestUtils"
 import { useState, useEffect, useContext, memo } from "react"
-import { DIRECT, GROUP, GROUP_INVITE, useIndexedDB, USER_ADDED, USER_REMOVED } from "../../utils/StorageUtils";
+import { DIRECT, GROUP, GROUP_INVITE, USER_ADDED, USER_REMOVED } from "../../utils/StorageUtils";
 import "../../css/chats.scss"
-import { blob_context, user_id_context, username_context } from "../../globals";
+import { user_id_context } from "../../globals";
+import useDBContext from "../../context/useDBContext";
+import useBlobStore from "../../context/useBlobStore";
 
 function render_text(contents, current_user_id, sender_id, sender_name, type, new_user_name, new_user_id) {
     let text = ""
@@ -36,34 +38,38 @@ function render_text(contents, current_user_id, sender_id, sender_name, type, ne
     return { text, text_class, message_class }
 }
 
-const ChatMessage = memo(({ message_key, contents, sender, type }) => {
-
-    let { db, loading } = useIndexedDB()
+// memo prevents unnecessary re-renders
+export  const ChatMessage = memo(({ message_key, contents, sender, type }) => {
+    let { db, loading } = useDBContext()
     let [file_metadata, set_file_metadata] = useState(undefined)
     let [user_id, set_user_id] = useContext(user_id_context)
-    let [current_username, set_current_username] = useContext(username_context)
-    let [addBlob, removeBlob, getBlob,] = useContext(blob_context)
+    let [addBlob, removeBlob, getBlob,] = useBlobStore()
 
     useEffect(() => {
         (async () => {
-            if (db) {
+            if (db && !getBlob(sender)) {
+                // only add profile image if not already in blobstore
                 addBlob(sender, await getUserProfileImage(db, sender))
+                // if this component added it, it will be removed when dismounted
+                return () => { removeBlob(sender) }
             }
         })()
     }, [db])
 
     useEffect(() => {
         if (contents.fileInfo) {
-            (async () => {
-                if (db) {
+            if (db && !getBlob(contents.fileInfo.fileId)) {
+                (async () => {
                     let file_blob = await getFile(db, contents.fileInfo.fileId, message_key, contents.fileInfo.fileIv)
                     addBlob(contents.fileInfo.fileId, file_blob)
                     set_file_metadata({ type: file_blob.type, name: file_blob.name })
                 }
-            })()
+                )()
+                // same thing but for the file if the message contains it
+                // if this component added it, it will be removed when dismounted
+                return () => {removeBlob(contents.fileInfo.fileId) }
+            }
         }
-
-        return () => { contents.fileInfo && removeBlob(contents.fileInfo.fileId) }
     }, [db])
 
     let [username, setUsername] = useState("")
@@ -77,6 +83,7 @@ const ChatMessage = memo(({ message_key, contents, sender, type }) => {
                     setUsername(await getUsername(db, sender))
                 } catch (e) {
                     if (e.code && e.code == 404) {
+                        // incase user is deleted
                         setUsername(`(Unknown user)${sender && sender.slice(0, 4)}`)
                     }
                 }
@@ -84,8 +91,9 @@ const ChatMessage = memo(({ message_key, contents, sender, type }) => {
         })()
     }, [db])
 
-
+    // if the message is about adding or rmeoving a user from a group, this contains the id of the user
     let changed_user_id = contents.userGroupChange && contents.userGroupChange.userId
+
     useEffect(() => {
         (async () => {
             if (db && [USER_ADDED, USER_REMOVED].includes(type) && changed_user_id) {
@@ -93,6 +101,7 @@ const ChatMessage = memo(({ message_key, contents, sender, type }) => {
                     set_changed_username(await getUsername(db, changed_user_id))
                 } catch (e) {
                     if (e.code && e.code == 404) {
+                        // incase user is deleted
                         set_changed_username(`(Unknown user)${changed_user_id && changed_user_id.slice(0, 4)}`)
                     }
                 }
@@ -101,12 +110,13 @@ const ChatMessage = memo(({ message_key, contents, sender, type }) => {
     }, [db])
 
     let { text, text_class, message_class } = render_text(contents, user_id, sender, username, type, changed_user_username, changed_user_id)
+
     return <Stack className={message_class}  >
         {text &&
             <span className={text_class}  >{text}</span>
         }
-        {contents.fileInfo && <Image thumbnail className={user_id === sender ? "align-self-end" : "align-self-start"} src={getBlob(contents.fileInfo.fileId)} />}
-        {contents.fileInfo && getBlob(contents.fileInfo.fileId) && <Button href={getBlob(contents.fileInfo.fileId)} download={file_metadata.name}><Image className="download-file-icon" src="/download-file-icon.svg"></Image>Download file</Button>}
+        {contents.fileInfo && file_metadata && file_metadata.type.startsWith("image") && <Image thumbnail className={user_id === sender ? "align-self-end" : "align-self-start"} src={getBlob(contents.fileInfo.fileId)} />}
+        {contents.fileInfo && getBlob(contents.fileInfo.fileId) && <Button href={getBlob(contents.fileInfo.fileId)} download={file_metadata.name}><Image className="download-file-icon" src="/download-file-icon.svg"></Image>{file_metadata.name}</Button>}
         {[GROUP, DIRECT].includes(type) &&
             <Stack className={user_id === sender ? "justify-content-end" : ""} direction="horizontal">
                 <Image roundedCircle className={`border msg-profile-image order-${Number(user_id === sender)}`} src={getBlob(sender)} />

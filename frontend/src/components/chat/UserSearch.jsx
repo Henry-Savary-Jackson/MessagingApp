@@ -1,15 +1,15 @@
-import { useEffect, useContext, useRef, useState } from "react";
+import { useState } from "react";
 import { Button, Image, Form, FormControl, ListGroup, ListGroupItem } from "react-bootstrap";
-import { getUserId, getUsername, getUserProfileById, searchUserIdsByUsername } from "../../utils/RequestUtils";
-import { useUserInfo } from "./useUserInfo";
-import { blob_context } from "../../globals";
+import { searchUserIdsByUsername } from "../../utils/RequestUtils";
+import { useUserInfo } from "../../hooks/useUserInfo";
 import "../../css/chats.scss"
-import { useIndexedDB } from "../../utils/StorageUtils";
+import useDBContext from "../../context/useDBContext";
 
 
-function UserSearchResult({ indexed_db, user_id, onUserSelect }) {
+function UserSearchResult({  user_id, onUserSelect }) {
     
-    let {user_info, profileURL}= useUserInfo(indexed_db, user_id)
+    let {db, loading} = useDBContext()
+    let {user_info, profileURL}= useUserInfo(db, user_id)
 
     return <ListGroupItem key={user_id} onClick={(e) => { onUserSelect(user_id) }}>
         {profileURL && <Image className="border msg-profile-image " src={profileURL} roundedCircle />}
@@ -20,8 +20,8 @@ function UserSearchResult({ indexed_db, user_id, onUserSelect }) {
 export default function UserSearch({ selectUserCallback }) {
 
     let [foundUserIds, setFoundsUserIds] = useState(null)
-    let { db, loading } = useIndexedDB()
 
+    let {db, loading} = useDBContext()
 
     let setSearchResultCallback = async (username) => {
         if (!username){
@@ -39,7 +39,7 @@ export default function UserSearch({ selectUserCallback }) {
         {foundUserIds && <ListGroup>
             {foundUserIds.map((user_id) => <UserSearchResult key={user_id} onUserSelect={(user_id) => {
                 selectUserCallback(user_id)
-            }} indexed_db={db} user_id={user_id} />)}
+            }}  user_id={user_id} />)}
         </ListGroup>}
     </Form>
 

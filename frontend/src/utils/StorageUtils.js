@@ -5,19 +5,19 @@ import { generate25519KeyExchangePair, DH, extractC25519KeyExchangePair, exportX
 import { Identity, MessageType } from "./protocol/messages"
 
 
-const db_string = "messaging_clone"
-const identity_store_name = "identity"
-const double_ratchet_store_name = "dr_sessions"
-const chats_store_name = "chats"
-const otp_store_name = "one_time_prekeys"
-const dh_keystore_name = "dh_keys_prev"
-const skipped_messages_store_name = "skipped_messages"
-const file_store_name = "message_files"
-const user_info_store_name = "user_cache"
-const username_index_name = "username_index"
-const user_metadata_store_name = "user_metadata"
-const current_version = 2
-const max_otp = 100;
+export const db_string = "messaging_clone"
+export const identity_store_name = "identity"
+export const double_ratchet_store_name = "dr_sessions"
+export const chats_store_name = "chats"
+export const otp_store_name = "one_time_prekeys"
+export const dh_keystore_name = "dh_keys_prev"
+export const skipped_messages_store_name = "skipped_messages"
+export const file_store_name = "message_files"
+export const user_info_store_name = "user_cache"
+export const username_index_name = "username_index"
+export const user_metadata_store_name = "user_metadata"
+export const current_version = 2
+export const max_otp = 100;
 
 export const [ X3DH,  DIRECT, GROUP,USER_ADDED, USER_REMOVED , GROUP_INVITE, GROUP_MEMBERSHIP]= ["X3DH","DIRECT", "GROUP", "USER_ADDED" , "USER_REMOVED", "GROUP_INVITE", "GROUP_MEMBERSHIP"]
 
@@ -32,68 +32,7 @@ export const convert_proto_chat_msg = (message_proto, message_contents, message_
         }
     }
 // so that react components can access the idb IndexedDB object to use utilit methods on to perform operations
-export function useIndexedDB() {
 
-    let [db, setDB] = useState(null)
-    let [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        let db_obj = null
-        const open = async () => {
-
-            db_obj = await openDB(db_string, current_version, {
-                upgrade(db_obj, oldVersion, newVersion, transaction) {
-                    const identity_store = db_obj.createObjectStore(identity_store_name, { keyPath: "user_id" });
-                    const dr_sess_store = db_obj.createObjectStore(double_ratchet_store_name, { keyPath: "user_id" });
-                    const chat_store = db_obj.createObjectStore(chats_store_name, { keyPath: "chat_id" });
-                    const otp_store = db_obj.createObjectStore(otp_store_name);
-                    const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "header_key" })
-                    const file_store = db_obj.createObjectStore(file_store_name)
-                    const metadata_store = db_obj.createObjectStore(user_metadata_store_name)
-                    const user_info_cache = db_obj.createObjectStore(user_info_store_name, { keyPath: "user_id" })
-                    user_info_cache.createIndex(username_index_name, "username")
-                    const skipped_message_store = db_obj.createObjectStore(skipped_messages_store_name, { keyPath: "message_id" })
-                }
-            })
-            setLoading(false);
-            setDB(db_obj)
-        }
-        open()
-        return () => {
-            db_obj && db_obj.close()
-        }
-    }, [])
-
-    return { db, loading }
-}
-
-// fetch identity information from the database when eeded
-// useful for react components that need to initiate an X3DH protocol or the need to accept an X3DH start message
-export function useIdentityInformation(indexed_db) {
-    let [ident_info, set_ident_info] = useState(null)
-
-    function save_new_ident_info(new_ident_info) {
-        if (indexed_db) {
-            set_ident_info(new_ident_info)
-            storeUserData(indexed_db, new_ident_info)
-        } else {
-            throw new Error("IndexedDB not intialized when saving identity information!")
-        }
-    }
-
-    useEffect(() => {
-        const get_from_db = async () => {
-            if (!indexed_db)
-                return
-            set_ident_info(await getIdentityDataFromDB(indexed_db))
-        }
-        get_from_db()
-    }, [indexed_db])
-
-    return [ident_info, save_new_ident_info]
-
-
-}
 
 export async function get_all_skipped_messages(indexed_db){
     return await indexed_db.getAll(skipped_messages_store_name)

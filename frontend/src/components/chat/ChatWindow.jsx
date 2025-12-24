@@ -4,10 +4,9 @@ import ChatKeyboard from "./ChatKeyboard";
 import { useContext, useState } from "react";
 import { user_id_context } from "../../globals";
 import GroupUserList from "./GroupUserList";
-import { useIndexedDB } from "../../utils/StorageUtils";
 
 
-function ChatWindow({  chat_object, onMessageSend, onInviteUser, onDeleteUser }) {
+export default function ChatWindow({  chat_object, onMessageSend, onInviteUser, onDeleteUser }) {
     let [user_id, set_user_id] = useContext(user_id_context) 
     let [disp_modal, set_disp_modal] = useState(false)
     let messages = chat_object.messages || []
@@ -27,5 +26,3 @@ function ChatWindow({  chat_object, onMessageSend, onInviteUser, onDeleteUser })
         </CardFooter>
     </Card>
 }
-
-export default ChatWindow;

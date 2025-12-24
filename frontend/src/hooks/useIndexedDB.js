@@ -1,0 +1,38 @@
+import { openDB } from "idb"
+import { useState, useEffect } from "react"
+import {current_version,db_string, identity_store_name, double_ratchet_store_name, chats_store_name, otp_store_name, dh_keystore_name, file_store_name, user_metadata_store_name, user_info_store_name, username_index_name,skipped_messages_store_name } from "../utils/StorageUtils"
+
+export function useIndexedDB() {
+
+    let [db, setDB] = useState(null)
+    let [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        let db_obj = null
+        const open = async () => {
+
+            db_obj = await openDB(db_string, current_version, {
+                upgrade(db_obj, oldVersion, newVersion, transaction) {
+                    const identity_store = db_obj.createObjectStore(identity_store_name, { keyPath: "user_id" });
+                    const dr_sess_store = db_obj.createObjectStore(double_ratchet_store_name, { keyPath: "user_id" });
+                    const chat_store = db_obj.createObjectStore(chats_store_name, { keyPath: "chat_id" });
+                    const otp_store = db_obj.createObjectStore(otp_store_name);
+                    const dh_key_store = db_obj.createObjectStore(dh_keystore_name, { keyPath: "header_key" })
+                    const file_store = db_obj.createObjectStore(file_store_name)
+                    const metadata_store = db_obj.createObjectStore(user_metadata_store_name)
+                    const user_info_cache = db_obj.createObjectStore(user_info_store_name, { keyPath: "user_id" })
+                    user_info_cache.createIndex(username_index_name, "username")
+                    const skipped_message_store = db_obj.createObjectStore(skipped_messages_store_name, { keyPath: "message_id" })
+                }
+            })
+            setLoading(false);
+            setDB(db_obj)
+        }
+        open()
+        return () => {
+            db_obj && db_obj.close()
+        }
+    }, [])
+
+    return { db, loading }
+}

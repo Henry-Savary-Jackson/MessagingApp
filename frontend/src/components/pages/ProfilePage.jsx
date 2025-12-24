@@ -1,44 +1,45 @@
 
-import { useContext, useEffect, useState } from "react";
-import { Form, Image, Button, FormLabel, FormControl, FormGroup } from "react-bootstrap";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Form, Image, Button, FormLabel, FormControl, FormGroup, Container } from "react-bootstrap";
 import { identity_context } from "../../globals";
 import { getUserProfileImage, putUserProfile } from "../../utils/RequestUtils";
 import { Link } from "react-router";
-import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer } from "../../utils/EncodingUtils";
-import { get_user_info, store_user_info, useIndexedDB } from "../../utils/StorageUtils";
+import { convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
+import { current_version, get_user_info, store_user_info } from "../../utils/StorageUtils";
 import "../../css/profile-page.scss";
+import useBlobStore from "../../context/useBlobStore";
+import useDBContext from "../../context/useDBContext";
 
 function ProfilePage() {
-    let { db, loading } = useIndexedDB()
+    let { db, loading } = useDBContext()
+    let [addBlob, removeBlob, getBlob] = useBlobStore()
     let [identity, set_ident_info] = useContext(identity_context)
 
     let [newUsername, setNewUsername] = useState(identity.username)
-    let [profileImageBlob, setProfileImageBlob] = useState(undefined)
 
     let [newFile, setNewFile] = useState(undefined)
-    let profileBlobURL = null
+
+    let [profileBlobURL, setProfileBlobURL] = useState(getBlob(identity.user_id))
 
     const unsetBlobURL = () => {
-        if (profileBlobURL)
+        if (profileBlobURL) {
             URL.revokeObjectURL(profileBlobURL)
+        }
     }
+
     const updateBlobURL = (profileImage) => {
-        profileBlobURL = (URL.createObjectURL(profileImage))
-    }
-    if (profileImageBlob) {
-        updateBlobURL(profileImageBlob)
+        unsetBlobURL()
+        setProfileBlobURL(URL.createObjectURL(profileImage))
     }
 
-    // gcreate a blob url and display it using an image component
-    useEffect(() => {
+    async function get_profile_image() {
+        if (db && !profileBlobURL)
+            setProfileBlobURL(addBlob(identity.user_id, await getUserProfileImage(db, identity.user_id)))
+    }
 
-        (async () => {
-            if (db)
-                setProfileImageBlob(await getUserProfileImage(db, identity.user_id) || undefined)
-        })()
-        return unsetBlobURL
+    get_profile_image()
 
-    }, [db])
+    // create a blob url and display it using an image component
 
     return <Form onSubmit={async (e) => {
         e.preventDefault()
@@ -52,19 +53,22 @@ function ProfilePage() {
         }
         if (newFile) {
             const fileReader = new FileReader()
-            fileReader.onload = (ev) => {
+            fileReader.onload = async (ev) => {
                 let bytes = fileReader.result
                 let newProfile = { "data": convertArrayBufferToBase64(bytes), mimeType: newFile.type }
                 let new_profile = new File([bytes], { type: newFile.type, name: newFile.name })
-                setProfileImageBlob(new_profile)
+                updateBlobURL(new_profile)
 
-                let user_info = get_user_info(db, identity.user_id)
+                let user_info = await get_user_info(db, identity.user_id)
+
                 user_info.profile = new_profile
+
                 store_user_info(db, user_info)
 
                 console.log("uploaded profile image")
 
                 submit(newProfile)
+                addBlob(identity.user_id, new_profile)
             }
             fileReader.readAsArrayBuffer(newFile)
         } else {
@@ -73,12 +77,12 @@ function ProfilePage() {
 
     }} className="profile-form">
         <Link to={"/chat"} className="btn btn-primary"> HomePage</Link>
-        <FormGroup className="profile-image">
-            <FormLabel className="profile-image" htmlFor="set-profile-input">
-                <Image alt="Profile Image" src={profileBlobURL || undefined} roundedCircle />
+        <FormGroup  >
+            <FormLabel className="d-flex flex-column align-items-center" htmlFor="set-profile-input">
+                <Image className="border profile-image" alt="Profile Image" src={profileBlobURL || undefined} roundedCircle />
+                <a download={"profile.png"} href={profileBlobURL} >Download</a>
             </FormLabel>
-            <a download={"profile.png"} href={profileBlobURL} ></a>
-            <FormControl id="set-profile-input" onChange={(e) => {
+            <FormControl id="set-profile-input" className="disappear" onChange={(e) => {
                 if (e.target.files) {
                     setNewFile(e.target.files[0])
                     updateBlobURL(e.target.files[0])

@@ -6,19 +6,22 @@ import PrivateRoute from './PrivateRoute';
 import { setAxiosCSRF, getCSRF, setSignedPrekey } from '../utils/RequestUtils.js';
 import { useEffect, useState } from 'react';
 import { username_context, user_id_context, csrf_context, identity_context } from '../globals.js'
-import { updateSignedPrekey, useIdentityInformation } from '../utils/StorageUtils.js';
-import { useIndexedDB } from '../utils/StorageUtils.js';
+import useIdentityInformation from '../hooks/useIdentityInformation.js';
+import { updateSignedPrekey } from '../utils/StorageUtils.js';
 import { useCookies } from 'react-cookie'
 import { broker_url } from '../utils/MessagingUtils.js';
 import { StompSessionProvider } from 'react-stomp-hooks'
 import ProfilePage from './pages/ProfilePage.jsx';
 import LoadingLogin from './pages/LoadingLogin.jsx';
+import  useDBContext  from '../context/useDBContext.js';
 
 function App() {
 
   let [csrf, setCSRF] = useState("")
+
   let [cookies, setCookies, removeCookies] = useCookies()
-  let { db, loading } = useIndexedDB()
+  let { db, loading } = useDBContext() 
+
   let [ident_info, set_ident_info] = useIdentityInformation(db)
   let [user_id, set_user_id] = useState(cookies.user_id || "")
   let [username, set_username] = useState(cookies.username || "")

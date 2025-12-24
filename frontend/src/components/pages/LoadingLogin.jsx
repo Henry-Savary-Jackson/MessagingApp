@@ -26,7 +26,6 @@ export default function LoadingLogin({ setUserCallback }) {
 
     let need_login = useRef(true)
 
-
     useEffect(()=>{
         if (user_id && ident_info  && ident_info !== "Not found" ){
             location.pathname = "/chat"
@@ -39,7 +38,7 @@ export default function LoadingLogin({ setUserCallback }) {
     }, [ident_info, user_id])
 
 
-    return <Stack>
+    return <Stack className="align-items-center justify-items-center">
         <Spinner />
         <span>Logging in...</span>
     </Stack >

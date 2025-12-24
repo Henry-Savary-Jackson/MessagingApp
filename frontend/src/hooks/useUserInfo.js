@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-import { blob_context } from "../../globals";
-import { getUserProfileById } from "../../utils/RequestUtils";
-import "../../css/chats.scss"
+import { useEffect, useState } from "react";
+import { getUserProfileById } from "../utils/RequestUtils";
+import useBlobStore from "../context/useBlobStore";
 
 
 export function useUserInfo(db, user_id) {
-    let [addBlob, removeBlob, getBlob] = useContext(blob_context)
+    let [addBlob, removeBlob, getBlob] = useBlobStore()
 
     let [user_info, setUserInfo] = useState(null)
     let [profileURL, setProfileURL] = useState(null)

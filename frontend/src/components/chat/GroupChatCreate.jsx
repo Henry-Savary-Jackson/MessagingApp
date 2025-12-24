@@ -2,17 +2,18 @@ import { useContext, useEffect, useState } from "react";
 import { v4 } from "uuid"
 import { Button, Image,Form,Stack, CloseButton, FormControl, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from "react-bootstrap";
 import { user_id_context } from "../../globals";
-import { create_chat_object, store_chat, useIndexedDB } from "../../utils/StorageUtils";
+import { create_chat_object, store_chat, } from "../../utils/StorageUtils";
 import { createChat, uploadFile } from "../../utils/RequestUtils";
 import { FileInfo, MessageFile } from "../../utils/protocol/messages";
 import "../../css/global.scss"
 import "../../css/chats.scss"
+import useDBContext from "../../context/useDBContext";
 
 
 export default function GroupChatCreate({show, onChatCreate, onClose}) {
 
     let [user_id, set_user_id] = useContext(user_id_context)
-    let { db, loading } = useIndexedDB()
+    let { db, loading } = useDBContext()
 
     let [group_name, set_group_name] = useState("")
     let [group_image, set_group_image] = useState(undefined)
@@ -51,6 +52,7 @@ export default function GroupChatCreate({show, onChatCreate, onClose}) {
         <ModalHeader><ModalTitle>Create new group chat</ModalTitle></ModalHeader>
         <ModalBody >
             <Stack>
+                {group_image_blob_url && <Image width={300} height={300} src={group_image_blob_url} />}
                 <FormLabel className="group-icon-upload" htmlFor="chat-upload-pic">Upload Icon<Image src="/chat-profile-input.svg" />{group_image ? group_image.name :""}</FormLabel>
                 <FormControl className="disappear" id="chat-upload-pic" type="file" onChange={(e) => {
                     if (e.target.files)

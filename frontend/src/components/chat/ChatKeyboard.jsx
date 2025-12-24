@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Image, Form, Button, FormControl, Stack, FormLabel } from "react-bootstrap"
 import "../../css/chats.scss"
 
-function ChatKeyboard({ chat_id, onMessageSend }) {
+export default function ChatKeyboard({ chat_id, onMessageSend }) {
 
     let [message, setMessage] = useState("")
     let [file, setFile] = useState(undefined)
@@ -49,6 +49,3 @@ function ChatKeyboard({ chat_id, onMessageSend }) {
         </Stack>
     </Form>
 }
-
-
-export default ChatKeyboard 

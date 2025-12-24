@@ -1,18 +1,19 @@
 import { useContext, useEffect, useReducer, useState } from 'react'
 import { Stack, Col, Container, Row, Modal, ModalTitle, ModalBody, ModalFooter, CloseButton } from 'react-bootstrap'
 import { Link, useLocation } from 'react-router'
-import { createChat, getCSRF, getPrekeyBundle, getUsername, getUserProfileImage, logout, setAxiosCSRF } from '../../utils/RequestUtils'
+import { getPrekeyBundle, getUsername, logout } from '../../utils/RequestUtils'
 import ChatWindow from "./../chat/ChatWindow"
 import ChatListBar from "./../chat/ChatListBar"
-import { decrypt_chat_message, init_ratchet_root_receiver, init_ratchet_root_sender, handle_all_skipped_messages_for_session } from '../../utils/RatchetUtils'
+import { handle_all_skipped_messages_for_session } from '../../utils/RatchetUtils'
 import { handle_X3DH_message, send_X3DH_message } from '../../utils/X3DHUtils'
 import { handle_new_encrypted_message, send_new_encrypted_message } from '../../utils/MessagingUtils'
 import { ChatMessage } from '../../utils/protocol/messages'
-import { create_chat_object, create_double_ratchet_recipient, delete_chat, delete_skipped_message, get_all_chats, get_all_double_ratchet_sess, get_chat, get_double_ratchet_session, get_messages, get_metadata, getOneTimePrekeyWithPubKey, set_metadata, store_chat, store_double_ratchet_session, store_message, useIdentityInformation, useIndexedDB, USER_ADDED, USER_REMOVED } from '../../utils/StorageUtils'
+import { create_chat_object, delete_chat, get_all_chats, get_chat, get_double_ratchet_session, get_metadata, set_metadata, store_chat, store_message, USER_ADDED, USER_REMOVED } from '../../utils/StorageUtils'
 import { useStompClient, useSubscription } from 'react-stomp-hooks'
-import { blob_context, identity_context, user_id_context, username_context } from '../../globals'
+import { user_id_context, username_context } from '../../globals'
 import GroupChatCreate from '../chat/GroupChatCreate'
 import UserSearch from '../chat/UserSearch'
+import useDBContext from '../../context/useDBContext'
 
 
 function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
@@ -21,24 +22,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     let [show_user_search, set_show_user_search] = useState(false)
 
-
-
     let [currentChatId, setCurrentChat] = useState("")
-
-    let [blobs, blobsReducer] = useReducer((prev, action) => {
-        switch (action.action) {
-            case "add":
-                return { ...prev, [action.fileId]: URL.createObjectURL(action.blob) }
-            case "remove":
-                URL.revokeObjectURL(prev[action.fileId])
-                delete prev[action.fileId]
-                return { ...prev }
-        }
-    }, {})
-
-    const add_blob = (fileId, blob) => { blob && blobsReducer({ action: "add", fileId: fileId, blob: blob }) }
-    const remove_blob = (fileId) => { blobsReducer({ action: "remove", fileId: fileId }) }
-    const get_blob = (fileId) => blobs[fileId]
 
     let [chats, chatsReducer] = useReducer((prev, action) => {
         switch (action.action) {
@@ -79,8 +63,8 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     const delChatUI = (chat_id) => { chatsReducer({ "action": "del", chat_id: chat_id }) } // TODO: make it so that the message
     const chatInUI = (chat_id) => chats.find((chat) => chat.chat_id === chat_id)
 
+    let { db, loading } = useDBContext() 
 
-    let { db, loading } = useIndexedDB()
 
     useEffect(() => {
         async function get_chats_callback() {
@@ -167,6 +151,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
 
     useSubscription("/user/messages", onMessage, { last_timestamp: (user_metadata && user_metadata.last_msg_timestamp) || new Date().getTime() })
+
     const client = useStompClient()
 
     const sendMessage = async (chat_id, text, file_object = null) => {
@@ -242,7 +227,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     let currentChat = currentChatId && getChatById(currentChatId)
 
 
-    return <blob_context.Provider value={[add_blob, remove_blob, get_blob]} > <Container fluid><Row>
+    return  <Container fluid><Row>
         <Col sm={2} >
             <Stack gap={2}>
                 <span>{username}</span>
@@ -258,7 +243,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={() => { set_show_user_search(true) }} onChatCreate={() => { set_chat_modal(true) }} />
         </Col>
         <Col className='vh-100' sm={6}>
-            {currentChat && <ChatWindow onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} onMessageSend={sendMessage} />}
+            {currentChat && <ChatWindow  onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} onMessageSend={sendMessage} />}
         </Col>
     </Row>
         <Modal show={show_user_search}>
@@ -272,7 +257,6 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
         </Modal>
         <GroupChatCreate show={show_chat_modal} onChatCreate={(chat) => { addNewChatUI(chat); set_chat_modal(false) }} onClose={() => { set_chat_modal(false) }} />
     </Container>
-    </blob_context.Provider>
 }
 
 export default ChatPage

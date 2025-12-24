@@ -1,13 +1,14 @@
 import { useContext, useEffect, useState } from "react";
-import { blob_context } from "../../globals";
 import { Button, Image, CloseButton, Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle, Stack } from "react-bootstrap";
 import { getUserProfileById } from "../../utils/RequestUtils";
 import "../../css/chats.scss"
-import { get_chat, useIndexedDB } from "../../utils/StorageUtils";
+import { get_chat  } from "../../utils/StorageUtils";
 import UserSearch from "./UserSearch";
+import useDBContext from "../../context/useDBContext";
+import useBlobStore from "../../context/useBlobStore";
 
 function useUserInfo(db, user_id) {
-    let [addBlob, removeBlob, getBlob] = useContext(blob_context)
+    let [addBlob, removeBlob, getBlob] = useBlobStore() 
 
     let [user_info, setUserInfo] = useState(null)
     let [profileURL, setProfileURL] = useState(null)
@@ -51,7 +52,7 @@ function UserGroupInfo({ chat_object, indexed_db, user_id, onRemoveUser }) {
 export default function GroupUserList({ show, chat_id, onAddUser, onRemoveUser, onClose }) {
 
     let [chat_object, set_chat_object] = useState(null)
-    let { db, loading } = useIndexedDB()
+    let { db, loading } = useDBContext()
 
     const updateChatObject = async () => { set_chat_object(await get_chat(db, chat_id)) }
 

@@ -325,6 +325,7 @@ $root.FileInfo = (function() {
      * @interface IFileInfo
      * @property {string|null} [fileId] FileInfo fileId
      * @property {Uint8Array|null} [fileIv] FileInfo fileIv
+     * @property {Uint8Array|null} [fileKey] FileInfo fileKey
      */
 
     /**
@@ -359,6 +360,28 @@ $root.FileInfo = (function() {
     FileInfo.prototype.fileIv = $util.newBuffer([]);
 
     /**
+     * FileInfo fileKey.
+     * @member {Uint8Array|null|undefined} fileKey
+     * @memberof FileInfo
+     * @instance
+     */
+    FileInfo.prototype.fileKey = null;
+
+    // OneOf field names bound to virtual getters and setters
+    var $oneOfFields;
+
+    /**
+     * FileInfo _fileKey.
+     * @member {"fileKey"|undefined} _fileKey
+     * @memberof FileInfo
+     * @instance
+     */
+    Object.defineProperty(FileInfo.prototype, "_fileKey", {
+        get: $util.oneOfGetter($oneOfFields = ["fileKey"]),
+        set: $util.oneOfSetter($oneOfFields)
+    });
+
+    /**
      * Creates a new FileInfo instance using the specified properties.
      * @function create
      * @memberof FileInfo
@@ -386,6 +409,8 @@ $root.FileInfo = (function() {
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.fileId);
         if (message.fileIv != null && Object.hasOwnProperty.call(message, "fileIv"))
             writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.fileIv);
+        if (message.fileKey != null && Object.hasOwnProperty.call(message, "fileKey"))
+            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.fileKey);
         return writer;
     };
 
@@ -430,6 +455,10 @@ $root.FileInfo = (function() {
                     message.fileIv = reader.bytes();
                     break;
                 }
+            case 3: {
+                    message.fileKey = reader.bytes();
+                    break;
+                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -465,12 +494,18 @@ $root.FileInfo = (function() {
     FileInfo.verify = function verify(message) {
         if (typeof message !== "object" || message === null)
             return "object expected";
+        var properties = {};
         if (message.fileId != null && message.hasOwnProperty("fileId"))
             if (!$util.isString(message.fileId))
                 return "fileId: string expected";
         if (message.fileIv != null && message.hasOwnProperty("fileIv"))
             if (!(message.fileIv && typeof message.fileIv.length === "number" || $util.isString(message.fileIv)))
                 return "fileIv: buffer expected";
+        if (message.fileKey != null && message.hasOwnProperty("fileKey")) {
+            properties._fileKey = 1;
+            if (!(message.fileKey && typeof message.fileKey.length === "number" || $util.isString(message.fileKey)))
+                return "fileKey: buffer expected";
+        }
         return null;
     };
 
@@ -493,6 +528,11 @@ $root.FileInfo = (function() {
                 $util.base64.decode(object.fileIv, message.fileIv = $util.newBuffer($util.base64.length(object.fileIv)), 0);
             else if (object.fileIv.length >= 0)
                 message.fileIv = object.fileIv;
+        if (object.fileKey != null)
+            if (typeof object.fileKey === "string")
+                $util.base64.decode(object.fileKey, message.fileKey = $util.newBuffer($util.base64.length(object.fileKey)), 0);
+            else if (object.fileKey.length >= 0)
+                message.fileKey = object.fileKey;
         return message;
     };
 
@@ -523,6 +563,11 @@ $root.FileInfo = (function() {
             object.fileId = message.fileId;
         if (message.fileIv != null && message.hasOwnProperty("fileIv"))
             object.fileIv = options.bytes === String ? $util.base64.encode(message.fileIv, 0, message.fileIv.length) : options.bytes === Array ? Array.prototype.slice.call(message.fileIv) : message.fileIv;
+        if (message.fileKey != null && message.hasOwnProperty("fileKey")) {
+            object.fileKey = options.bytes === String ? $util.base64.encode(message.fileKey, 0, message.fileKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.fileKey) : message.fileKey;
+            if (options.oneofs)
+                object._fileKey = "fileKey";
+        }
         return object;
     };
 
@@ -1003,7 +1048,6 @@ $root.GroupInvite = (function() {
      * @interface IGroupInvite
      * @property {string|null} [groupChatId] GroupInvite groupChatId
      * @property {string|null} [groupChatName] GroupInvite groupChatName
-     * @property {Uint8Array|null} [groupKey] GroupInvite groupKey
      * @property {IFileInfo|null} [groupImage] GroupInvite groupImage
      */
 
@@ -1037,14 +1081,6 @@ $root.GroupInvite = (function() {
      * @instance
      */
     GroupInvite.prototype.groupChatName = "";
-
-    /**
-     * GroupInvite groupKey.
-     * @member {Uint8Array} groupKey
-     * @memberof GroupInvite
-     * @instance
-     */
-    GroupInvite.prototype.groupKey = $util.newBuffer([]);
 
     /**
      * GroupInvite groupImage.
@@ -1096,8 +1132,6 @@ $root.GroupInvite = (function() {
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.groupChatId);
         if (message.groupChatName != null && Object.hasOwnProperty.call(message, "groupChatName"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.groupChatName);
-        if (message.groupKey != null && Object.hasOwnProperty.call(message, "groupKey"))
-            writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.groupKey);
         if (message.groupImage != null && Object.hasOwnProperty.call(message, "groupImage"))
             $root.FileInfo.encode(message.groupImage, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
         return writer;
@@ -1142,10 +1176,6 @@ $root.GroupInvite = (function() {
                 }
             case 2: {
                     message.groupChatName = reader.string();
-                    break;
-                }
-            case 3: {
-                    message.groupKey = reader.bytes();
                     break;
                 }
             case 4: {
@@ -1194,9 +1224,6 @@ $root.GroupInvite = (function() {
         if (message.groupChatName != null && message.hasOwnProperty("groupChatName"))
             if (!$util.isString(message.groupChatName))
                 return "groupChatName: string expected";
-        if (message.groupKey != null && message.hasOwnProperty("groupKey"))
-            if (!(message.groupKey && typeof message.groupKey.length === "number" || $util.isString(message.groupKey)))
-                return "groupKey: buffer expected";
         if (message.groupImage != null && message.hasOwnProperty("groupImage")) {
             properties._groupImage = 1;
             {
@@ -1224,11 +1251,6 @@ $root.GroupInvite = (function() {
             message.groupChatId = String(object.groupChatId);
         if (object.groupChatName != null)
             message.groupChatName = String(object.groupChatName);
-        if (object.groupKey != null)
-            if (typeof object.groupKey === "string")
-                $util.base64.decode(object.groupKey, message.groupKey = $util.newBuffer($util.base64.length(object.groupKey)), 0);
-            else if (object.groupKey.length >= 0)
-                message.groupKey = object.groupKey;
         if (object.groupImage != null) {
             if (typeof object.groupImage !== "object")
                 throw TypeError(".GroupInvite.groupImage: object expected");
@@ -1253,20 +1275,11 @@ $root.GroupInvite = (function() {
         if (options.defaults) {
             object.groupChatId = "";
             object.groupChatName = "";
-            if (options.bytes === String)
-                object.groupKey = "";
-            else {
-                object.groupKey = [];
-                if (options.bytes !== Array)
-                    object.groupKey = $util.newBuffer(object.groupKey);
-            }
         }
         if (message.groupChatId != null && message.hasOwnProperty("groupChatId"))
             object.groupChatId = message.groupChatId;
         if (message.groupChatName != null && message.hasOwnProperty("groupChatName"))
             object.groupChatName = message.groupChatName;
-        if (message.groupKey != null && message.hasOwnProperty("groupKey"))
-            object.groupKey = options.bytes === String ? $util.base64.encode(message.groupKey, 0, message.groupKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.groupKey) : message.groupKey;
         if (message.groupImage != null && message.hasOwnProperty("groupImage")) {
             object.groupImage = $root.FileInfo.toObject(message.groupImage, options);
             if (options.oneofs)
@@ -1310,7 +1323,7 @@ $root.GroupMembership = (function() {
      * Properties of a GroupMembership.
      * @exports IGroupMembership
      * @interface IGroupMembership
-     * @property {Uint8Array|null} [groupKey] GroupMembership groupKey
+     * @property {string|null} [initiator] GroupMembership initiator
      */
 
     /**
@@ -1329,12 +1342,12 @@ $root.GroupMembership = (function() {
     }
 
     /**
-     * GroupMembership groupKey.
-     * @member {Uint8Array} groupKey
+     * GroupMembership initiator.
+     * @member {string} initiator
      * @memberof GroupMembership
      * @instance
      */
-    GroupMembership.prototype.groupKey = $util.newBuffer([]);
+    GroupMembership.prototype.initiator = "";
 
     /**
      * Creates a new GroupMembership instance using the specified properties.
@@ -1360,8 +1373,8 @@ $root.GroupMembership = (function() {
     GroupMembership.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.groupKey != null && Object.hasOwnProperty.call(message, "groupKey"))
-            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.groupKey);
+        if (message.initiator != null && Object.hasOwnProperty.call(message, "initiator"))
+            writer.uint32(/* id 1, wireType 2 =*/10).string(message.initiator);
         return writer;
     };
 
@@ -1399,7 +1412,7 @@ $root.GroupMembership = (function() {
                 break;
             switch (tag >>> 3) {
             case 1: {
-                    message.groupKey = reader.bytes();
+                    message.initiator = reader.string();
                     break;
                 }
             default:
@@ -1437,9 +1450,9 @@ $root.GroupMembership = (function() {
     GroupMembership.verify = function verify(message) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.groupKey != null && message.hasOwnProperty("groupKey"))
-            if (!(message.groupKey && typeof message.groupKey.length === "number" || $util.isString(message.groupKey)))
-                return "groupKey: buffer expected";
+        if (message.initiator != null && message.hasOwnProperty("initiator"))
+            if (!$util.isString(message.initiator))
+                return "initiator: string expected";
         return null;
     };
 
@@ -1455,11 +1468,8 @@ $root.GroupMembership = (function() {
         if (object instanceof $root.GroupMembership)
             return object;
         var message = new $root.GroupMembership();
-        if (object.groupKey != null)
-            if (typeof object.groupKey === "string")
-                $util.base64.decode(object.groupKey, message.groupKey = $util.newBuffer($util.base64.length(object.groupKey)), 0);
-            else if (object.groupKey.length >= 0)
-                message.groupKey = object.groupKey;
+        if (object.initiator != null)
+            message.initiator = String(object.initiator);
         return message;
     };
 
@@ -1477,15 +1487,9 @@ $root.GroupMembership = (function() {
             options = {};
         var object = {};
         if (options.defaults)
-            if (options.bytes === String)
-                object.groupKey = "";
-            else {
-                object.groupKey = [];
-                if (options.bytes !== Array)
-                    object.groupKey = $util.newBuffer(object.groupKey);
-            }
-        if (message.groupKey != null && message.hasOwnProperty("groupKey"))
-            object.groupKey = options.bytes === String ? $util.base64.encode(message.groupKey, 0, message.groupKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.groupKey) : message.groupKey;
+            object.initiator = "";
+        if (message.initiator != null && message.hasOwnProperty("initiator"))
+            object.initiator = message.initiator;
         return object;
     };
 
@@ -1525,7 +1529,6 @@ $root.UserGroupChange = (function() {
      * @exports IUserGroupChange
      * @interface IUserGroupChange
      * @property {string|null} [userId] UserGroupChange userId
-     * @property {Uint8Array|null} [newGroupKey] UserGroupChange newGroupKey
      */
 
     /**
@@ -1550,14 +1553,6 @@ $root.UserGroupChange = (function() {
      * @instance
      */
     UserGroupChange.prototype.userId = "";
-
-    /**
-     * UserGroupChange newGroupKey.
-     * @member {Uint8Array} newGroupKey
-     * @memberof UserGroupChange
-     * @instance
-     */
-    UserGroupChange.prototype.newGroupKey = $util.newBuffer([]);
 
     /**
      * Creates a new UserGroupChange instance using the specified properties.
@@ -1585,8 +1580,6 @@ $root.UserGroupChange = (function() {
             writer = $Writer.create();
         if (message.userId != null && Object.hasOwnProperty.call(message, "userId"))
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.userId);
-        if (message.newGroupKey != null && Object.hasOwnProperty.call(message, "newGroupKey"))
-            writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.newGroupKey);
         return writer;
     };
 
@@ -1627,10 +1620,6 @@ $root.UserGroupChange = (function() {
                     message.userId = reader.string();
                     break;
                 }
-            case 2: {
-                    message.newGroupKey = reader.bytes();
-                    break;
-                }
             default:
                 reader.skipType(tag & 7);
                 break;
@@ -1669,9 +1658,6 @@ $root.UserGroupChange = (function() {
         if (message.userId != null && message.hasOwnProperty("userId"))
             if (!$util.isString(message.userId))
                 return "userId: string expected";
-        if (message.newGroupKey != null && message.hasOwnProperty("newGroupKey"))
-            if (!(message.newGroupKey && typeof message.newGroupKey.length === "number" || $util.isString(message.newGroupKey)))
-                return "newGroupKey: buffer expected";
         return null;
     };
 
@@ -1689,11 +1675,6 @@ $root.UserGroupChange = (function() {
         var message = new $root.UserGroupChange();
         if (object.userId != null)
             message.userId = String(object.userId);
-        if (object.newGroupKey != null)
-            if (typeof object.newGroupKey === "string")
-                $util.base64.decode(object.newGroupKey, message.newGroupKey = $util.newBuffer($util.base64.length(object.newGroupKey)), 0);
-            else if (object.newGroupKey.length >= 0)
-                message.newGroupKey = object.newGroupKey;
         return message;
     };
 
@@ -1710,20 +1691,10 @@ $root.UserGroupChange = (function() {
         if (!options)
             options = {};
         var object = {};
-        if (options.defaults) {
+        if (options.defaults)
             object.userId = "";
-            if (options.bytes === String)
-                object.newGroupKey = "";
-            else {
-                object.newGroupKey = [];
-                if (options.bytes !== Array)
-                    object.newGroupKey = $util.newBuffer(object.newGroupKey);
-            }
-        }
         if (message.userId != null && message.hasOwnProperty("userId"))
             object.userId = message.userId;
-        if (message.newGroupKey != null && message.hasOwnProperty("newGroupKey"))
-            object.newGroupKey = options.bytes === String ? $util.base64.encode(message.newGroupKey, 0, message.newGroupKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.newGroupKey) : message.newGroupKey;
         return object;
     };
 

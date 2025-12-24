@@ -5,7 +5,6 @@ import GroupChatCreate from "./GroupChatCreate";
 
 
 function ChatListBar({ chats, onChatClick, onChatCreate, onMessageUser, onChatLeave }) {
-
     return <Stack className="border vh-100 " gap={3}>
         <Button onClick={(e) => { onMessageUser() }} >Message user</Button>
         <Button onClick={(e) => { onChatCreate() }} >Create your chat</Button>

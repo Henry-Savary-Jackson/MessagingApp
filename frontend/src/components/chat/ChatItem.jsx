@@ -1,33 +1,28 @@
-import { useContext, useEffect, useState } from "react"
-import { Button, Image, Container, Stack, Fade } from "react-bootstrap"
-import { convertBase64StringToArrayBuffer } from "../../utils/EncodingUtils"
+import { useEffect, useState } from "react"
+import { Button, Image, Stack } from "react-bootstrap"
 import { getFile, getUserProfileImage } from "../../utils/RequestUtils"
-import { blob_context } from "../../globals"
-import { useIndexedDB } from "../../utils/StorageUtils"
 import "../../css/chats.scss"
+import useBlobStore from "../../context/useBlobStore"
+import useDBContext from "../../context/useDBContext"
 
-function ChatItem({ chat, onChatClick, onChatLeave }) {
+export default function ChatItem({ chat, onChatClick, onChatLeave }) {
 
-    let { db, loading } = useIndexedDB()
-    let [addBlob, removeBlob, getBlob,] = useContext(blob_context)
+    let { db, loading } = useDBContext()
+    let [addBlob, removeBlob, getBlob] = useBlobStore() 
     let [fileId, setFileId] = useState("")
 
     useEffect(() => {
         (async () => {
-            if (db) {
+            let new_file_id = chat.type === "DIRECT"? (chat.chat_id) : chat.group_image_file && chat.group_image_file.fileId
+            setFileId(new_file_id)
+            if (db && new_file_id && !getBlob(new_file_id) ) {
                 let file_blob = null
-                let new_file_id = ""
                 if (chat.type === "DIRECT") {
-                    new_file_id = (chat.chat_id)
-                    file_blob = await getUserProfileImage(db, chat.chat_id) || undefined
-                } else if (chat.type === "GROUP" && chat.group_image_file) {
-                    new_file_id = (chat.group_image_file.fileId)
+                    file_blob = await getUserProfileImage(db, new_file_id) || undefined
+                } else if (chat.type === "GROUP" ) {
                     file_blob = await getFile(db, new_file_id, null, chat.group_image_file.fileIv)
                 }
-
-                setFileId(new_file_id)
-                file_blob && addBlob(new_file_id, file_blob)
-
+                addBlob(new_file_id, file_blob)
                 return () => { new_file_id && file_blob && removeBlob(new_file_id) }
             }
         })()
@@ -43,5 +38,3 @@ function ChatItem({ chat, onChatClick, onChatLeave }) {
     </Stack>
 
 }
-
-export default ChatItem
