@@ -8,8 +8,7 @@ import useDBContext from "../../context/useDBContext";
 
 function UserSearchResult({  user_id, onUserSelect }) {
     
-    let {db, loading} = useDBContext()
-    let {user_info, profileURL}= useUserInfo(db, user_id)
+    let {user_info, profileURL}= useUserInfo( user_id)
 
     return <ListGroupItem key={user_id} onClick={(e) => { onUserSelect(user_id) }}>
         {profileURL && <Image className="border msg-profile-image " src={profileURL} roundedCircle />}
@@ -21,14 +20,13 @@ export default function UserSearch({ selectUserCallback }) {
 
     let [foundUserIds, setFoundsUserIds] = useState(null)
 
-    let {db, loading} = useDBContext()
 
     let setSearchResultCallback = async (username) => {
         if (!username){
             setFoundsUserIds(null)
             return;
         }
-        db && setFoundsUserIds(await searchUserIdsByUsername(db, username))
+        db && setFoundsUserIds(await searchUserIdsByUsername( username))
     }
 
     return <Form onSubmit={(e) => {

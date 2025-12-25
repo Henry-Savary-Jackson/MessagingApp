@@ -3,28 +3,14 @@ import { getUserProfileById } from "../utils/RequestUtils";
 import useBlobStore from "../context/useBlobStore";
 
 
-export function useUserInfo(db, user_id) {
+export function useUserInfo( user_id) {
     let [addBlob, removeBlob, getBlob] = useBlobStore()
 
-    let [user_info, setUserInfo] = useState(null)
-    let [profileURL, setProfileURL] = useState(null)
-
-    useEffect(() => {
-        (async () => {
-            let new_user_info = await getUserProfileById(db, user_id)
-            setUserInfo(new_user_info)
-            addBlob(user_id, new_user_info.profile)
-        })()
-    }, [])
-
-    useEffect(() => {
-        if (user_info && user_info.profile) {
-            let url = getBlob(user_id)
-
-            setProfileURL(url)
-        }
-    }, [user_info])
-
+    let user_info = useLiveQuery(()=>getUserProfileById(user_id) ,[user_id])
+    let profileURL = "" 
+    if (user_info && user_info.profile){
+        profileURL =addBlob(user_id, user_info.profile)
+    }
 
     return { user_info, profileURL }
 

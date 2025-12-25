@@ -3,7 +3,6 @@ import App from './components/App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { CookiesProvider } from 'react-cookie';
 import { StrictMode } from 'react';
-import DBProvider from './components/providers/DBProvider';
 import BlobStoreProvider from './components/providers/BlobStoreProvider';
 {
   /* The following line can be included in your src/index.js or App.js file */
@@ -14,9 +13,7 @@ root.render(
   <StrictMode>
     <CookiesProvider>
       <BlobStoreProvider>
-        <DBProvider>
           <App />
-        </DBProvider>
       </BlobStoreProvider>
     </CookiesProvider>
   </StrictMode>

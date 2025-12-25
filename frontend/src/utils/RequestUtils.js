@@ -86,17 +86,17 @@ export async function deleteChatRequest(chat_id) {
     return await performRequestCSRFToken(async () => (await axios.post(`${api_url}/chat/delete`, chat_id, { withCredentials: true, withXSRFToken: true })).data);
 }
 
-export async function searchUserIdsByUsername(indexed_db, search_query){
+export async function searchUserIdsByUsername( search_query){
 
     return await performRequestCSRFToken(async () => {
         return (await axios.get(`${api_url}/user/profile/search`, { params:{q:search_query}, withCredentials: true, withXSRFToken: true })).data
     })
 }
 
-export async function getUserProfileByUsername(indexed_db, username){
+export async function getUserProfileByUsername( username){
 
     return await performRequestCSRFToken(async () => {
-        let user_info = await get_user_info_username(indexed_db, username)
+        let user_info = await get_user_info_username( username)
         if (user_info) {
             return user_info
         }
@@ -104,14 +104,14 @@ export async function getUserProfileByUsername(indexed_db, username){
         const profile_data = result.profileImage
         user_info = {username:result.username, user_id:result.userId}
         user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:username,type:profile_data.mimeType})
-        await store_user_info(indexed_db, user_info)
+        await store_user_info( user_info)
         return user_info
     })
 }
 
-export async function getUserProfileById(indexed_db, user_id){
+export async function getUserProfileById( user_id){
     return await performRequestCSRFToken(async () => {
-        let user_info = await get_user_info(indexed_db,user_id)
+        let user_info = await get_user_info(user_id)
         if (user_info) {
             return user_info
         }
@@ -119,13 +119,13 @@ export async function getUserProfileById(indexed_db, user_id){
         const profile_data = result.profileImage
         user_info = {username:result.username, user_id:result.userId}
         user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:result.username,type:profile_data.mimeType})
-        await store_user_info(indexed_db, user_info)
+        await store_user_info(user_info)
         return user_info
     })
 }
 
-export async function getUserProfileImage(indexed_db, user_id) {
-   return (await getUserProfileById(indexed_db, user_id)).profile 
+export async function getUserProfileImage( user_id) {
+   return (await getUserProfileById( user_id)).profile 
 }
 
 export async function putUserProfile(data) {
@@ -138,9 +138,9 @@ export async function uploadFile(data) {
 export async function deleteFile(uuid) {
     return await performRequestCSRFToken(async () => (await axios.delete(`${api_url}/file/${uuid}`, null, { withCredentials: true, withXSRFToken: true })).data);
 }
-export async function getFile(indexed_db, uuid, message_key, fileIv) {
+export async function getFile( uuid, message_key, fileIv) {
     return await performRequestCSRFToken(async () => {
-        let file_local_blob = await get_file_local(indexed_db, uuid)
+        let file_local_blob = await get_file_local( uuid)
         if (file_local_blob) {
             return file_local_blob
         }
@@ -154,7 +154,7 @@ export async function getFile(indexed_db, uuid, message_key, fileIv) {
                 message_file_proto = MessageFile.decode(buffer_encrypted)  // group profile pictures
             }
             let blob = new File([message_file_proto.data], message_file_proto.fileName,{type:message_file_proto.mimeType})
-            await store_file_local(indexed_db, blob, uuid)
+            await store_file_local( blob, uuid)
 
             return blob 
         } catch (e) {
@@ -176,10 +176,10 @@ export async function getPrekeyBundle(username) {
 }
 
 
-export async function getUserId(indexed_db, username){
-    return (await getUserProfileByUsername(indexed_db, username)).user_id
+export async function getUserId( username){
+    return (await getUserProfileByUsername( username)).user_id
 }
 
-export async function getUsername(indexed_db, user_id) {
-    return (await getUserProfileById(indexed_db, user_id)).username
+export async function getUsername( user_id) {
+    return (await getUserProfileById( user_id)).username
 }

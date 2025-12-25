@@ -1,14 +1,13 @@
 import { openDB } from "idb"
 import { useState, useEffect } from "react"
-import { current_version, db_string, expiration_index_name, identity_store_name, double_ratchet_store_name, chats_store_name, otp_store_name, dh_keystore_name, file_store_name, user_metadata_store_name, user_info_store_name, username_index_name, skipped_messages_store_name, clear_expired_receiving_chains, clear_expired_user_info, clear_expired_skipped_messages } from "../utils/StorageUtils"
+import { clear_expired_receiving_chains, clear_expired_user_info, clear_expired_skipped_messages } from "../utils/StorageUtils"
+import { db } from "../db"
 
 export function useIndexedDB() {
-
-    let [db, setDB] = useState(null)
-    let [loading, setLoading] = useState(true)
+    let [db_object, setDB] = useState(null)
 
     useEffect(() => {
-        let db_obj = null
+        db.open()
         const open = async () => {
 
             db_obj = await openDB(db_string, current_version, {
@@ -41,5 +40,5 @@ export function useIndexedDB() {
         }
     }, [])
 
-    return { db, loading }
+    return { db: db_obj, loading }
 }

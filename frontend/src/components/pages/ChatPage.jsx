@@ -14,6 +14,7 @@ import { user_id_context, username_context } from '../../globals'
 import GroupChatCreate from '../chat/GroupChatCreate'
 import UserSearch from '../chat/UserSearch'
 import useDBContext from '../../context/useDBContext'
+import { db } from '../../db'
 
 
 function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
@@ -63,9 +64,6 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     const delChatUI = (chat_id) => { chatsReducer({ "action": "del", chat_id: chat_id }) } // TODO: make it so that the message
     const chatInUI = (chat_id) => chats.find((chat) => chat.chat_id === chat_id)
 
-    let { db, loading } = useDBContext() 
-
-
     useEffect(() => {
         async function get_chats_callback() {
             if (db) {
@@ -75,7 +73,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
         }
         get_chats_callback()
 
-    }, [db])
+    }, [])
     let [user_metadata, set_user_metadata] = useState({})
 
     async function update_metadata(new_metadata) {
@@ -92,7 +90,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
         })()
     }
 
-        , [db])
+        , [])
 
     let [user_id, set_user_id] = useContext(user_id_context)
     let [username, set_current_username] = useContext(username_context)
@@ -156,21 +154,21 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     const sendMessage = async (chat_id, text, file_object = null) => {
         let inital_chat_obj = await get_chat(db, chat_id)
-        let {msg_obj, chat_object} = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info, inital_chat_obj.type, file_object)
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info, inital_chat_obj.type, file_object)
         msg_obj.chat_id = chat_object.chat_id
         await store_message(db, msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat_id)
     }
     const onInviteUser = async (chat, other_id) => {
-        let {msg_obj,chat_object} = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
         await store_message(db, msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat.chat_id)
     }
 
     const onDeleteUser = async (chat, other_id) => {
-        let {msg_obj,chat_object} = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
         await store_message(db, msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat.chat_id)
@@ -227,7 +225,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     let currentChat = currentChatId && getChatById(currentChatId)
 
 
-    return  <Container fluid><Row>
+    return <Container fluid><Row>
         <Col sm={2} >
             <Stack gap={2}>
                 <span>{username}</span>
@@ -243,7 +241,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={() => { set_show_user_search(true) }} onChatCreate={() => { set_chat_modal(true) }} />
         </Col>
         <Col className='vh-100' sm={6}>
-            {currentChat && <ChatWindow  onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} onMessageSend={sendMessage} />}
+            {currentChat && <ChatWindow onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} onMessageSend={sendMessage} />}
         </Col>
     </Row>
         <Modal show={show_user_search}>

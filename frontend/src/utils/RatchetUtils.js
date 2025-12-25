@@ -17,7 +17,7 @@ export async function ratchet_turn_until_match(chain, index) {
     return chain.message_keys[index]
 }
 
-export async function ratchet_turn_send(indexed_db, dr_session, turn_root = true) {
+export async function ratchet_turn_send( dr_session, turn_root = true) {
     if (turn_root) {
         console.log("Turning root sender! ")
         // perform a diffie helmann key exchans with the otherś dh key
@@ -28,7 +28,7 @@ export async function ratchet_turn_send(indexed_db, dr_session, turn_root = true
         dr_session.dh_input = await DH(dr_session.dh_keypair_private.privateKey, public_cryptokey_other)
 
         // use this diffie helman output in the ratchet turn step
-        await store_recieving_chain(indexed_db, dr_session.receiving_chain)
+        await store_recieving_chain( dr_session.receiving_chain)
         await turn_ratchet_root_sender(dr_session)
     }
     let message_keys = dr_session.sending_chain.message_keys
@@ -127,9 +127,9 @@ export async function root_ratchet_turn_recieve(dr_session, other_dh) {
 
 }
 
-export async function look_for_header_key_skipped(indexed_db, chat_message) {
+export async function look_for_header_key_skipped( chat_message) {
 
-    let receiving_chains = await get_recieving_chains(indexed_db)
+    let receiving_chains = await get_recieving_chains()
     let chat_header_bytes = chat_message.messageHeaderEncrypted
     let chat_header_iv = chat_message.headerIv
     for (let receiving_chain of receiving_chains) {
@@ -144,8 +144,8 @@ export async function look_for_header_key_skipped(indexed_db, chat_message) {
 }
 
 // looks for all  skipped messages and sees if they can be attributes to this new double ratchet session
-export async function test_all_skipped_messages_session(indexed_db, new_session) {
-    let skipped_messages = await get_all_skipped_messages(indexed_db)
+export async function test_all_skipped_messages_session( new_session) {
+    let skipped_messages = await get_all_skipped_messages()
     let found_messages = []
     for (let skipped_message of skipped_messages) {
         try {
@@ -156,19 +156,19 @@ export async function test_all_skipped_messages_session(indexed_db, new_session)
     return found_messages
 }
 
-export async function handle_all_skipped_messages_for_session(indexed_db, client, identity, new_session) {
+export async function handle_all_skipped_messages_for_session( client, identity, new_session) {
 
-    let found_skipped_messages = await test_all_skipped_messages_session(indexed_db, new_session)
+    let found_skipped_messages = await test_all_skipped_messages_session( new_session)
     let decrypted_found_messages = []
     for (let [message_header, header_key, _, skipped_message] of found_skipped_messages) {
 
-        let message_key = await get_message_key_in_session(indexed_db, new_session, message_header, header_key)
+        let message_key = await get_message_key_in_session( new_session, message_header, header_key)
 
         let message_contents = await decrypt_message_contents(message_key, skipped_message.messageContentsEncrypted, message_header.messageIv)
 
-        decrypted_found_messages.push(await handle_new_decrypted_message(indexed_db, client, skipped_message, identity, message_contents, message_header, message_key))
+        decrypted_found_messages.push(await handle_new_decrypted_message( client, skipped_message, identity, message_contents, message_header, message_key))
 
-        await delete_skipped_message(indexed_db, skipped_message)
+        await delete_skipped_message( skipped_message)
     }
     return decrypted_found_messages
 }
@@ -184,9 +184,9 @@ export async function test_header_key_for_session(dr_session, header_bytes, head
 
 }
 
-export async function look_for_header_key_sessions(indexed_db, chat_message) {
+export async function look_for_header_key_sessions( chat_message) {
     // look in the currentl chats first
-    let sessions_search = await get_all_double_ratchet_sess(indexed_db)
+    let sessions_search = await get_all_double_ratchet_sess()
     let header_bytes = chat_message.messageHeaderEncrypted
     let header_iv = chat_message.headerIv
     for (let dr_session of sessions_search) {
@@ -197,7 +197,7 @@ export async function look_for_header_key_sessions(indexed_db, chat_message) {
     return [null, null, null]
 }
 
-export async function get_message_key_in_session(indexed_db, dr_session, message_header, header_key) {
+export async function get_message_key_in_session( dr_session, message_header, header_key) {
     let dh_public_bytes = message_header.dhPublicKey
     // in an existing chatś recievng chain
     if (Uint8ArrayEquals(header_key, dr_session.receiving_chain.next_header_key)) {
@@ -206,54 +206,54 @@ export async function get_message_key_in_session(indexed_db, dr_session, message
         console.log("Ratchet turn receive!")
         dr_session.receiving_chain.max_n = message_header.previousLength
 
-        await store_recieving_chain(indexed_db, dr_session.receiving_chain)
+        await store_recieving_chain(dr_session.receiving_chain)
 
         await root_ratchet_turn_recieve(dr_session, dh_public_bytes)
 
         let message_key = await ratchet_turn_until_match(dr_session.receiving_chain, message_header.chainLength - 1)
 
         // get the total messages sent in the previous chain 
-        await store_double_ratchet_session(indexed_db, dr_session)
+        await store_double_ratchet_session(dr_session)
         return message_key
 
     } else {
 
         console.log("No ratchet turn receive!")
         let message_key = await ratchet_turn_until_match(dr_session.receiving_chain, message_header.chainLength - 1)
-        await store_double_ratchet_session(indexed_db, dr_session)
+        await store_double_ratchet_session( dr_session)
         return message_key
         // use the current recieving chain
     }
 }
 
-export async function get_message_key_in_recieving_chain(indexed_db, receiving_chain, message_header,) {
+export async function get_message_key_in_recieving_chain( receiving_chain, message_header,) {
     let message_key = await ratchet_turn_until_match(receiving_chain, message_header.chainLength-1)
-    await store_recieving_chain(indexed_db, receiving_chain)
+    await store_recieving_chain( receiving_chain)
     return message_key
 }
 
-export async function get_message_key_for_message(indexed_db, chat_message) {
+export async function get_message_key_for_message( chat_message) {
 
     // if a dr_session is already found, only decrypt for that session 
-    let [message_header, header_key, dr_session] = await look_for_header_key_sessions(indexed_db, chat_message)
+    let [message_header, header_key, dr_session] = await look_for_header_key_sessions( chat_message)
 
     if (message_header != null) {
-        let message_key = await get_message_key_in_session(indexed_db, dr_session, message_header, header_key)
+        let message_key = await get_message_key_in_session( dr_session, message_header, header_key)
         return { message_header, message_key }
     } else {
         //  the message is in a previous recieving chain
-        let [message_header, receiving_chain] = await look_for_header_key_skipped(indexed_db, chat_message)
+        let [message_header, receiving_chain] = await look_for_header_key_skipped( chat_message)
         if (!message_header || !receiving_chain) {
             return { message_header: null, message_key: null }
         }
         console.log("Found header key!!!!")
-        let message_key = await get_message_key_in_recieving_chain(indexed_db, receiving_chain, message_header)
+        let message_key = await get_message_key_in_recieving_chain( receiving_chain, message_header)
         return { message_header, message_key }
     }
 }
 
-export async function decrypt_chat_message(indexed_db, chat_message) {
-    let { message_key, message_header } = await get_message_key_for_message(indexed_db, chat_message)
+export async function decrypt_chat_message( chat_message) {
+    let { message_key, message_header } = await get_message_key_for_message( chat_message)
 
     if (!message_key || !message_header) {
         return { message_header: null, message_contents: null, message_key: null }

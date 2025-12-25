@@ -33,9 +33,9 @@ function useUserInfo(db, user_id) {
 
 }
 
-function UserGroupInfo({ chat_object, indexed_db, user_id, onRemoveUser }) {
+function UserGroupInfo({ chat_object, user_id, onRemoveUser }) {
 
-    let { user_info, profileURL } = useUserInfo(indexed_db, user_id)
+    let { user_info, profileURL } = useUserInfo(user_id)
 
     return <Stack key={user_id} gap={2} className="w-100 border justify-items-start align-items-center" direction="horizontal">
         {profileURL && <Image className=" msg-profile-image " src={profileURL} roundedCircle />}
@@ -79,7 +79,7 @@ export default function GroupUserList({ show, chat_id, onAddUser, onRemoveUser, 
         </ModalHeader>
         <ModalBody>
             <Stack>
-                {chat_object && db && chat_object.users.map((user_id) => <UserGroupInfo key={user_id} chat_object={chat_object} indexed_db={db} onRemoveUser={removeUserCallback} user_id={user_id} initiator={chat_object.initiator} />)}
+                {chat_object && db && chat_object.users.map((user_id) => <UserGroupInfo key={user_id} chat_object={chat_object} onRemoveUser={removeUserCallback} user_id={user_id} initiator={chat_object.initiator} />)}
             </Stack>
         </ModalBody>
         <ModalFooter><CloseButton variant="danger" onClick={(e) => { onClose() }} /></ModalFooter>
