@@ -20,14 +20,13 @@ function App() {
   let [csrf, setCSRF] = useState("")
 
   let [cookies, setCookies, removeCookies] = useCookies()
-  let { db, loading } = useDBContext() 
 
-  let [ident_info, set_ident_info] = useIdentityInformation(db)
+  let [ident_info, set_ident_info] = useIdentityInformation()
   let [user_id, set_user_id] = useState(cookies.user_id || "")
   let [username, set_username] = useState(cookies.username || "")
 
   async function do_signed_prekey_update() {
-    let new_prekey_info = await updateSignedPrekey(db)
+    let new_prekey_info = await updateSignedPrekey(user_id)
     await setSignedPrekey(...new_prekey_info)
   }
 

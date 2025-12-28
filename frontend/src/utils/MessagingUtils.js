@@ -150,7 +150,7 @@ export async function send_direct_message(client,  recipient_id, contents, sende
         messageIv: iv,
         senderId: sender_id,
         previousLength: dr_session.sending_chain.pn || 0, // put previous n
-        dhPublicKey: await exportX25519PublicKey(dr_session.dh_keypair_private.publicKey)
+        dhPublicKey: dr_session.dh_keypair_private.publicKey
     }
     if (chat_id)
         message_header_js_obj.chatId = chat_id

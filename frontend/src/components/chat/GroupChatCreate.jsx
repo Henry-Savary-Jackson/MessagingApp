@@ -13,7 +13,6 @@ import useDBContext from "../../context/useDBContext";
 export default function GroupChatCreate({ show, onChatCreate, onClose }) {
 
     let [user_id, set_user_id] = useContext(user_id_context)
-    let { db, loading } = useDBContext()
 
     let [group_name, set_group_name] = useState("")
     let [group_image, set_group_image] = useState(undefined)
@@ -44,7 +43,7 @@ export default function GroupChatCreate({ show, onChatCreate, onClose }) {
         }
 
         let chat_object = await create_chat_object(v4(), group_name, "GROUP", [user_id], group_image_file, user_id)
-        await store_chat(db, chat_object)
+        await store_chat(chat_object)
         return chat_object
     }
 
@@ -52,11 +51,13 @@ export default function GroupChatCreate({ show, onChatCreate, onClose }) {
         <ModalHeader><ModalTitle>Create new group chat</ModalTitle></ModalHeader>
         <ModalBody >
             <Stack>
-
                 <FormLabel className="group-icon-upload" htmlFor="chat-upload-pic">
-                    {group_image_blob_url && <Image width={300} height={300} src={group_image_blob_url} />}
-                    <span>Upload Group Icon</span>
-                    <Image src="/chat-profile-input.svg" />{group_image ? group_image.name : ""}</FormLabel>
+                    <Stack>
+                        {group_image_blob_url && <Image className="group-icon" width={300} height={300} src={group_image_blob_url} />}
+                        <span>Upload Group Icon</span>
+                        <Image className="group-icon-upload-img" src="/chat-profile-input.svg" />{group_image ? group_image.name : ""}
+                    </Stack>
+                </FormLabel>
                 <FormControl className="disappear" id="chat-upload-pic" type="file" onChange={(e) => {
                     if (e.target.files)
                         set_group_image(e.target.files[0])

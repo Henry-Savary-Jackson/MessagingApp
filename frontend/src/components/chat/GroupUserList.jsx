@@ -52,14 +52,12 @@ function UserGroupInfo({ chat_object, user_id, onRemoveUser }) {
 export default function GroupUserList({ show, chat_id, onAddUser, onRemoveUser, onClose }) {
 
     let [chat_object, set_chat_object] = useState(null)
-    let { db, loading } = useDBContext()
 
-    const updateChatObject = async () => { set_chat_object(await get_chat(db, chat_id)) }
+    const updateChatObject = async () => { set_chat_object(await get_chat( chat_id)) }
 
     useEffect(() => {
-        if (db)
-            updateChatObject()
-    }, [db])
+        updateChatObject()
+    }, [])
 
 
     async function removeUserCallback(user_id) {
@@ -79,7 +77,7 @@ export default function GroupUserList({ show, chat_id, onAddUser, onRemoveUser, 
         </ModalHeader>
         <ModalBody>
             <Stack>
-                {chat_object && db && chat_object.users.map((user_id) => <UserGroupInfo key={user_id} chat_object={chat_object} onRemoveUser={removeUserCallback} user_id={user_id} initiator={chat_object.initiator} />)}
+                {chat_object  && chat_object.users.map((user_id) => <UserGroupInfo key={user_id} chat_object={chat_object} onRemoveUser={removeUserCallback} user_id={user_id} initiator={chat_object.initiator} />)}
             </Stack>
         </ModalBody>
         <ModalFooter><CloseButton variant="danger" onClick={(e) => { onClose() }} /></ModalFooter>

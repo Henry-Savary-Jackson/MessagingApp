@@ -41,7 +41,7 @@ export default function ChatKeyboard({ chat_id, onMessageSend }) {
                         setFile(e.target.files[0])
                     }
                 }} />
-                {file && <span>{file.name}</span>}
+                {file && <span style={{maxWidth:"100px"}} >{file.name}</span>}
             </Stack>
             <Button onClick={(e) => { document.getElementById("input-file-chat").value = null;setFile(null) }} >Clear file input</Button>
 

@@ -1,9 +1,9 @@
-import { openDB } from "idb"
 import { v4 } from "uuid"
-import { useEffect, useState } from "react"
-import { generate25519KeyExchangePair, DH, extractC25519KeyExchangePair, exportX25519KeyPair, extractC25519KeySignaturePair, extractC25519ExchangePublicKey, concatenateUIntArray, generate25519SignaturePair, signPreKey, exportX25519PublicKey, signed_prekey_lifetime_ms, generateAESkey, exportAESKey } from "./CryptoUtils"
+import { generate25519KeyExchangePair, DH, extractC25519KeyExchangePair, exportX25519KeyPair, extractC25519KeySignaturePair, extractC25519ExchangePublicKey, concatenateUIntArray, generate25519SignaturePair, signPreKey, exportX25519PublicKey, signed_prekey_lifetime_ms, generateAESkey, exportAESKey, extractC25519SignaturePublicKey, extractC25519KeyExchangePrivateKey } from "./CryptoUtils"
 import { Identity, MessageType } from "./protocol/messages"
+import { Dexie } from "dexie"
 import "dexie-export-import"
+export const [X3DH, DIRECT, GROUP, USER_ADDED, USER_REMOVED, GROUP_INVITE, GROUP_MEMBERSHIP] = ["X3DH", "DIRECT", "GROUP", "USER_ADDED", "USER_REMOVED", "GROUP_INVITE", "GROUP_MEMBERSHIP"]
 
 export const db_string = "messaging_clone"
 export const identity_store_name = "identity"
@@ -15,22 +15,56 @@ export const skipped_messages_store_name = "skipped_messages"
 export const file_store_name = "message_files"
 export const user_info_store_name = "user_cache"
 export const username_index_name = "username_index"
-export const expiration_index_name = "expiration_index"
+export const expiration_index_name = "expiration"
 export const user_metadata_store_name = "user_metadata"
 export const current_version = 2
 export const max_otp = 100;
 
-export const [X3DH, DIRECT, GROUP, USER_ADDED, USER_REMOVED, GROUP_INVITE, GROUP_MEMBERSHIP] = ["X3DH", "DIRECT", "GROUP", "USER_ADDED", "USER_REMOVED", "GROUP_INVITE", "GROUP_MEMBERSHIP"]
+export const db = new Dexie(db_string)
 
-import { db } from "../db"
+db.version(current_version).stores({
+    [identity_store_name]: "user_id",
+    [double_ratchet_store_name]: "user_id",
+    [chats_store_name]: "chat_id",
+    [otp_store_name]: "publicKey",
+    [dh_keystore_name]: "header_key, expiration",
+    [file_store_name]: "",
+    [user_metadata_store_name]: "",
+    [user_info_store_name]: "user_id, username, expiration",
+    [skipped_messages_store_name]: "message_id, expiration"
+})
 
+db.open()
 
-export async function exportDBToJSON() {
-    return await db.export({})
+async function deleteFromIndexExpired(store_name) {
+    const oldest_timestamp = new Date().getTime()
+    await db.table(store_name).where(expiration_index_name).below(oldest_timestamp).delete()
 }
 
-export async function importDBFromJSON(blob) {
-    await db.import(blob, { acceptVersionDiff: true, clearTablesBeforeImport: true })
+export async function clear_expired_user_info() {
+    await deleteFromIndexExpired(user_info_store_name)
+}
+
+export async function clear_expired_skipped_messages() {
+    await deleteFromIndexExpired(skipped_messages_store_name)
+}
+export async function clear_expired_receiving_chains() {
+    await deleteFromIndexExpired(dh_keystore_name)
+}
+
+
+
+clear_expired_receiving_chains()
+clear_expired_user_info()
+clear_expired_skipped_messages()
+
+
+export async function exportDBToJSON(progess_callback = (prog) => { }) {
+    return await db.export({ progressCallback: progess_callback, prettyJson: true })
+}
+
+export async function importDBFromJSON(blob, progess_callback = (prog) => { }) {
+    await db.import(blob, {overwriteValues:true, clearTablesBeforeImport:true,progressCallback: progess_callback })
 }
 
 export const convert_proto_chat_msg = (message_proto, message_contents, message_header, message_key) => {
@@ -60,13 +94,8 @@ export async function store_skipped_message(skipped_message) {
 
 export async function storeUserData(identity) {
     if (identity.oneTimePrekey) {
-        pub_keys = []
-        for (let otp of identity.oneTimePrekey) {
-            let raw_pubkey = (await exportX25519KeyPair(otp)).publicKey
-            pub_keys.push(raw_pubkey)
-        }
-        await db.table(otp_store_name).bulkAdd(identity.oneTimePrekey, pub_keys)
-        identity.oneTimePrekey = undefined
+        await db.table(otp_store_name).bulkAdd(identity.oneTimePrekey)
+        delete identity.oneTimePrekey
     }
 
     return await db.table(identity_store_name).add(identity)
@@ -126,16 +155,16 @@ export async function store_message(message, chat_object) {
     await store_chat(chat_object)
 }
 
-export async function store_double_ratchet_session( dr_session) {
+export async function store_double_ratchet_session(dr_session) {
     return await db.table(double_ratchet_store_name).put(dr_session)
 }
 
-export async function get_double_ratchet_session( user_id) {
+export async function get_double_ratchet_session(user_id) {
     return await db.table(double_ratchet_store_name).get(user_id)
 }
 
-export async function store_chat( chat_object) {
-    await db.table(chats_store_name).add(chat_object)
+export async function store_chat(chat_object) {
+    await db.table(chats_store_name).put(chat_object)
 }
 
 export async function get_chat(chat_id) {
@@ -152,7 +181,7 @@ export async function get_file_local(file_id) {
 }
 
 export async function store_file_local(file_object, uuid) {
-    await db.table(file_store_name).add(file_object, uuid)
+    await db.table(file_store_name).put(file_object, uuid)
 }
 
 export async function get_user_info_username(username) {
@@ -171,49 +200,12 @@ export async function get_user_info(user_id) {
 
 export async function store_user_info(user_object) {
     const expiration = new Date().getTime() + 4 * 60 * 60 * 1000
-    await db.table(user_info_store_name).add({ ...user_object, expiration })
-}
-
-async function deleteFromIndexExpired(store_name) {
-    const oldest_timestamp = new Date().getTime()
-    await db.table(store_name).where(expiration_index_name).below(oldest_timestamp).delete()
-}
-
-export async function clear_expired_user_info() {
-    await deleteFromIndexExpired(user_info_store_name)
-}
-
-export async function clear_expired_skipped_messages() {
-    await deleteFromIndexExpired(skipped_messages_store_name)
-}
-export async function clear_expired_receiving_chains() {
-    await deleteFromIndexExpired(dh_keystore_name)
+    await db.table(user_info_store_name).put({ ...user_object, expiration })
 }
 
 export async function import_identity(identityBytes) {
-
     let identity_protobuf = Identity.decode(identityBytes);
     return identity_protobuf
-
-}
-
-export async function convertProtoBufIdentityToObject(identity_protobuf) {
-    // convert otps into Crypto Keypair
-    let identity = identity_protobuf.identityKey
-    let verifier = identity_protobuf.verifierKey
-    let signed_prekey = identity_protobuf.signedPrekey
-    let signedPreKeyExpiration = identity_protobuf.signedPrekeyExpiration
-    let one_time_prekeys = identity_protobuf.oneTimePrekey
-
-    let identityKey = await extractC25519KeyExchangePair(identity)
-    let verifierKey = await extractC25519KeySignaturePair(verifier)
-    let signedPrekey = await extractC25519KeyExchangePair(signed_prekey)
-    let oneTimePrekey = []
-    for (let otp of one_time_prekeys) {
-        oneTimePrekey.push(await extractC25519KeyExchangePair(otp))
-    }
-
-    return { identityKey: identityKey, verifierKey: verifierKey, signedPrekey: signedPrekey, signedPreKeyExpiration: signedPreKeyExpiration, oneTimePrekey: oneTimePrekey }
 }
 
 export async function getIdentityDataFromDB() {
@@ -264,8 +256,7 @@ export async function create_chat_object(chat_id, name, type, users = [], group_
 
 export async function create_double_ratchet_sender(other_id, sender_dh_ratchet_key, other_identity_key, shared_key) {
 
-    let other_identity_key_public = await extractC25519ExchangePublicKey(other_identity_key)
-    let dh_input = await DH(sender_dh_ratchet_key.privateKey, other_identity_key_public)
+    let dh_input = await DH(sender_dh_ratchet_key.privateKey, other_identity_key)
 
     return {
         timestamp: new Date().getTime(),
@@ -284,7 +275,7 @@ export async function create_double_ratchet_sender(other_id, sender_dh_ratchet_k
 }
 
 
-export async function get_previous_messages_keys( other_dh_public) {
+export async function get_previous_messages_keys(other_dh_public) {
     return await db.get(dh_keystore_name, other_dh_public)
 }
 
@@ -292,8 +283,7 @@ export async function get_previous_messages_keys( other_dh_public) {
 
 export async function create_double_ratchet_recipient(identityKey, other_id, other_public_key_bytes, shared_key) {
 
-    let other_ratchet_key_public = await extractC25519ExchangePublicKey(other_public_key_bytes)
-    let dh_input = await DH(identityKey.privateKey, other_ratchet_key_public)
+    let dh_input = await DH(identityKey.privateKey, other_public_key_bytes)
 
     return {
         timestamp: new Date().getTime(),
@@ -311,14 +301,14 @@ export async function create_double_ratchet_recipient(identityKey, other_id, oth
     }
 }
 
-export async function updateSignedPrekey( user_id) {
+export async function updateSignedPrekey(user_id) {
     let new_signed_prekey = await generate25519SignaturePair()
     let new_signed_prekey_bytes = await exportX25519PublicKey(new_signed_prekey.publicKey)
     let identity_data = await getIdentityDataFromDB(user_id)
     let prekey_signature_bytes = signPreKey(new_signed_prekey_bytes, identity_data.identityKey)
     identity_data.signedPrekey = new_signed_prekey
     identity_data.expiration = new Date().getTime() + signed_prekey_lifetime_ms
-    await storeUserData( identity_data)
+    await storeUserData(identity_data)
     return [new_signed_prekey_bytes, prekey_signature_bytes]
 }
 

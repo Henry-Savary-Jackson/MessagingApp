@@ -1,4 +1,4 @@
-import { decrypt_message_contents, decrypt_message_header, generate25519KeyExchangePair, DH, KDF_chain_key, KDF_root_key, extractC25519ExchangePublicKey } from "./CryptoUtils"
+import { decrypt_message_contents, decrypt_message_header, generate25519KeyExchangePair, DH, KDF_chain_key, KDF_root_key, extractC25519ExchangePublicKey, extractC25519KeyExchangePair, exportX25519KeyPair, extractC25519KeyExchangePrivateKey } from "./CryptoUtils"
 import { Uint8ArrayEquals } from "./EncodingUtils"
 import { handle_new_decrypted_message } from "./MessagingUtils"
 import { get_all_double_ratchet_sess, get_previous_messages_keys, get_recieving_chains, store_double_ratchet_session, store_recieving_chain, get_all_skipped_messages, convert_proto_chat_msg, delete_skipped_message } from "./StorageUtils"
@@ -21,11 +21,10 @@ export async function ratchet_turn_send( dr_session, turn_root = true) {
     if (turn_root) {
         console.log("Turning root sender! ")
         // perform a diffie helmann key exchans with the otherś dh key
-        dr_session.dh_keypair_private = await generate25519KeyExchangePair()
+        dr_session.dh_keypair_private = await exportX25519KeyPair(await generate25519KeyExchangePair())
 
-        let public_cryptokey_other = await extractC25519ExchangePublicKey(dr_session.other_dh_public)
 
-        dr_session.dh_input = await DH(dr_session.dh_keypair_private.privateKey, public_cryptokey_other)
+        dr_session.dh_input = await DH(dr_session.dh_keypair_private.privateKey, dr_session.other_dh_public)
 
         // use this diffie helman output in the ratchet turn step
         await store_recieving_chain( dr_session.receiving_chain)
@@ -102,9 +101,8 @@ export async function turn_ratchet_root_sender(dr_session) {
 }
 
 export async function root_ratchet_turn_recieve(dr_session, other_dh) {
-    let other_dh_public_cryptokey = await extractC25519ExchangePublicKey(other_dh)
     dr_session.other_dh_public = other_dh
-    dr_session.dh_input = await DH(dr_session.dh_keypair_private.privateKey, other_dh_public_cryptokey)
+    dr_session.dh_input = await DH(dr_session.dh_keypair_private.privateKey, other_dh)
 
     // save previous length of recieving_chain
     dr_session.sending_chain.pn = dr_session.sending_chain.message_keys.length;

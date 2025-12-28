@@ -78,9 +78,16 @@
     @extend %disappear-input
 }
 
-.group-icon-upload img{
+.group-icon-upload-img{
     width: 40px;
     height: 40px;
+}
+
+.group-icon{
+    max-width: 400px;
+    max-height: 400px;
+    width: auto;
+    height: auto;
 }
 
 .msg-profile-image {

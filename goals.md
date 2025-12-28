@@ -1,10 +1,11 @@
 
-- [x] implement removal of old skipped messages 
-- [x] implement removal of old receiving chains
-- [x] implement updating cache of user information
+- [ ] implement removal of old skipped messages 
+- [ ] implement removal of old receiving chains
+- [ ] implement updating cache of user information
 - [] make login and registration more intuitive
-- [] migrate to using dexie js to handle db operations
+- [x] migrate to using dexie js to handle db operations
 - [] implement exporting and importing chats 
+- [] add web workers to 
 
 
 - Optional:

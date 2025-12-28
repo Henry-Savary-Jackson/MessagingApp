@@ -3,12 +3,10 @@ import { Button, Image, Form, FormControl, ListGroup, ListGroupItem } from "reac
 import { searchUserIdsByUsername } from "../../utils/RequestUtils";
 import { useUserInfo } from "../../hooks/useUserInfo";
 import "../../css/chats.scss"
-import useDBContext from "../../context/useDBContext";
 
 
 function UserSearchResult({  user_id, onUserSelect }) {
-    
-    let {user_info, profileURL}= useUserInfo( user_id)
+    let {user_info,profileURL}= useUserInfo( user_id)
 
     return <ListGroupItem key={user_id} onClick={(e) => { onUserSelect(user_id) }}>
         {profileURL && <Image className="border msg-profile-image " src={profileURL} roundedCircle />}
@@ -26,7 +24,7 @@ export default function UserSearch({ selectUserCallback }) {
             setFoundsUserIds(null)
             return;
         }
-        db && setFoundsUserIds(await searchUserIdsByUsername( username))
+        setFoundsUserIds(await searchUserIdsByUsername( username))
     }
 
     return <Form onSubmit={(e) => {

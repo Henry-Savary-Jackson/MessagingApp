@@ -63,29 +63,19 @@ export async function extractC25519KeySignaturePair(keyPairMessage) {
 
 
 export async function X3DH_accept(identity, prekey_bundle, ephemeral_key_bytes, AD_encrypted, AD_iv, one_time_prekey=null){
-    let identityCryptoKeyExchangePair = identity.identityKey
-
-    let signed_prekey_keypair_exchange =  identity.signedPrekey
-
-    let otherVerifierKeySign = await extractC25519SignaturePublicKey(prekey_bundle.verifierKey)
-    let otherIdentityKeyExchange = await extractC25519ExchangePublicKey(prekey_bundle.identityKey)
     // verify the signature of sign prekey
-    
-    let ephemeralKey = await extractC25519ExchangePublicKey(ephemeral_key_bytes)
 
-    let otherPreKeySignature = prekey_bundle.prekeySignature
-
-    await verify_signed_prekey(otherVerifierKeySign, otherPreKeySignature, prekey_bundle.signedPrekey)
+    await verify_signed_prekey(prekey_bundle.verifierKey, prekey_bundle.prekeySignature, prekey_bundle.signedPrekey)
 
     // derive root key
-    let KM = await derive_root_key_recipient(identityCryptoKeyExchangePair, otherIdentityKeyExchange, signed_prekey_keypair_exchange, ephemeralKey, one_time_prekey )
+    let KM = await derive_root_key_recipient(identity.identityKey,prekey_bundle.identityKey , identity.signedPrekey, ephemeral_key_bytes, one_time_prekey )
     console.log(KM)
     
     let SK = await create_shared_key(KM)
 
     // unecnrypt AD ciphertext into plain text using root key
-    let bytesRecipientIdentityPubKey = new Uint8Array( await crypto.subtle.exportKey("raw", identityCryptoKeyExchangePair.publicKey))
-    let bytesSenderIdentityPubKey = new Uint8Array(await crypto.subtle.exportKey("raw", otherIdentityKeyExchange))
+    let bytesRecipientIdentityPubKey = identity.identityKey.publicKey
+    let bytesSenderIdentityPubKey = prekey_bundle.identityKey
     let AD_derived =concatenateUIntArray(bytesSenderIdentityPubKey,bytesRecipientIdentityPubKey) 
 
     console.log(AD_derived)
@@ -124,9 +114,11 @@ export async function derive_root_key_sender(identity_key, other_identity_key, o
 
     return KM
 }
-export async function verify_signed_prekey(otherIdentityKey, otherPreKeySignature,signed_prekey_bytes) {
+export async function verify_signed_prekey(otherVerifierKey, otherPreKeySignature,signed_prekey_bytes) {
+
+    let otherVerifierCryptoKey = await extractC25519SignaturePublicKey(otherVerifierKey)
     
-    let result = await crypto.subtle.verify("Ed25519",  otherIdentityKey, otherPreKeySignature, signed_prekey_bytes)
+    let result = await crypto.subtle.verify("Ed25519",  otherVerifierCryptoKey, otherPreKeySignature, signed_prekey_bytes)
     if (!result){
         throw new Error("Invalid prekey signature")
     }
@@ -137,32 +129,27 @@ export async function verify_signed_prekey(otherIdentityKey, otherPreKeySignatur
 }
 
 export async function X3DH_send(identity, prekey_bundle){
-
-    let identityCryptoKeyExchangePair = identity.identityKey
-
-    let otherIdentityKey = await extractC25519ExchangePublicKey(prekey_bundle.identityKey)
-    let otherVerifierKeySigning = await extractC25519SignaturePublicKey(prekey_bundle.verifierKey)
-    let othersignedPrekKey = await extractC25519ExchangePublicKey(prekey_bundle.signedPrekey)
     
-    let ephemeralKeyPair = await generate25519KeyExchangePair()
+    // make an ephem key for this session
+    let ephemeralKeyPair =await exportX25519KeyPair( await generate25519KeyExchangePair())
 
     // verify prekey signature
-    let otherPreKeySignature = prekey_bundle.prekeySignature
 
-    await verify_signed_prekey(otherVerifierKeySigning,otherPreKeySignature, prekey_bundle.signedPrekey)
+    await verify_signed_prekey(prekey_bundle.verifierKey,prekey_bundle.prekeySignature, prekey_bundle.signedPrekey)
 
     // choose random one time prekey
     let onetime_prekeys = prekey_bundle.oneTimePrekey
 
 
-    let onetime_prekey =  onetime_prekeys.length> 0 && await extractC25519ExchangePublicKey(onetime_prekeys[Math.floor(Math.random()*onetime_prekeys.length)])
+    let onetime_prekey =  onetime_prekeys.length> 0 && onetime_prekeys[Math.floor(Math.random()*onetime_prekeys.length)]
 
-    let KM = await derive_root_key_sender(identityCryptoKeyExchangePair, otherIdentityKey, othersignedPrekKey, ephemeralKeyPair, onetime_prekey)
+    let KM = await derive_root_key_sender(identity.identityKey, prekey_bundle.identityKey, prekey_bundle.signedPrekey, ephemeralKeyPair, onetime_prekey)
     console.log(KM)
 
     let SK = await create_shared_key(KM)
-    let bytesYourIdentityPubKey = new Uint8Array( await crypto.subtle.exportKey("raw", identityCryptoKeyExchangePair.publicKey))
-    let bytesOtherIdentityPubKey = new Uint8Array(await crypto.subtle.exportKey("raw", otherIdentityKey))
+    // these vars are just to mkae sure the order of public keys matches for both sender and reciever
+    let bytesYourIdentityPubKey = identity.identityKey.publicKey 
+    let bytesOtherIdentityPubKey =  prekey_bundle.identityKey
 
     let AD =concatenateUIntArray(bytesYourIdentityPubKey,bytesOtherIdentityPubKey) 
 
@@ -235,7 +222,9 @@ export function createHKDFRootInput(KM_bytes){
 }
 
 export async function DH(yourKey, otherKey){
-    return new Uint8Array( await crypto.subtle.deriveBits({name:"X25519", public:otherKey}, yourKey,256 ))
+    let yourKeyCryptoKey = await extractC25519KeyExchangePrivateKey(yourKey)
+    let otherKeyCryptoKey = await extractC25519ExchangePublicKey(otherKey)
+    return new Uint8Array( await crypto.subtle.deriveBits({name:"X25519", public:otherKeyCryptoKey}, yourKeyCryptoKey,256 ))
 }
 
 export async function exportX25519KeyPair(subtleKeyPair) {
@@ -250,12 +239,25 @@ export async function signPreKey(prekeyBytes, identityKey) {
 }
 
 export async function signBytes(key, bytes){
-   return new Uint8Array(await crypto.subtle.sign('Ed25519', key, bytes ))
+    let cryptoKey = await extractC25519SignaturePrivateKey(key)
+   return new Uint8Array(await crypto.subtle.sign('Ed25519', cryptoKey, bytes ))
 }
 
-export async function signChallenge(identityKey) {
+export async function create_new_prekey_bundle(js_identity){
+    let identityKey = js_identity.identityKey.publicKey
+    let verifierKey = js_identity.verifierKey.publicKey
+    let signedPrekey = js_identity.signedPrekey.publicKey
+    let prekeySignature = await signBytes(js_identity.verifierKey.privateKey,signedPrekey )
+    let oneTimePrekey = js_identity.oneTimePrekey.map((otp)=>otp.publicKey)
+
+    return { identityKey, verifierKey,signedPrekey,prekeySignature, signedPrekeyExpiration:js_identity.signedPreKeyExpiration , oneTimePrekey}
+}
+
+export async function signChallenge(signingKey) {
+
+    let private_verifier_key  = await extractC25519SignaturePrivateKey(signingKey)
     let challenge = generateChallengeBuffer()
-    let signatrueBytes = await crypto.subtle.sign('Ed25519', identityKey,
+    let signatrueBytes = await crypto.subtle.sign('Ed25519', private_verifier_key,
         challenge);
     return {
         "challenge": convertArrayBufferToBase64(challenge), "challengeSignature":
@@ -278,9 +280,9 @@ export function removeHeaderFooterToKey(rawStr) {
 
 
 export async function create_new_identity(){
-    let identityKey  =await generate25519KeyExchangePair();
-    let verifierKey  =await generate25519SignaturePair();
-    let signedPrekey = await generate25519KeyExchangePair();
+    let identityKey  =await exportX25519KeyPair(await generate25519KeyExchangePair());
+    let verifierKey  =await exportX25519KeyPair( await generate25519SignaturePair());
+    let signedPrekey = await exportX25519KeyPair( await generate25519KeyExchangePair());
 
     let current_date = new Date()
     let expiration = current_date.getTime() + signed_prekey_lifetime_ms
@@ -288,40 +290,10 @@ export async function create_new_identity(){
     let n_otp = 100;
     let oneTimePrekey  = []
     for (let i=0 ; i< n_otp; i++){
-        oneTimePrekey.push(await generate25519KeyExchangePair())
+        oneTimePrekey.push(await exportX25519KeyPair( await generate25519KeyExchangePair()))
     }
     let last_msg_timestamp = current_date.getTime()
     return {identityKey,verifierKey, signedPrekey, expiration, oneTimePrekey, last_msg_timestamp}
-}
-
-export async function create_new_prekey_bundle(js_identity){
-    let identityKeyPair = js_identity.identityKey
-    let identityKey = await exportX25519PublicKey(identityKeyPair.publicKey)
-    let verifierKey = await exportX25519PublicKey(js_identity.verifierKey.publicKey)
-    let signedPrekey = await exportX25519PublicKey(js_identity.signedPrekey.publicKey)
-    let prekeySignature = await signBytes(js_identity.verifierKey.privateKey,signedPrekey )
-    let oneTimePrekey = []
-    for (let otp of js_identity.oneTimePrekey){
-        oneTimePrekey.push((await exportX25519PublicKey(otp.publicKey)))
-    }
-
-    return { identityKey, verifierKey,signedPrekey,prekeySignature, signedPrekeyExpiration:js_identity.signedPreKeyExpiration , oneTimePrekey}
-}
-
-export async function convert_js_identity_to_protobuf_identity(js_identity){
-    let identityKey  =await exportX25519KeyPair(js_identity.identityKey);
-    let verifierKey  =await exportX25519KeyPair(js_identity.verifierKey);
-    let signedPrekey = await exportX25519KeyPair(js_identity.signedPrekey);
-
-    let signedPrekeyExpiration = js_identity.expiration
-
-    let oneTimePrekey  = [] 
-    for (let otp of js_identity.oneTimePrekey){
-        oneTimePrekey.push((await exportX25519KeyPair(otp)))
-    }
-
-
-    return Identity.fromObject({identityKey,verifierKey, signedPrekey, signedPrekeyExpiration, oneTimePrekey})
 }
 
 export async function decrypt_message_header(header_key_bits,header_contents_bytes, header_iv){

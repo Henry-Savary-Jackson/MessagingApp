@@ -1,5 +1,5 @@
 import { useContext, useEffect, useReducer, useState } from 'react'
-import { Stack, Col, Container, Row, Modal, ModalTitle, ModalBody, ModalFooter, CloseButton } from 'react-bootstrap'
+import { Stack, Col, Container, Row, Modal, ModalTitle, ModalBody, ModalFooter, CloseButton, Button } from 'react-bootstrap'
 import { Link, useLocation } from 'react-router'
 import { getPrekeyBundle, getUsername, logout } from '../../utils/RequestUtils'
 import ChatWindow from "./../chat/ChatWindow"
@@ -13,8 +13,7 @@ import { useStompClient, useSubscription } from 'react-stomp-hooks'
 import { user_id_context, username_context } from '../../globals'
 import GroupChatCreate from '../chat/GroupChatCreate'
 import UserSearch from '../chat/UserSearch'
-import useDBContext from '../../context/useDBContext'
-import { db } from '../../db'
+import DBExport from '../chat/DBExport'
 
 
 function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
@@ -22,6 +21,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     let location = useLocation()
 
     let [show_user_search, set_show_user_search] = useState(false)
+    let [show_export_modal, set_show_export_modal] = useState(false)
 
     let [currentChatId, setCurrentChat] = useState("")
 
@@ -66,10 +66,8 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     useEffect(() => {
         async function get_chats_callback() {
-            if (db) {
-                let chats = await get_all_chats(db) || []
-                setNewChats(chats)
-            }
+            let chats = await get_all_chats() || []
+            setNewChats(chats)
         }
         get_chats_callback()
 
@@ -78,14 +76,14 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     async function update_metadata(new_metadata) {
         set_user_metadata(new_metadata)
-        await set_metadata(db, new_metadata, user_id)
+        await set_metadata(new_metadata, user_id)
     }
 
     useEffect(() => {
         (async () => {
-            if (!db || !user_id)
+            if (!user_id)
                 return
-            let metadata = await get_metadata(db, user_id) || { last_msg_timestamp: new Date().getTime() }
+            let metadata = await get_metadata(user_id) || { last_msg_timestamp: new Date().getTime() }
             metadata && update_metadata(metadata)
         })()
     }
@@ -120,9 +118,9 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             let chat_message = ChatMessage.decode(message.binaryBody)
             if (chat_message.messageHeader) {
                 // X3DH message
-                let new_dr_session = await handle_X3DH_message(db, ident_info.identityKey, ident_info.signedPrekey, chat_message)
+                let new_dr_session = await handle_X3DH_message(ident_info.identityKeyNew, ident_info.signedPrekey, chat_message)
 
-                let found_skipped_messages = await handle_all_skipped_messages_for_session(db, client, ident_info, new_dr_session)
+                let found_skipped_messages = await handle_all_skipped_messages_for_session(client, ident_info, new_dr_session)
 
                 found_skipped_messages.forEach(
                     async (skipped_msg) => {
@@ -134,7 +132,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             } else {
                 // nortmal message, decrypt with double ratchet algo
 
-                let { msg_obj, chat_object } = await handle_new_encrypted_message(db, client, chat_message, ident_info)
+                let { msg_obj, chat_object } = await handle_new_encrypted_message(client, chat_message, ident_info)
                 await onMessageUI(msg_obj, chat_object)
             }
         } finally {
@@ -143,7 +141,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             // doing this causes re_renders which causes unnecesarry unsub adnd subcribe calls
             const new_metadata = { ...user_metadata, last_msg_timestamp: new Date().getTime() }
             set_user_metadata(new_metadata)
-            db && await set_metadata(db, new_metadata, user_id)
+            await set_metadata(new_metadata, user_id)
         }
     }
 
@@ -153,41 +151,41 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     const client = useStompClient()
 
     const sendMessage = async (chat_id, text, file_object = null) => {
-        let inital_chat_obj = await get_chat(db, chat_id)
-        let { msg_obj, chat_object } = await send_new_encrypted_message(client, db, chat_id, { text: text, file: file_object }, user_id, ident_info, inital_chat_obj.type, file_object)
+        let inital_chat_obj = await get_chat(chat_id)
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat_id, { text: text, file: file_object }, user_id, ident_info, inital_chat_obj.type, file_object)
         msg_obj.chat_id = chat_object.chat_id
-        await store_message(db, msg_obj, chat_object)
+        await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat_id)
     }
     const onInviteUser = async (chat, other_id) => {
-        let { msg_obj, chat_object } = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
-        await store_message(db, msg_obj, chat_object)
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
+        await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat.chat_id)
     }
 
     const onDeleteUser = async (chat, other_id) => {
-        let { msg_obj, chat_object } = await send_new_encrypted_message(client, db, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
-        await store_message(db, msg_obj, chat_object)
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
+        await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat.chat_id)
     }
 
     const onChatToNewUser = async (other_id) => {
         try {
-            let other_name = await getUsername(db, other_id)
+            let other_name = await getUsername(other_id)
             let prekey_bundle_other = await getPrekeyBundle(other_name)
             // if chat is already in ui, dont bother
             if (chatInUI(other_id)) {
                 return
             }
             // if a chat exists, then double ratchet session must exist
-            if (!(await get_double_ratchet_session(db, other_id))) {
-                await send_X3DH_message(db, client, user_id, other_id, other_name, ident_info.identityKey, ident_info.signedPreKey, ident_info.verifierKey, prekey_bundle_other)
+            if (!(await get_double_ratchet_session(other_id))) {
+                await send_X3DH_message(client, user_id, other_id, other_name, ident_info.identityKeyNew, ident_info.signedPreKey, ident_info.verifierKey, prekey_bundle_other)
             }
             let chat_object = await create_chat_object(other_id, other_name, "DIRECT")
-            await store_chat(db, chat_object)
+            await store_chat(chat_object)
 
             // for debugging
             if (!chat_object)
@@ -209,10 +207,10 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             setCurrentChat(undefined)
     }
     const leaveChat = async (chat_id) => {
-        let chat_object = await get_chat(db, chat_id)
+        let chat_object = await get_chat(chat_id)
         if (chat_object.type === "GROUP")
-            await send_new_encrypted_message(client, db, chat_id, { userId: user_id }, user_id, ident_info, USER_REMOVED)
-        await delete_chat(db, chat_id);
+            await send_new_encrypted_message(client, chat_id, { userId: user_id }, user_id, ident_info, USER_REMOVED)
+        await delete_chat(chat_id);
         leaveChatUI(chat_id)
     }
 
@@ -235,6 +233,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
                     logoutCallback()
                     location.pathname = "/login"
                 }} >Logout</Link>
+                <Button variant='success' onClick={() => set_show_export_modal(true)}>Export Data</Button>
             </Stack>
         </Col>
         <Col sm={4} >
@@ -251,6 +250,15 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             </ModalBody>
             <ModalFooter>
                 <CloseButton variant='danger' onClick={(e) => set_show_user_search(false)} />
+            </ModalFooter>
+        </Modal>
+        <Modal show={show_export_modal}>
+            <ModalTitle>Export Database</ModalTitle>
+            <ModalBody>
+                <DBExport onDone={() => { console.log("done") }} />
+            </ModalBody>
+            <ModalFooter>
+                <CloseButton variant='danger' onClick={(e) => set_show_export_modal(false)} />
             </ModalFooter>
         </Modal>
         <GroupChatCreate show={show_chat_modal} onChatCreate={(chat) => { addNewChatUI(chat); set_chat_modal(false) }} onClose={() => { set_chat_modal(false) }} />

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import {  identity_context, user_id_context } from "../../globals";
 import { Container, Spinner, Stack } from "react-bootstrap";
-import { signChallenge } from "../../utils/CryptoUtils";
+import { extractC25519SignaturePrivateKey, signChallenge } from "../../utils/CryptoUtils";
 import { useLocation } from "react-router";
 import { login } from "../../utils/RequestUtils";
 
@@ -15,7 +15,7 @@ export default function LoadingLogin({ setUserCallback }) {
         const authenticationRequest = await signChallenge(ident_info.verifierKey.privateKey)
         authenticationRequest.username = ident_info.username
         if (!ident_info.last_msg_timestamp){
-            let new_ident = {...ident_info, last_msg_timestamp:new Date().getTime()}
+            let new_ident = {...ident_info,identityKeyNew:structuredClone(ident_info.identityKey), last_msg_timestamp:new Date().getTime()}
             set_ident_info(new_ident)
         }
 

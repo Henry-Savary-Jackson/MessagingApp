@@ -39,38 +39,37 @@ function render_text(contents, current_user_id, sender_id, sender_name, type, ne
 }
 
 // memo prevents unnecessary re-renders
-export  const ChatMessage = memo(({ message_key, contents, sender, type }) => {
-    let { db, loading } = useDBContext()
+export const ChatMessage = memo(({ message_key, contents, sender, type }) => {
     let [file_metadata, set_file_metadata] = useState(undefined)
     let [user_id, set_user_id] = useContext(user_id_context)
     let [addBlob, removeBlob, getBlob,] = useBlobStore()
 
     useEffect(() => {
         (async () => {
-            if (db && !getBlob(sender)) {
+            if (!getBlob(sender)) {
                 // only add profile image if not already in blobstore
-                addBlob(sender, await getUserProfileImage(db, sender))
+                addBlob(sender, await getUserProfileImage(sender))
                 // if this component added it, it will be removed when dismounted
                 return () => { removeBlob(sender) }
             }
         })()
-    }, [db])
+    }, [])
 
     useEffect(() => {
         if (contents.fileInfo) {
-            if (db && !getBlob(contents.fileInfo.fileId)) {
+            if (!getBlob(contents.fileInfo.fileId)) {
                 (async () => {
-                    let file_blob = await getFile(db, contents.fileInfo.fileId, message_key, contents.fileInfo.fileIv)
+                    let file_blob = await getFile(contents.fileInfo.fileId, message_key, contents.fileInfo.fileIv)
                     addBlob(contents.fileInfo.fileId, file_blob)
                     set_file_metadata({ type: file_blob.type, name: file_blob.name })
                 }
                 )()
                 // same thing but for the file if the message contains it
                 // if this component added it, it will be removed when dismounted
-                return () => {removeBlob(contents.fileInfo.fileId) }
+                return () => { removeBlob(contents.fileInfo.fileId) }
             }
         }
-    }, [db])
+    }, [])
 
     let [username, setUsername] = useState("")
 
@@ -78,27 +77,25 @@ export  const ChatMessage = memo(({ message_key, contents, sender, type }) => {
 
     useEffect(() => {
         (async () => {
-            if (db) {
-                try {
-                    setUsername(await getUsername(db, sender))
-                } catch (e) {
-                    if (e.code && e.code == 404) {
-                        // incase user is deleted
-                        setUsername(`(Unknown user)${sender && sender.slice(0, 4)}`)
-                    }
+            try {
+                setUsername(await getUsername(sender))
+            } catch (e) {
+                if (e.code && e.code == 404) {
+                    // incase user is deleted
+                    setUsername(`(Unknown user)${sender && sender.slice(0, 4)}`)
                 }
             }
         })()
-    }, [db])
+    }, [])
 
     // if the message is about adding or rmeoving a user from a group, this contains the id of the user
     let changed_user_id = contents.userGroupChange && contents.userGroupChange.userId
 
     useEffect(() => {
         (async () => {
-            if (db && [USER_ADDED, USER_REMOVED].includes(type) && changed_user_id) {
+            if ([USER_ADDED, USER_REMOVED].includes(type) && changed_user_id) {
                 try {
-                    set_changed_username(await getUsername(db, changed_user_id))
+                    set_changed_username(await getUsername(changed_user_id))
                 } catch (e) {
                     if (e.code && e.code == 404) {
                         // incase user is deleted
@@ -107,7 +104,7 @@ export  const ChatMessage = memo(({ message_key, contents, sender, type }) => {
                 }
             }
         })()
-    }, [db])
+    }, [])
 
     let { text, text_class, message_class } = render_text(contents, user_id, sender, username, type, changed_user_username, changed_user_id)
 

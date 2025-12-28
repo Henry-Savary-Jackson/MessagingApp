@@ -1,7 +1,7 @@
 import { useEffect, useContext, useState, useRef, useMemo } from "react";
 import { Link } from "react-router";
 import { Button, Image, Form, FormLabel, FormControl, FormGroup } from "react-bootstrap";
-import { convert_js_identity_to_protobuf_identity, create_new_identity, create_new_prekey_bundle } from "../../utils/CryptoUtils"
+import { create_new_identity, create_new_prekey_bundle } from "../../utils/CryptoUtils"
 import { register } from "../../utils/RequestUtils"
 import { useLocation } from 'react-router'
 import { convertArrayBufferToBase64, } from "../../utils/EncodingUtils";
@@ -43,7 +43,7 @@ function RegisterForm({ setUserCallback }) {
     useEffect(() => {
         (async () => {
             if (identity_data) {
-                let identity_protobuf = await convert_js_identity_to_protobuf_identity(identity_data)
+                let identity_protobuf = Identity.fromObject(identity_data)
                 let identity_bytes = Identity.encode(identity_protobuf).finish()
                 set_identity_file_url(URL.createObjectURL(new Blob([identity_bytes], { type: "application/octet-stream" })))
             }
@@ -56,7 +56,6 @@ function RegisterForm({ setUserCallback }) {
         e.preventDefault()
         let profileImageData = undefined;
         async function submit() {
-
             let prekey_bundle = await create_new_prekey_bundle(identity_data)
             let prekey_bundle_protobuf = PreKeyBundle.fromObject(prekey_bundle)
             let prekey_bundle_base64 = convertArrayBufferToBase64(PreKeyBundle.encode(prekey_bundle_protobuf).finish())
@@ -66,7 +65,12 @@ function RegisterForm({ setUserCallback }) {
             await performActionWithAlert(async () => {
                 let user_id = await register(registerRequest)
                 // now put it into indexeddb
-                await set_ident_info({ ...identity_data, username: username, user_id: user_id })
+
+                const newIdentKey = {
+                    publicKey: new Uint8Array(identity_data.identityKey.publicKey),
+                    privateKey: new Uint8Array(identity_data.identityKey.privateKey),
+                }
+                await set_ident_info({ ...identity_data, identityKeyNew: newIdentKey, username: username, user_id: user_id })
                 setUserCallback(username, user_id)
                 location.pathname = "/chat"
             });

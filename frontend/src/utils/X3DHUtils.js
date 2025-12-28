@@ -2,7 +2,7 @@ import { ChatMessage, MessageHeader } from './protocol/messages'
 import { send } from './MessagingUtils'
 import { v4 } from 'uuid'
 import { init_ratchet_root_receiver,init_ratchet_root_sender } from './RatchetUtils'
-import { generate25519KeyExchangePair, exportX25519PublicKey, X3DH_send, X3DH_accept } from './CryptoUtils'
+import { generate25519KeyExchangePair, exportX25519PublicKey, X3DH_send, X3DH_accept, exportX25519KeyPair } from './CryptoUtils'
 import { addOTP, getPrekeyBundle, getUsername } from './RequestUtils'
 import { create_double_ratchet_recipient,store_chat, delete_one_time_prekey,create_double_ratchet_sender, getOneTimePrekeyWithPubKey, refill_otp,  store_double_ratchet_session } from './StorageUtils'
 
@@ -48,11 +48,10 @@ export async function handle_X3DH_message( identity, signed_prekey, chat_message
 }
 export async function send_X3DH_message( stomp_client, user_id ,other_id,other_name, identity, signed_prekey, verifier_key, other_prekey_bundle) {
     let { KM, AD, AD_encrypted, AD_IV, ephemeralKeyPair, onetime_prekey } = await X3DH_send({ identityKey: identity, verifierKey: verifier_key, signedPrekey: signed_prekey }, other_prekey_bundle)
-    let ephemeral_key_bytes = await exportX25519PublicKey(ephemeralKeyPair.publicKey)
+    let ephemeral_key_bytes = ephemeralKeyPair.publicKey
 
-    let sender_ratchet_key = await generate25519KeyExchangePair()
-    let sender_ratchet_key_bytes = await exportX25519PublicKey(sender_ratchet_key.publicKey)
-    let msg_header_js = { type: "X3DH", messageIv: AD_IV, chainLength: 0, dhPublicKey: sender_ratchet_key_bytes, ephemeralKey: ephemeral_key_bytes, oneTimePrekey: await exportX25519PublicKey(onetime_prekey), senderId: user_id }
+    let sender_ratchet_key = await exportX25519KeyPair ( await generate25519KeyExchangePair())
+    let msg_header_js = { type: "X3DH", messageIv: AD_IV, chainLength: 0, dhPublicKey: sender_ratchet_key.publicKey, ephemeralKey: ephemeral_key_bytes, oneTimePrekey: onetime_prekey, senderId: user_id }
     let messageHeader = MessageHeader.fromObject(msg_header_js)
     let chat_message = ChatMessage.fromObject({ messageHeader: messageHeader, messageContentsEncrypted: AD_encrypted, timestamp: new Date().getTime() })
 

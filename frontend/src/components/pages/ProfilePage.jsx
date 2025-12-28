@@ -11,7 +11,6 @@ import useBlobStore from "../../context/useBlobStore";
 import useDBContext from "../../context/useDBContext";
 
 function ProfilePage() {
-    let { db, loading } = useDBContext()
     let [addBlob, removeBlob, getBlob] = useBlobStore()
     let [identity, set_ident_info] = useContext(identity_context)
 
@@ -33,8 +32,8 @@ function ProfilePage() {
     }
 
     async function get_profile_image() {
-        if (db && !profileBlobURL)
-            setProfileBlobURL(addBlob(identity.user_id, await getUserProfileImage(db, identity.user_id)))
+        if (!profileBlobURL)
+            setProfileBlobURL(addBlob(identity.user_id, await getUserProfileImage( identity.user_id)))
     }
 
     get_profile_image()
@@ -59,11 +58,11 @@ function ProfilePage() {
                 let new_profile = new File([bytes], { type: newFile.type, name: newFile.name })
                 updateBlobURL(new_profile)
 
-                let user_info = await get_user_info(db, identity.user_id)
+                let user_info = await get_user_info( identity.user_id)
 
                 user_info.profile = new_profile
 
-                store_user_info(db, user_info)
+                store_user_info( user_info)
 
                 console.log("uploaded profile image")
 
