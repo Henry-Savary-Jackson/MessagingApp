@@ -118,7 +118,8 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             let chat_message = ChatMessage.decode(message.binaryBody)
             if (chat_message.messageHeader) {
                 // X3DH message
-                let new_dr_session = await handle_X3DH_message(ident_info.identityKeyNew, ident_info.signedPrekey, chat_message)
+                let identityKey = { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv }
+                let new_dr_session = await handle_X3DH_message(identityKey, ident_info.signedPrekey, chat_message)
 
                 let found_skipped_messages = await handle_all_skipped_messages_for_session(client, ident_info, new_dr_session)
 
@@ -132,7 +133,8 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             } else {
                 // nortmal message, decrypt with double ratchet algo
 
-                let { msg_obj, chat_object } = await handle_new_encrypted_message(client, chat_message, ident_info)
+                let new_ident_info = { ...ident_info, identityKey: { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv } }
+                let { msg_obj, chat_object } = await handle_new_encrypted_message(client, chat_message, new_ident_info)
                 await onMessageUI(msg_obj, chat_object)
             }
         } finally {
@@ -152,21 +154,26 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     const sendMessage = async (chat_id, text, file_object = null) => {
         let inital_chat_obj = await get_chat(chat_id)
-        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat_id, { text: text, file: file_object }, user_id, ident_info, inital_chat_obj.type, file_object)
+
+        let new_ident_info = { ...ident_info, identityKey: { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv } }
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat_id, { text: text, file: file_object }, user_id, new_ident_info, inital_chat_obj.type, file_object)
         msg_obj.chat_id = chat_object.chat_id
         await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat_id)
     }
     const onInviteUser = async (chat, other_id) => {
-        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_ADDED)
+
+        let new_ident_info = {...ident_info, identityKey:{...ident_info.identityKey, privateKey:ident_info.identityKeyPriv}}
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, new_ident_info, USER_ADDED)
         await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat.chat_id)
     }
 
     const onDeleteUser = async (chat, other_id) => {
-        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, ident_info, USER_REMOVED)
+        let new_ident_info = {...ident_info, identityKey:{...ident_info.identityKey, privateKey:ident_info.identityKeyPriv}}
+        let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, new_ident_info, USER_REMOVED)
         await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
         readMessages(chat.chat_id)
@@ -182,7 +189,9 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             }
             // if a chat exists, then double ratchet session must exist
             if (!(await get_double_ratchet_session(other_id))) {
-                await send_X3DH_message(client, user_id, other_id, other_name, ident_info.identityKeyNew, ident_info.signedPreKey, ident_info.verifierKey, prekey_bundle_other)
+
+                let identityKey = { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv }
+                await send_X3DH_message(client, user_id, other_id, other_name, identityKey, ident_info.signedPreKey, ident_info.verifierKey, prekey_bundle_other)
             }
             let chat_object = await create_chat_object(other_id, other_name, "DIRECT")
             await store_chat(chat_object)

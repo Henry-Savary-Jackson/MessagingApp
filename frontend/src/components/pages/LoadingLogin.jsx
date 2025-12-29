@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import {  identity_context, user_id_context } from "../../globals";
+import { identity_context, user_id_context } from "../../globals";
 import { Container, Spinner, Stack } from "react-bootstrap";
 import { extractC25519SignaturePrivateKey, signChallenge } from "../../utils/CryptoUtils";
 import { useLocation } from "react-router";
@@ -14,24 +14,25 @@ export default function LoadingLogin({ setUserCallback }) {
     async function log_in() {
         const authenticationRequest = await signChallenge(ident_info.verifierKey.privateKey)
         authenticationRequest.username = ident_info.username
-        if (!ident_info.last_msg_timestamp){
-            let new_ident = {...ident_info,identityKeyNew:structuredClone(ident_info.identityKey), last_msg_timestamp:new Date().getTime()}
+        if (!ident_info.last_msg_timestamp) {
+            
+            let new_ident = { ...ident_info, identityKeyPriv: new Uint8Array(ident_info.identityKey.privateKey), last_msg_timestamp: new Date().getTime() }
             set_ident_info(new_ident)
         }
 
         const user_id = await login(authenticationRequest)
-        setUserCallback( ident_info.username, user_id)
+        setUserCallback(ident_info.username, user_id)
         location.pathname = "/chat"
     }
 
     let need_login = useRef(true)
 
-    useEffect(()=>{
-        if (user_id && ident_info  && ident_info !== "Not found" ){
+    useEffect(() => {
+        if (user_id && ident_info && ident_info !== "Not found") {
             location.pathname = "/chat"
-        }else if (ident_info && ident_info === "Not found"){
+        } else if (ident_info && ident_info === "Not found") {
             location.pathname = "/login"
-        }else if (!user_id && ident_info  && ident_info !== "Not found" && need_login.current){
+        } else if (!user_id && ident_info && ident_info !== "Not found" && need_login.current) {
             need_login.current = false
             log_in()
         }
@@ -39,7 +40,7 @@ export default function LoadingLogin({ setUserCallback }) {
 
 
     return <Container className="d-flex flex-column vh-100 align-items-center justify-items-center">
-        <Spinner  variant="primary" />
+        <Spinner variant="primary" />
         <span>Logging in...</span>
     </Container >
 

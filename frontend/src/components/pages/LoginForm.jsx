@@ -40,8 +40,7 @@ function LoginForm({ setUserCallback }) {
                 let user_id = await login(authenticationRequest)
 
                 // if not last msg timestamp, update
-
-                await set_ident_info({ ...identity_protobuf_obj,identityKeyNew:structuredClone(identity_protobuf_obj.identityKey), username: username, user_id: user_id, last_msg_timestamp: new Date().getTime() })
+                await set_ident_info({ ...identity_protobuf_obj, identityKeyPriv: new Uint8Array(identity_protobuf_obj.identityKey.privateKey), username: username, user_id: user_id, last_msg_timestamp: new Date().getTime() })
 
                 setUserCallback(username, user_id)
                 location.pathname = "/chat"
@@ -58,7 +57,7 @@ function LoginForm({ setUserCallback }) {
             <FormControl type="file" onChange={(e) => setFile(e.target.files[0])} />
         </FormGroup>
         <Button type="submit">Login</Button>
-        <DBImport onDone={onDoneImport}/>
+        <DBImport onDone={onDoneImport} />
         <Link to="/register">Register</Link>
     </Form>
 

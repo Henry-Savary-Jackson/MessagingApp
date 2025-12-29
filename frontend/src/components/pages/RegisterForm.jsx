@@ -66,11 +66,7 @@ function RegisterForm({ setUserCallback }) {
                 let user_id = await register(registerRequest)
                 // now put it into indexeddb
 
-                const newIdentKey = {
-                    publicKey: new Uint8Array(identity_data.identityKey.publicKey),
-                    privateKey: new Uint8Array(identity_data.identityKey.privateKey),
-                }
-                await set_ident_info({ ...identity_data, identityKeyNew: newIdentKey, username: username, user_id: user_id })
+                await set_ident_info({ ...identity_data, identityKeyPriv: new Uint8Array(identity_data.identityKey.privateKey), username: username, user_id: user_id })
                 setUserCallback(username, user_id)
                 location.pathname = "/chat"
             });
