@@ -20,6 +20,7 @@ export default function BlobStoreProvider({children}){
             blobsReducer({ action: "add", fileId: fileId, url: url }) 
             return url
         }
+        return ""
     }
 
         

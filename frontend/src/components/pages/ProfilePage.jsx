@@ -8,7 +8,6 @@ import { convertArrayBufferToBase64 } from "../../utils/EncodingUtils";
 import { current_version, get_user_info, store_user_info } from "../../utils/StorageUtils";
 import "../../css/profile-page.scss";
 import useBlobStore from "../../context/useBlobStore";
-import useDBContext from "../../context/useDBContext";
 
 function ProfilePage() {
     let [addBlob, removeBlob, getBlob] = useBlobStore()

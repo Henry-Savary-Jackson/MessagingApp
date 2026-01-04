@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getUserProfileById } from "../utils/RequestUtils";
 import useBlobStore from "../context/useBlobStore";
-import { useLiveQuery } from 'dexie-react-hooks'
 
 
 export function useUserInfo(user_id) {
@@ -14,8 +13,9 @@ export function useUserInfo(user_id) {
         , [])
 
     useEffect(() => {
-        if (user_info && user_info.profile) {
+        if (user_info && user_info.profile && !getBlob(user_id)) {
             setProfileURL(addBlob(user_id, user_info.profile))
+            return () => removeBlob(user_id)
         }
     }, [user_info])
 

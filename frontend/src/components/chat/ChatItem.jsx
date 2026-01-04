@@ -27,7 +27,7 @@ export default function ChatItem({ chat, onChatClick, onChatLeave }) {
     }, [])
 
     return  <Stack className="chat-item border" direction="horizontal" gap={1} key={chat.chat_id} >
-        <Image className="w-25 border" alt={chat.name} src={getBlob(fileId) || undefined} roundedCircle />
+        <Image className="w-25 border" alt={chat.name} src={getBlob(fileId)} roundedCircle />
         <span onClick={(e) => { 
             onChatClick(chat)
              }}> {chat.name || "No name to chat"} : {chat.new_message} new messages

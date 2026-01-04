@@ -8,14 +8,12 @@ export function convertArrayBufferToBase64(arrayBuffer) {
     for (let i = 0; i < bytes.length; i++) {
         binary += String.fromCharCode(bytes[i]);
     }
-    return window.btoa(binary);
+    return btoa(binary);
 }
-
-
 
 // from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#pkcs_8_import
 export function convertBase64StringToArrayBuffer(base64str) {
-    const binary_string = window.atob(base64str);
+    const binary_string = atob(base64str);
     const len = binary_string.length;
     const buffer = new ArrayBuffer(len);
     const view = new Uint8Array(buffer);

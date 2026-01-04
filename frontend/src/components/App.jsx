@@ -13,12 +13,12 @@ import { broker_url } from '../utils/MessagingUtils.js';
 import { StompSessionProvider } from 'react-stomp-hooks'
 import ProfilePage from './pages/ProfilePage.jsx';
 import LoadingLogin from './pages/LoadingLogin.jsx';
-import  useDBContext  from '../context/useDBContext.js';
 
 function App() {
 
   let [csrf, setCSRF] = useState("")
 
+  // use cookies to store last message received
   let [cookies, setCookies, removeCookies] = useCookies()
 
   let [ident_info, set_ident_info] = useIdentityInformation()

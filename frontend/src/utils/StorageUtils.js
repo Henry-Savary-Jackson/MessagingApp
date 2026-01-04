@@ -69,6 +69,7 @@ export async function importDBFromJSON(blob, progess_callback = (prog) => { }) {
 
 export const convert_proto_chat_msg = (message_proto, message_contents, message_header, message_key) => {
     return {
+        id: v4(),
         sender_id: message_header.senderId,
         chat_id: message_header.chatId || message_header.senderId,
         message_contents: message_contents,

@@ -1,11 +1,11 @@
 import { ChatMessage, MessageType, MessageHeader, MessageFile, MessageContents } from "./protocol/messages"
+import {v4} from "uuid"
 import { decrypt_message_contents, encrypt_file_contents, encrypt_header, encrypt_message_contents, exportAESKey, exportX25519PublicKey, generateAESkey, signed_prekey_lifetime_ms } from './CryptoUtils'
 import { store_message, convert_proto_chat_msg, DIRECT, get_chat, get_double_ratchet_session, GROUP, GROUP_MEMBERSHIP, GROUP_INVITE, store_chat, store_double_ratchet_session, USER_ADDED, USER_REMOVED, delete_chat, create_chat_object, store_skipped_message } from './StorageUtils'
 import { decrypt_chat_message, ratchet_turn_send } from "./RatchetUtils"
 import { getPrekeyBundle, getUsername, uploadFile } from "./RequestUtils"
 import { convertArrayBufferToBase64, convertBase64StringToArrayBuffer } from "./EncodingUtils"
 import { send_X3DH_message } from "./X3DHUtils"
-import { user_id_context } from "../globals"
 
 export var broker_url = "ws://localhost:8080/ws"
 const protobuf_mimetype = "application/x-protobuf"
@@ -111,9 +111,13 @@ export async function send_group_message(client, chat_id, contents, sender_id, i
     }
 
     // convert file data into fileblob and store it locally
-    let msg_obj = { chat_id: chat_id, type: type, sender_id: sender_id, message_contents: contents, message_key: file_key, timestamp: new Date().getTime() }
+    let msg_obj = make_msg_object_sender(chat_id, type, sender_id, contents, file_key)
 
     return { msg_obj, chat_object }
+}
+
+export function make_msg_object_sender( chat_id, type, sender_id, message_contents, message_key){
+    return { id:v4(), chat_id: chat_id, type: type, sender_id: sender_id, message_contents: message_contents, message_key: message_key, timestamp: new Date().getTime() }
 }
 
 
@@ -170,7 +174,9 @@ export async function send_direct_message(client,  recipient_id, contents, sende
     // setTimeout(() => 
     // , Math.random() * 10000)
 
-    return { sender_id: sender_id, message_contents: contents, type: message_header_js_obj.type, message_key: message_key, timestamp: chat_message_js_obj.timestamp }
+    if (!chat_id)
+        return make_msg_object_sender(chat_id, message_header_js_obj.type, sender_id, contents, message_key)
+    
 }
 
 // if direct, using norm dr ratchet,

@@ -4,7 +4,6 @@ import { useState, useEffect, useContext, memo } from "react"
 import { DIRECT, GROUP, GROUP_INVITE, USER_ADDED, USER_REMOVED } from "../../utils/StorageUtils";
 import "../../css/chats.scss"
 import { user_id_context } from "../../globals";
-import useDBContext from "../../context/useDBContext";
 import useBlobStore from "../../context/useBlobStore";
 
 function render_text(contents, current_user_id, sender_id, sender_name, type, new_user_name, new_user_id) {

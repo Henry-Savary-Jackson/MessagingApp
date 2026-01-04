@@ -7,7 +7,6 @@ import { createChat, uploadFile } from "../../utils/RequestUtils";
 import { FileInfo, MessageFile } from "../../utils/protocol/messages";
 import "../../css/global.scss"
 import "../../css/chats.scss"
-import useDBContext from "../../context/useDBContext";
 
 
 export default function GroupChatCreate({ show, onChatCreate, onClose }) {
@@ -24,7 +23,6 @@ export default function GroupChatCreate({ show, onChatCreate, onClose }) {
         if (group_image) {
             set_group_image_blob_url(URL.createObjectURL(group_image))
         }
-
 
         return () => {
             if (group_image_blob_url)

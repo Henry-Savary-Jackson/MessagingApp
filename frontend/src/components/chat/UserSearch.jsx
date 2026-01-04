@@ -31,7 +31,6 @@ export default function UserSearch({ selectUserCallback }) {
         e.preventDefault()
     }}>
         <FormControl type="text" onChange={(e) => { setSearchResultCallback(e.currentTarget.value) }} />
-        <Button type="submit" variant="success">Add</Button>
         {foundUserIds && <ListGroup>
             {foundUserIds.map((user_id) => <UserSearchResult key={user_id} onUserSelect={(user_id) => {
                 selectUserCallback(user_id)

@@ -1,4 +1,5 @@
-import { useContext, useEffect, useReducer, useState } from 'react'
+import { useContext, useEffect, useReducer, useRef, useState } from 'react'
+import { v4 } from "uuid"
 import { Stack, Col, Container, Row, Modal, ModalTitle, ModalBody, ModalFooter, CloseButton, Button } from 'react-bootstrap'
 import { Link, useLocation } from 'react-router'
 import { getPrekeyBundle, getUsername, logout } from '../../utils/RequestUtils'
@@ -25,44 +26,52 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     let [currentChatId, setCurrentChat] = useState("")
 
+    let [last_timestamp, set_last_timestamp] = useState(null)
+
     let [chats, chatsReducer] = useReducer((prev, action) => {
+        let new_chats = { ...prev }
+
         switch (action.action) {
             case "init":
-                return action.data.map((chat) => { return { ...chat, "new_message": 0, "last_timestamp": 0 } })
-            case "add":
-                return [...prev, { ...action.new, "new_message": 0, "last_timestamp": 0 }].sort((a, b) => b.last_timestamp - a.last_timestamp)
-            case "del":
-                return prev.filter((chat) => chat.chat_id !== action.chat_id);
-            case "read_message":
-                return prev.map((chat) => {
-                    if (chat.chat_id !== action.chat_id)
-                        return { ...chat }
-                    return { ...chat, new_message: 0 }
-                }).sort((a, b) => b.last_timestamp - a.last_timestamp)
-            case "add_message":
-                return prev.map((chat) => {
-                    if (chat.chat_id !== action.chat_id)
-                        return chat
-                    return { ...chat, messages: [...chat.messages, action.message], new_message: chat.new_message + 1, "last_timestamp": new Date().getTime() }
+                action.data.forEach((chat) => {
+                    new_chats[chat.chat_id] = { ...chat, new_message: 0, last_timestamp: new Date().getTime() }
                 })
-
-
+                return new_chats
+            case "add":
+                if (action.new.chat_id in new_chats) break;
+                new_chats[action.new.chat_id] = { ...action.new, new_message: 0, last_timestamp: new Date().getTime() }
+                return new_chats
+            case "del":
+                delete new_chats[action.chat_id]
+                return new_chats
+            case "read_message": {
+                let chat = new_chats[action.chat_id]
+                if (!chat) break;
+                new_chats[action.chat_id] = { ...chat, new_message: 0, last_timestamp: new Date().getTime() }
+                return new_chats
+            }
+            case "add_message":
+                let chat = new_chats[action.chat_id]
+                if (!chat) break;
+                if (chat.messages.map((m)=>m.id).includes(action.message.id)) break;
+                new_chats[action.chat_id] = { ...chat, messages: [...chat.messages, action.message], new_message: chat.new_message + 1, last_timestamp: new Date().getTime() }
+                return new_chats
         }
-    }, [])
+        return new_chats
+    }, {})
 
 
-    const getChatById = (chat_id) => chats.find((chat) => chat.chat_id === chat_id)
+    const getChatById = (chat_id) => chats[chat_id]
 
 
-    const addMessageUI = (newMessage) => { chatsReducer({ action: "add_message", message: newMessage, chat_id: newMessage.chat_id }) }
+    const addMessageUI = (newMessage) => chatsReducer({ action: "add_message", message: newMessage, chat_id: newMessage.chat_id }) 
 
-    const readMessages = (chat_id) => { chatsReducer({ chat_id: chat_id, "action": "read_message" }) }
-    const addNewChatUI = async (chat) => {
-        chatsReducer({ "action": "add", "new": chat })
-    }
-    const setNewChats = (newChats) => { chatsReducer({ "action": "init", "data": newChats }) }
-    const delChatUI = (chat_id) => { chatsReducer({ "action": "del", chat_id: chat_id }) } // TODO: make it so that the message
-    const chatInUI = (chat_id) => chats.find((chat) => chat.chat_id === chat_id)
+    const readMessages = (chat_id) => chatsReducer({ chat_id: chat_id, "action": "read_message" }) 
+    const addNewChatUI = async (chat) => chatsReducer({ "action": "add", "new": chat })
+   
+    const setNewChats = (newChats) =>  chatsReducer({ "action": "init", "data": newChats }) 
+    const delChatUI = (chat_id) => chatsReducer({ "action": "del", chat_id: chat_id }) 
+    const chatInUI = (chat_id) => chat_id in chats
 
     useEffect(() => {
         async function get_chats_callback() {
@@ -72,10 +81,14 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
         get_chats_callback()
 
     }, [])
-    let [user_metadata, set_user_metadata] = useState({})
+    let current_timestamp = useRef(undefined)
+    let previous_timestamp = useRef(undefined)
 
     async function update_metadata(new_metadata) {
-        set_user_metadata(new_metadata)
+        previous_timestamp.current = current_timestamp.current
+        current_timestamp.current = new_metadata.last_msg_timestamp
+        // only update ste variable if the previous timestamp is null, whci hwhill causde the subscription to be restarted
+        !previous_timestamp.current && current_timestamp.current && set_last_timestamp(current_timestamp.current)
         await set_metadata(new_metadata, user_id)
     }
 
@@ -84,10 +97,9 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             if (!user_id)
                 return
             let metadata = await get_metadata(user_id) || { last_msg_timestamp: new Date().getTime() }
-            metadata && update_metadata(metadata)
+            await update_metadata(metadata)
         })()
     }
-
         , [])
 
     let [user_id, set_user_id] = useContext(user_id_context)
@@ -96,14 +108,15 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     let [show_chat_modal, set_chat_modal] = useState(false)
 
-    const onMessageUI = async (msg_obj, chat_object) => {
+
+    let onMessageUI = async (msg_obj, chat_object) => {
         if (msg_obj && msg_obj.type === USER_REMOVED && !msg_obj.message_contents.userGroupChange) {
             leaveChatUI(chat_object.chat_id)
             return;
         }
-        if (chat_object && !chatInUI(chat_object.chat_id))
+        if (chat_object) {
             addNewChatUI(chat_object)
-
+        }
         if (msg_obj)
             addMessageUI(msg_obj)
 
@@ -112,43 +125,37 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
 
     }
 
+    let worker = useRef(null)
+
+    useEffect(() => {
+        if (!worker.current) {
+            // spawn one worker
+            worker.current = new Worker(new URL("../../workers/messageHandlerWorker.js", import.meta.url), { type: "module" })
+            worker.current.onmessage = (msg) => {
+                let { msg_obj, chat_object } = msg.data
+                onMessageUI(msg_obj, chat_object)
+            }
+        }
+    }, [])
+
+
     const onMessage = async (message) => {
         console.log("New STOMP message!")
         try {
-            let chat_message = ChatMessage.decode(message.binaryBody)
-            if (chat_message.messageHeader) {
-                // X3DH message
-                let identityKey = { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv }
-                let new_dr_session = await handle_X3DH_message(identityKey, ident_info.signedPrekey, chat_message)
-
-                let found_skipped_messages = await handle_all_skipped_messages_for_session(client, ident_info, new_dr_session)
-
-                found_skipped_messages.forEach(
-                    async (skipped_msg) => {
-                        let { msg_obj, chat_object } = skipped_msg
-                        console.log("Handling skipped message on UI!")
-                        console.log(skipped_msg)
-                        await onMessageUI(msg_obj, chat_object);
-                    })
-            } else {
-                // nortmal message, decrypt with double ratchet algo
-
-                let new_ident_info = { ...ident_info, identityKey: { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv } }
-                let { msg_obj, chat_object } = await handle_new_encrypted_message(client, chat_message, new_ident_info)
-                await onMessageUI(msg_obj, chat_object)
-            }
+            worker.current && worker.current.postMessage(message.binaryBody)
         } finally {
-            // is there not a cleaner way to do this????
-            // why should i update the whole object
-            // doing this causes re_renders which causes unnecesarry unsub adnd subcribe calls
-            const new_metadata = { ...user_metadata, last_msg_timestamp: new Date().getTime() }
-            set_user_metadata(new_metadata)
-            await set_metadata(new_metadata, user_id)
+            const new_metadata = { last_msg_timestamp: new Date().getTime() }
+            await update_metadata(new_metadata)
         }
     }
 
 
-    useSubscription("/user/messages", onMessage, { last_timestamp: (user_metadata && user_metadata.last_msg_timestamp) || new Date().getTime() })
+    const sub_header = {}
+    if (last_timestamp)
+        sub_header.last_timestamp = last_timestamp
+
+    // only rerun subscription  effect if the last timestamp is null
+    useSubscription("/user/messages", onMessage, sub_header)
 
     const client = useStompClient()
 
@@ -164,7 +171,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     }
     const onInviteUser = async (chat, other_id) => {
 
-        let new_ident_info = {...ident_info, identityKey:{...ident_info.identityKey, privateKey:ident_info.identityKeyPriv}}
+        let new_ident_info = { ...ident_info, identityKey: { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv } }
         let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, new_ident_info, USER_ADDED)
         await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
@@ -172,7 +179,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
     }
 
     const onDeleteUser = async (chat, other_id) => {
-        let new_ident_info = {...ident_info, identityKey:{...ident_info.identityKey, privateKey:ident_info.identityKeyPriv}}
+        let new_ident_info = { ...ident_info, identityKey: { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv } }
         let { msg_obj, chat_object } = await send_new_encrypted_message(client, chat.chat_id, { userId: other_id }, user_id, new_ident_info, USER_REMOVED)
         await store_message(msg_obj, chat_object)
         addMessageUI(msg_obj)
@@ -190,6 +197,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             // if a chat exists, then double ratchet session must exist
             if (!(await get_double_ratchet_session(other_id))) {
 
+                // THERE SEEMS TO BE A BUG WITH EXPORTING, SEE STORAGEUTILS
                 let identityKey = { ...ident_info.identityKey, privateKey: ident_info.identityKeyPriv }
                 await send_X3DH_message(client, user_id, other_id, other_name, identityKey, ident_info.signedPreKey, ident_info.verifierKey, prekey_bundle_other)
             }
@@ -246,7 +254,7 @@ function ChatPage({ ident_info, set_ident_info, logoutCallback }) {
             </Stack>
         </Col>
         <Col sm={4} >
-            <ChatListBar chats={chats} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={() => { set_show_user_search(true) }} onChatCreate={() => { set_chat_modal(true) }} />
+            <ChatListBar chats={Object.values(chats).sort((a, b) => b.last_timestamp - a.last_timestamp)} onChatLeave={leaveChat} onChatClick={onChatClick} onMessageUser={() => { set_show_user_search(true) }} onChatCreate={() => { set_chat_modal(true) }} />
         </Col>
         <Col className='vh-100' sm={6}>
             {currentChat && <ChatWindow onDeleteUser={onDeleteUser} onInviteUser={onInviteUser} chat_object={currentChat} onMessageSend={sendMessage} />}

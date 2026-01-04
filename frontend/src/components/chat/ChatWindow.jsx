@@ -18,7 +18,7 @@ export default function ChatWindow({  chat_object, onMessageSend, onInviteUser, 
         </CardHeader>}
         <CardBody className="overflow-y-scroll border">
             <Stack style={{paddingBottom:"10vh"}} gap={2}  >
-                {messages && messages.sort((a, b) => a.timestamp - b.timestamp).map((message, index) => <ChatMessage  type={message.type} key={index} message_key={message.message_key} contents={message.message_contents} sender={message.sender_id} />)}
+                {messages && messages.sort((a, b) => a.timestamp - b.timestamp).map((message, index) => <ChatMessage  type={message.type} key={message.id} message_key={message.message_key} contents={message.message_contents} sender={message.sender_id} />)}
             </Stack>
         </CardBody>
         <CardFooter className="position-absolute w-100  bg-white bottom-0">
