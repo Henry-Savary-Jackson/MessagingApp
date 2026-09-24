@@ -5,7 +5,10 @@ import { get_file_local, get_user_info, get_user_info_username, store_file_local
 import { decrypt_file_contents , concatenateUIntArray} from './CryptoUtils'
 import { convertBase64StringToArrayBuffer } from './EncodingUtils'
 
-const api_url = "http://localhost:8080"
+export var api_url = `http://${process.env.REACT_APP_BACKEND_DOMAIN}`
+
+console.log(api_url)
+
 const username_cache = new Map()
 const profile_cache = new Map()
 const protobuf_mimetype = "application/x-protobuf"
@@ -103,7 +106,7 @@ export async function getUserProfileByUsername( username){
         let result = (await axios.get(`${api_url}/user/profile/username/${username}`, { withCredentials: true, withXSRFToken: true })).data
         const profile_data = result.profileImage
         user_info = {username:result.username, user_id:result.userId}
-        user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:username,type:profile_data.mimeType})
+        user_info.profile = profile_data ? new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:username,type:profile_data.mimeType}) : null
         await store_user_info( user_info)
         return user_info
     })
@@ -118,7 +121,7 @@ export async function getUserProfileById( user_id){
         let result = (await axios.get(`${api_url}/user/profile/user_id/${user_id}`, { withCredentials: true, withXSRFToken: true })).data
         const profile_data = result.profileImage
         user_info = {username:result.username, user_id:result.userId}
-        user_info.profile = new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:result.username,type:profile_data.mimeType})
+        user_info.profile = profile_data ?  new File([ convertBase64StringToArrayBuffer( profile_data.data) ] , {name:result.username,type:profile_data.mimeType}) : null
         await store_user_info(user_info)
         return user_info
     })

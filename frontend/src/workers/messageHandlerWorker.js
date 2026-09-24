@@ -6,7 +6,7 @@ import { ChatMessage } from '../utils/protocol/messages'
 import {Client} from "@stomp/stompjs"
 import { getIdentityDataFromDB } from '../utils/StorageUtils'
 import { broker_url } from '../utils/MessagingUtils'
-/* eslint-disable no-restricted-globals */
+/* eslint-disable no-restricted-globals */ ///NEEEDEC OTHERWISE NPM COMPLAINS
 
 const client = new Client({brokerURL:broker_url}) 
 client.activate()

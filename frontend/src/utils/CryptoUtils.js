@@ -185,7 +185,7 @@ export function concatenateUIntArray(...arr){
 
 export async function KDF_root_key(root_key_inp, dh_output){
     let info = new Uint8Array(8);
-    let dh_key = await crypto.subtle.importKey("raw", dh_output, {"name":"HKDF"}, true, ["deriveKey", "deriveBits"])
+    let dh_key = await crypto.subtle.importKey("raw", dh_output, {"name":"HKDF"}, false, ["deriveKey", "deriveBits"])
     let resultBits = new Uint8Array( await crypto.subtle.deriveBits({"name":"HKDF", "hash":"SHA-512", "info":info, "salt":root_key_inp},dh_key , 512) )
 
     let root_bits = resultBits.slice(0,32)
@@ -199,7 +199,7 @@ export async function KDF_chain_key( chain_key_bits){
 
     let info = new Uint8Array(8);
     let salt = new Uint8Array(32);
-    let chain_key = await crypto.subtle.importKey("raw", chain_key_bits, {"name":"HKDF"},true, ["deriveBits"] )
+    let chain_key = await crypto.subtle.importKey("raw", chain_key_bits, {"name":"HKDF"},false, ["deriveBits"] )
     let resultBits = new Uint8Array( await crypto.subtle.deriveBits({"name":"HKDF", "hash":"SHA-512", "info":info, "salt":salt},chain_key , 256) )
     return resultBits 
 }

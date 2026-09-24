@@ -30,10 +30,15 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
+    @Value("${spring.data.mongodb.uri}")
+    private String mongo;
+
     @Bean
     public ProducerFactory<String, byte[]> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        System.out.println(bootstrapAddress);
+        System.out.println(mongo);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         return new DefaultKafkaProducerFactory<>(configProps);

@@ -28,7 +28,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, byte[]> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-
+        System.out.println(bootstrapAddress);
         return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new ByteArrayDeserializer());
     }
 
